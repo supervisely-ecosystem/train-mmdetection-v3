@@ -1,1 +1,1 @@
-# mmdetection-2
+# Train MMDetection 2.0

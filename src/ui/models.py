@@ -8,6 +8,7 @@ from supervisely.app.widgets import (
     Container,
     Button,
     Text,
+    Field,
 )
 
 from src.ui.task import task_selector
@@ -65,13 +66,27 @@ table = RadioTable(
     subtitles=subtitles,
 )
 
-
 text = Text(text=f"selected model: {table.get_selected_row()[0]}")
 
+input_path = Input(placeholder="Path to .pth file in Team Files")
+path_field = Field(
+    title="Path to weights file",
+    description="Copy path in Team Files",
+    content=input_path,
+)
+
+radio_tabs = RadioTabs(
+    titles=["Pretrained models", "Custom weights"],
+    contents=[
+        Container(widgets=[arch_select, table, text]),
+        path_field,
+    ],
+)
+
 card = Card(
-    title=f"{task_selector.get_value()} models",
+    title=f"3️⃣{task_selector.get_value()} models",
     description="Choose model architecture and how weights should be initialized",
-    content=Container(widgets=[arch_select, table, text]),
+    content=radio_tabs,
 )
 
 

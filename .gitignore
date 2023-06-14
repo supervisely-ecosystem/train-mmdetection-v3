@@ -1,0 +1,19 @@
+train/secret_debug.env
+serve/secret_debug.env
+checkpoints
+cache
+data
+train/src/__pycache__
+train/src/ui/__pycache__
+serve/src/__pycache__
+serve/src/ui/__pycache__
+.venv
+*.png
+/mmdetection
+/configs_old
+# /configs
+/sly_project
+*.pth
+/model
+__pycache__
+/work_dirs

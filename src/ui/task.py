@@ -23,15 +23,15 @@ msg = (
 )
 
 info = NotificationBox(title="INFO: How to select task?", description=msg, box_type="info")
-selector = RadioGroup(
+task_selector = RadioGroup(
     items=[
-        RadioGroup.Item(value="object_detection", label="Object detection"),
-        RadioGroup.Item(value="instance_segmentation", label="Instance Segmentation"),
+        RadioGroup.Item(value="Object detection", label="object_detection"),
+        RadioGroup.Item(value="Instance Segmentation", label="instance_segmentation"),
     ],
     direction="vertical",
 )
 
-select_field = Field(title="Select deep learning problem to solve", content=selector)
+select_field = Field(title="Select deep learning problem to solve", content=task_selector)
 select_btn = Button(text="Select task")
 
 select_params = {"icon": None, "plain": False, "text": "Select task"}
@@ -50,11 +50,11 @@ card.lock()
 def select_task():
     # TODO: load task config if selected
     if select_btn._click_handled:
-        selector.disable()
+        task_selector.disable()
         update_custom_button_params(select_btn, reselect_params)
         select_btn._click_handled = False
     else:
-        selector.enable()
+        task_selector.enable()
         update_custom_button_params(select_btn, select_params)
         select_btn._click_handled = True
         # TODO: restart all steps

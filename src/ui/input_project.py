@@ -1,22 +1,61 @@
 from time import sleep  # remove
-from supervisely.app.widgets import SelectProject, Card, Container, Button, Text
+from supervisely.app.widgets import (
+    SelectProject,
+    Card,
+    Container,
+    Button,
+    DoneLabel,
+    Progress,
+    Text,
+    ProjectThumbnail,
+)
 
+import src.ui.task as task
+from src.sly_globals import api
 
 project_selector = SelectProject()
-info = Text(text="Project has been successfully downloaded", status="success")
+info = DoneLabel(text="Project has been successfully downloaded")
 info.hide()
-submit = Button(text="Submit", show_loading=True)
+
+warning = Text(text="Select project before load", status="error")
+warning.hide()
+
+progress = Progress("loading")
+progress.hide()
+
+submit = Button(text="Download", show_loading=True)
+
+project_th = ProjectThumbnail()
+project_th.hide()
 
 card = Card(
     title="1️⃣Input project",
     description="Download images and annotations from server to local app directory",
-    content=Container(widgets=[project_selector, info, submit], direction="vertical"),
+    content=Container(
+        widgets=[project_selector, info, warning, progress, project_th, submit],
+        direction="vertical",
+    ),
     lock_message="Project selected",
 )
 
 
 @submit.click
 def load_project_data():
-    sleep(2)  # load data
-    info.show()
-    card.lock()
+    if project_selector.get_selected_id() is None:
+        warning.show()
+    else:
+        warning.hide()
+
+        project_info = api.project.get_info_by_id(project_selector.get_selected_id())
+        project_th.set(project_info)
+        project_th.show()
+        # load data
+        progress.show()
+        for _ in progress(range(2)):
+            sleep(1)
+
+        info.show()
+        card.lock()
+
+        # TODO: locker/unlocker class for all cards
+        task.card.unlock()

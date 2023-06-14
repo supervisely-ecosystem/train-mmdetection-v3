@@ -1,0 +1,2 @@
+mim install "mmcls>=1.0.0rc0"
+mim install mmdet

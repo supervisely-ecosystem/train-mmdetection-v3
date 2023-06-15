@@ -27,7 +27,7 @@ def modify_num_classes_recursive(d, num_classes):
             modify_num_classes_recursive(v, num_classes)
 
 
-def find_index_for_aug(pipeline):
+def find_index_for_imgaug(pipeline):
     # return index after LoadImageFromFile and LoadAnnotations
     i1, i2 = -1, -1
     types = [p["type"] for p in pipeline]
@@ -41,14 +41,15 @@ def find_index_for_aug(pipeline):
     return idx_insert
 
 
-# change num_classes
-modify_num_classes_recursive(cfg.model, 2)
+# change model num_classes
+num_classes = 2
+modify_num_classes_recursive(cfg.model, num_classes)
 
 
 # pipelines
 augs_config = "medium.json"
 img_aug = dict(type="SlyImgAugs", config_path=augs_config)
-idx_insert = find_index_for_aug(cfg.train_pipeline)
+idx_insert = find_index_for_imgaug(cfg.train_pipeline)
 # cfg.train_pipeline.insert(idx_insert, img_aug)
 
 
@@ -72,34 +73,48 @@ cfg.val_dataloader.dataset = dict(
 cfg.test_dataloader = cfg.val_dataloader.copy()
 
 # evaluators
+from mmdet.evaluation.metrics import CocoMetric
+
+task = "instance_segmentation"  # or "detection"
+coco_metric = "segm" if task == "instance_segmentation" else "bbox"
+classwise = num_classes <= 10
 cfg.val_evaluator = dict(
     type="CocoMetric",
     ann_file="val_coco_instances.json",
-    metric=["bbox", "segm"],
-    format_only=False,
+    metric=coco_metric,
+    classwise=classwise,
 )
 
 cfg.test_evaluator = cfg.val_evaluator.copy()
 
-# hooks, vis
-vis_hook = cfg.default_hooks.visualization
-vis_hook["draw"] = True
-# vis_hook["test_out_dir"] = "vis_draw_dir"
-vis_hook["interval"] = 12
+# train/val
+cfg.train_cfg = dict(by_epoch=True, max_epochs=12, val_interval=1)
+cfg.log_processor = dict(type="LogProcessor", window_size=10, by_epoch=True)
 
-cfg.default_hooks.checkpoint["interval"] = 12
+# visualization
+cfg.default_hooks.visualization = dict(type="DetVisualizationHook", draw=True, interval=12)
+
+# hooks
+from sly_hook import SuperviselyHook
+from mmdet.engine.hooks import CheckInvalidLossHook, MeanTeacherHook, NumClassCheckHook
+
+cfg.default_hooks.checkpoint = dict(type="CheckpointHook", interval=12)
 cfg.default_hooks.logger["interval"] = 20
+cfg.custom_hooks = [
+    dict(type="NumClassCheckHook"),
+    dict(type="CheckInvalidLossHook", interval=5),
+    dict(type="SuperviselyHook", interval=5),
+    # dict(type="MeanTeacherHook", interval=2, momentum=0.001),
+]
 
 # optimizer
+from mmengine.optim.optimizer import OptimWrapper
+
 opt = dict(type="AdamW", lr=0.0002, betas=(0.9, 0.999), weight_decay=0.0005)
 cfg.optim_wrapper.optimizer = opt
 cfg.optim_wrapper.clip_grad = dict(max_norm=20.0)
 cfg.param_scheduler = []
 
-# train/val
-cfg.train_cfg["val_interval"] = 12
-
-from mmengine.optim.optimizer import OptimWrapper
 
 # from mmengine.optim.scheduler import ConstantLR
 
@@ -108,3 +123,5 @@ from mmengine.optim.optimizer import OptimWrapper
 cfg.work_dir = "work_dirs"
 runner = registry.RUNNERS.build(cfg)
 runner.train()
+
+from mmengine.runner import Runner

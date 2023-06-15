@@ -25,11 +25,12 @@ msg = (
 info = NotificationBox(title="INFO: How to select task?", description=msg, box_type="info")
 task_selector = RadioGroup(
     items=[
-        RadioGroup.Item(value="Object detection", label="object_detection"),
-        RadioGroup.Item(value="Instance Segmentation", label="instance_segmentation"),
+        RadioGroup.Item(value="Object detection", label="Object detection"),
+        RadioGroup.Item(value="Instance Segmentation", label="Instance Segmentation"),
     ],
     direction="vertical",
 )
+
 
 select_field = Field(title="Select deep learning problem to solve", content=task_selector)
 select_btn = Button(text="Select task")

@@ -2,10 +2,8 @@ from typing import Dict, Any
 from supervisely.app import DataJson
 from supervisely.app.widgets import Button
 
-import src.ui.task as task
 
-
-def update_custom_button_params(
+def update_custom_params(
     btn: Button,
     params_dct: Dict[str, Any],
 ) -> None:
@@ -19,3 +17,13 @@ def update_custom_button_params(
         else:
             DataJson()[btn.widget_id][key] = params_dct[key]
     DataJson().send_changes()
+
+
+def update_custom_button_params(
+    btn: Button,
+    params_dct: Dict[str, Any],
+) -> None:
+    if "icon" in params_dct:
+        new_icon = f'<i class="{params_dct["icon"]}" style="margin-right: {btn._icon_gap}px"></i>'
+    params_dct["icon"] = new_icon
+    update_custom_params(btn, params_dct)

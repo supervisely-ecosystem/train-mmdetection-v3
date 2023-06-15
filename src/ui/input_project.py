@@ -11,6 +11,7 @@ from supervisely.app.widgets import (
 )
 
 import src.ui.task as task
+from src.ui.classes import classes
 from src.sly_globals import api
 
 project_selector = SelectProject()
@@ -46,7 +47,9 @@ def load_project_data():
     else:
         warning.hide()
 
-        project_info = api.project.get_info_by_id(project_selector.get_selected_id())
+        pid = project_selector.get_selected_id()
+        project_info = api.project.get_info_by_id(pid)
+        classes.read_project_from_id(pid)
         project_th.set(project_info)
         project_th.show()
         # load data

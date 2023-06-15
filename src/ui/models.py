@@ -12,10 +12,11 @@ from supervisely.app.widgets import (
 )
 
 from src.ui.task import task_selector
+from src.ui.utils import update_custom_params
 
 
 def get_architectures_by_task(task: str) -> List[Select.Item]:
-    if "segmentation" in task:
+    if "segmentation" in task.lower():
         s = 4
     else:
         s = 0
@@ -52,6 +53,7 @@ def get_models_by_architecture(titles, architecture):
     return [list(range(i, i + len(titles))) for i in range(ml)]
 
 
+cur_task = task_selector.get_value()
 arch, links = get_architectures_by_task(task_selector.get_value())
 
 arch_select = Select(
@@ -83,16 +85,19 @@ radio_tabs = RadioTabs(
     ],
 )
 
+select_btn = Button(text="Select model")
+
 card = Card(
-    title=f"3️⃣{task_selector.get_value()} models",
+    title=f"3️⃣{cur_task} models",
     description="Choose model architecture and how weights should be initialized",
-    content=radio_tabs,
+    content=Container([radio_tabs, select_btn]),
 )
 
 
 @task_selector.value_changed
-def update_architecture():
-    arch_select.set(get_architectures_by_task(task_selector.get_value()))
+def update_architecture(selected_task):
+    update_custom_params(card, {"title": f"3️⃣{selected_task} models"})
+    arch_select.set(get_architectures_by_task(selected_task)[0])
 
 
 @arch_select.value_changed

@@ -9,10 +9,12 @@ from supervisely.app.widgets import (
     Button,
     Text,
     Field,
+    TeamFilesSelector,
 )
 
 from src.ui.task import task_selector
 from src.ui.utils import update_custom_params
+from src.sly_globals import TEAM_ID
 
 
 def get_architectures_by_task(task: str) -> List[Select.Item]:
@@ -70,11 +72,12 @@ table = RadioTable(
 
 text = Text(text=f"selected model: {table.get_selected_row()[0]}")
 
-input_path = Input(placeholder="Path to .pth file in Team Files")
+# input_file = Input(placeholder="Path to .pth file in Team Files")
+input_file = TeamFilesSelector(TEAM_ID, selection_file_type="file")
 path_field = Field(
     title="Path to weights file",
     description="Copy path in Team Files",
-    content=input_path,
+    content=input_file,
 )
 
 radio_tabs = RadioTabs(
@@ -88,7 +91,7 @@ radio_tabs = RadioTabs(
 select_btn = Button(text="Select model")
 
 card = Card(
-    title=f"3️⃣{cur_task} models",
+    title=f"2️⃣{cur_task} models",
     description="Choose model architecture and how weights should be initialized",
     content=Container([radio_tabs, select_btn]),
 )

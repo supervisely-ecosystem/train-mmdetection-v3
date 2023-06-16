@@ -7,11 +7,18 @@ import src.ui.task as task
 import src.ui.models as models
 import src.ui.classes as classes
 import src.ui.train_val_split as train_val_split
+import src.ui.graphics as graphics
 
 # import src.ui.augmentations as augmentations
 
 
-widgets = [task.card, models.card, classes.card, train_val_split.card]  # , augmentations.card]
+widgets = [
+    task.card,
+    models.card,
+    classes.card,
+    train_val_split.card,
+    graphics.card,
+]  # , augmentations.card]
 layout = Container(widgets=widgets)
 app = sly.Application(layout=layout)
 

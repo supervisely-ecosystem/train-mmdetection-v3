@@ -39,12 +39,11 @@ select_params = {"icon": None, "plain": False, "text": "Select task"}
 reselect_params = {"icon": "zmdi zmdi-refresh", "plain": True, "text": "Reselect task"}
 
 card = Card(
-    title="2️⃣MMDetection task",
+    title="1️⃣MMDetection task",
     description="Select task from list below",
     content=Container(widgets=[info, select_field, select_btn], direction="vertical"),
     lock_message="Please, select project and load data.",
 )
-card.lock()
 
 
 @select_btn.click

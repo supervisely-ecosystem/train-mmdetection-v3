@@ -3,6 +3,7 @@ from mmdet.registry import TRANSFORMS
 from mmdet.structures.mask import BitmapMasks
 from mmdet.structures.bbox import HorizontalBoxes
 import numpy as np
+import torch
 
 
 @TRANSFORMS.register_module()
@@ -54,10 +55,24 @@ class SlyImgAugs(object):
             results["gt_masks"] = res_masks
         else:
             res_img, res_boxes = sly.imgaug_utils.apply_to_image_and_bbox(self.augs, img, boxes)
+
         if float32:
             res_img = res_img.astype(np.float32)
 
         res_boxes = HorizontalBoxes(np.array(res_boxes, dtype=np.float32))
+
+        # Some augmentations can lead to oversized new bounding boxes,
+        # especially in the case of rotation.
+        # https://imgaug.readthedocs.io/en/latest/source/examples_bounding_boxes.html
+        # So we will try to fit bboxes over the masks.
+        if "gt_masks" in results.keys():
+            res_boxes = res_masks.get_bboxes("hbox")
+
+        # Some boxes can end up fully or partially outside of the image
+        # and loss can become NaN.
+        # We will ignore instances with near zero area of bbox.
+        res_boxes.clip_(res_img.shape[:2])
+        results["gt_ignore_flags"] = (res_boxes.areas < 4).numpy()
 
         results["img"] = res_img
         results["gt_bboxes"] = res_boxes

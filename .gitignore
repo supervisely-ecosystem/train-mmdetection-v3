@@ -1,19 +1,14 @@
-train/secret_debug.env
-serve/secret_debug.env
 checkpoints
 cache
 data
-train/src/__pycache__
-train/src/ui/__pycache__
-serve/src/__pycache__
-serve/src/ui/__pycache__
 .venv
-*.png
+/*.jpg
 /mmdetection
-/configs_old
-# /configs
 /sly_project
 *.pth
 /model
 __pycache__
 /work_dirs
+/train_split.json
+/val_coco_instances.json
+/val_split.json

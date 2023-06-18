@@ -50,7 +50,7 @@ modify_num_classes_recursive(cfg.model, num_classes)
 augs_config = "medium.json"
 img_aug = dict(type="SlyImgAugs", config_path=augs_config)
 idx_insert = find_index_for_imgaug(cfg.train_pipeline)
-# cfg.train_pipeline.insert(idx_insert, img_aug)
+cfg.train_pipeline.insert(idx_insert, img_aug)
 
 
 # datasets
@@ -88,8 +88,12 @@ cfg.val_evaluator = dict(
 cfg.test_evaluator = cfg.val_evaluator.copy()
 
 # train/val
-cfg.train_cfg = dict(by_epoch=True, max_epochs=12, val_interval=1)
+cfg.train_cfg = dict(by_epoch=True, max_epochs=12, val_interval=12)
 cfg.log_processor = dict(type="LogProcessor", window_size=10, by_epoch=True)
+cfg.train_dataloader.batch_size = 2
+num_workers = 0
+cfg.train_dataloader.num_workers = num_workers
+cfg.train_dataloader.persistent_workers = num_workers != 0
 
 # visualization
 cfg.default_hooks.visualization = dict(type="DetVisualizationHook", draw=True, interval=12)
@@ -99,10 +103,10 @@ from sly_hook import SuperviselyHook
 from mmdet.engine.hooks import CheckInvalidLossHook, MeanTeacherHook, NumClassCheckHook
 
 cfg.default_hooks.checkpoint = dict(type="CheckpointHook", interval=12)
-cfg.default_hooks.logger["interval"] = 20
+cfg.default_hooks.logger["interval"] = 1
 cfg.custom_hooks = [
     dict(type="NumClassCheckHook"),
-    dict(type="CheckInvalidLossHook", interval=5),
+    dict(type="CheckInvalidLossHook", interval=1),
     dict(type="SuperviselyHook", interval=5),
     # dict(type="MeanTeacherHook", interval=2, momentum=0.001),
 ]
@@ -121,6 +125,7 @@ cfg.param_scheduler = []
 
 # run
 cfg.work_dir = "work_dirs"
+cfg.randomness = dict(seed=875212355, deterministic=False)
 runner = registry.RUNNERS.build(cfg)
 runner.train()
 

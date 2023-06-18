@@ -125,7 +125,7 @@ cfg.param_scheduler = []
 
 # run
 cfg.work_dir = "work_dirs"
-cfg.randomness = dict(seed=875212355, deterministic=False)
+# cfg.randomness = dict(seed=875212355, deterministic=False)
 runner = registry.RUNNERS.build(cfg)
 runner.train()
 

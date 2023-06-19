@@ -20,7 +20,7 @@
             "name": "test.py",
             "type": "python",
             "request": "launch",
-            "program": "src/test.py",
+            "program": "src/test2.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "env": {

@@ -27,7 +27,7 @@ class SuperviselyHook(Hook):
         #     # sly.image.write(f"inputs_{runner.iter:02}.jpg", inputs)
         #     print()
 
-        if True:
+        if False:
             # sly.image.write("inputs_nan.jpg", inputs)
 
             # draw with mask
@@ -60,13 +60,15 @@ class SuperviselyHook(Hook):
 
         # fill progress
         # ...
+        # print(runner.epoch, runner.max_epochs, batch_idx+1, len(runner.train_dataloader))
 
-        # update plots
+        # update train charts
         if self.every_n_train_iters(runner, self.interval):
             tag, log_str = runner.log_processor.get_log_after_iter(runner, batch_idx, "train")
-            print(runner.iter, tag)
+            # print(runner.iter, tag)
 
     def after_val_epoch(self, runner: Runner, metrics: Dict[str, float] = None) -> None:
+        # update val charts
         classwise_keys = [m for m in metrics if m.endswith("_precision")]
         mAP_keys = ["coco/segm_mAP", "coco/segm_mAP_50", "coco/segm_mAP_75"]
         dataset_meta = runner.val_dataloader.dataset.metainfo

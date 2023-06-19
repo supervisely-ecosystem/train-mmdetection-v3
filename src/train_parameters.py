@@ -23,17 +23,19 @@ class TrainParameters:
         self.checkpoint_interval = 1
         self.optimizer = dict(type="AdamW", lr=0.0002, betas=(0.9, 0.999), weight_decay=0.0001)
         self.clip_grad_norm = None
-        self.warmup_steps = 500
+        self.warmup_steps = 0
         self.scheduler = None
         self.losses = None
         self.log_interval = 50
         self.chart_update_interval = 5
+        self.load_checkpoint = None  # path or http link
 
     @classmethod
     def from_config(cls, config):
         cfg = config
         self = cls()
-        # Can get from config:
+        # TODO: load from config:
+        # self.optim_wrapper = None
         self.scheduler = None
         self.losses = None
         return self
@@ -55,6 +57,11 @@ class TrainParameters:
         img_aug = dict(type="SlyImgAugs", config_path=self.augs_config_path)
         idx_insert = find_index_for_imgaug(train_pipeline)  # 2 by default
         train_pipeline.insert(idx_insert, img_aug)
+        # remove unused:
+        if cfg.get("train_pipeline"):
+            cfg.train_pipeline = None
+        if cfg.get("test_pipeline"):
+            cfg.test_pipeline = None
 
         # datasets
         train_dataset = dict(
@@ -128,7 +135,7 @@ class TrainParameters:
         ]
 
         # visualization
-        # cfg.default_hooks.visualization = dict(type="DetVisualizationHook", draw=True, interval=12)
+        cfg.default_hooks.visualization = dict(type="DetVisualizationHook", draw=True, interval=12)
 
         # optimizer
         # from mmengine.optim.optimizer import OptimWrapper
@@ -154,6 +161,7 @@ class TrainParameters:
         # can we correctly change losses?
 
         cfg.work_dir = "work_dirs"
+        cfg.load_from = self.load_checkpoint
 
         return cfg
 
@@ -193,7 +201,10 @@ def get_default_pipelines():
         dict(type="LoadAnnotations", with_bbox=True, with_mask=True),
         # *imgagus will be here
         dict(type="Resize", scale=(1333, 800), keep_ratio=True),
-        dict(type="PackDetInputs"),
+        dict(
+            type="PackDetInputs",
+            meta_keys=("img_id", "img_path", "ori_shape", "img_shape", "scale_factor"),
+        ),
     ]
     test_pipeline = [
         dict(type="LoadImageFromFile"),

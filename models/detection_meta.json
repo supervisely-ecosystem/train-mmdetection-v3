@@ -1,0 +1,185 @@
+[
+  {
+    "model_name" : "TOOD",
+    "yml_file" : "tood/metafile.yml",
+    "paper_from": "ICCV",
+    "year": 2021
+  },
+  {
+    "model_name" : "Deformable DETR",
+    "yml_file" : "deformable_detr/metafile.yml",
+    "paper_from": "ICLR",
+    "year": 2021
+  },
+  {
+    "model_name" : "YOLOX",
+    "yml_file" : "yolox/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2021
+  },
+  {
+    "model_name" : "YOLOF",
+    "yml_file" : "yolof/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2021
+  },
+  {
+    "model_name" : "Sparse R-CNN",
+    "yml_file" : "sparse_rcnn/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2021
+  },
+  {
+    "model_name" : "VarifocalNet",
+    "yml_file" : "vfnet/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2021
+  },
+  {
+    "model_name" : "PAA",
+    "yml_file" : "paa/metafile.yml",
+    "paper_from": "ECCV",
+    "year": 2020
+  },
+  {
+    "model_name" : "DETR",
+    "yml_file" : "detr/metafile.yml",
+    "paper_from": "ECCV",
+    "year": 2020
+  },
+  {
+    "model_name" : "Dynamic R-CNN",
+    "yml_file" : "dynamic_rcnn/metafile.yml",
+    "paper_from": "ECCV",
+    "year": 2020
+  },
+  {
+    "model_name" : "Side-Aware Boundary Localization",
+    "yml_file" : "sabl/metafile.yml",
+    "paper_from": "ECCV",
+    "year": 2020,
+    "exclude": "sabl_cascade*"
+  },
+  {
+    "model_name" : "AutoAssign",
+    "yml_file" : "autoassign/metafile.yml",
+    "paper_from": "ArXiv",
+    "year": 2020
+  },
+  {
+    "model_name" : "NAS-FCOS",
+    "yml_file" : "nas_fcos/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2020
+  },
+  {
+    "model_name" : "ATSS",
+    "yml_file" : "atss/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2020
+  },
+  {
+    "model_name" : "Double-Head R-CNN",
+    "yml_file" : "double_heads/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2020
+  },
+  {
+    "model_name" : "Foveabox",
+    "yml_file" : "foveabox/metafile.yml",
+    "paper_from": "TIP",
+    "year": 2020
+  },
+  {
+    "model_name" : "Free Anchor",
+    "yml_file" : "free_anchor/metafile.yml",
+    "paper_from": "NeurIPS",
+    "year": 2019
+  },
+  {
+    "model_name" : "RepPoints",
+    "yml_file" : "reppoints/metafile.yml",
+    "paper_from": "ICCV",
+    "year": 2019
+  },
+  {
+    "model_name" : "FCOS",
+    "yml_file" : "fcos/metafile.yml",
+    "paper_from": "ICCV",
+    "year": 2019
+  },
+  {
+    "model_name" : "TridentNet",
+    "yml_file" : "tridentnet/metafile.yml",
+    "paper_from": "ICCV",
+    "year": 2019
+  },
+  {
+    "model_name" : "Libra R-CNN",
+    "yml_file" : "libra_rcnn/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2019
+  },
+  {
+    "model_name" : "CenterNet",
+    "yml_file" : "centernet/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2019
+  },
+  {
+    "model_name" : "FSAF",
+    "yml_file" : "fsaf/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2019
+  },
+  {
+    "model_name" : "Guided Anchoring",
+    "yml_file" : "guided_anchoring/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2019,
+    "exclude": "ga_rpn*"
+  },
+  {
+    "model_name" : "Grid R-CNN",
+    "yml_file" : "grid_rcnn/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2019
+  },
+  {
+    "model_name" : "CornerNet",
+    "yml_file" : "cornernet/metafile.yml",
+    "paper_from": "ECCV",
+    "year": 2018
+  },
+  {
+    "model_name" : "YOLOv3",
+    "yml_file" : "yolo/metafile.yml",
+    "paper_from": "ArXiv",
+    "year": 2018
+  },
+  {
+    "model_name" : "Cascade R-CNN",
+    "yml_file" : "cascade_rcnn/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2018,
+    "exclude": "cascade_mask*"
+  },
+  {
+    "model_name" : "RetinaNet",
+    "yml_file" : "retinanet/metafile.yml",
+    "paper_from": "ICCV",
+    "year": 2017
+  },
+  {
+    "model_name" : "SSD",
+    "yml_file" : "ssd/metafile.yml",
+    "paper_from": "ECCV",
+    "year": 2016
+  },
+  {
+    "model_name" : "Faster R-CNN",
+    "yml_file" : "faster_rcnn/metafile.yml",
+    "paper_from": "NeurIPS",
+    "year": 2015
+  }
+]

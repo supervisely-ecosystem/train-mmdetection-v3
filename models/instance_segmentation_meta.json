@@ -1,0 +1,72 @@
+[
+  {
+    "model_name" : "QueryInst",
+    "yml_file" : "queryinst/metafile.yml",
+    "paper_from": "ICCV",
+    "year": 2021
+  },
+  {
+    "model_name" : "SCNet",
+    "yml_file" : "scnet/metafile.yml",
+    "paper_from": "AAAI",
+    "year": 2021,
+    "semantic": "*"
+  },
+  {
+    "model_name" : "DetectoRS",
+    "yml_file" : "detectors/metafile.yml",
+    "paper_from": "ArXiv",
+    "year": 2020,
+    "semantic": "*htc*"
+  },
+  {
+    "model_name" : "PointRend",
+    "yml_file" : "point_rend/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2020
+  },
+  {
+    "model_name" : "SOLO",
+    "yml_file" : "solo/metafile.yml",
+    "paper_from": "ECCV",
+    "year": 2020
+  },
+  {
+    "model_name" : "InstaBoost",
+    "yml_file" : "instaboost/metafile.yml",
+    "paper_from": "ICCV",
+    "year": 2019
+  },
+  {
+    "model_name" : "YOLACT",
+    "yml_file" : "yolact/metafile.yml",
+    "paper_from": "ICCV",
+    "year": 2019
+  },
+  {
+    "model_name" : "Hybrid Task Cascade",
+    "yml_file" : "htc/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2019,
+    "semantic": "!htc_without*"
+  },
+  {
+    "model_name" : "Mask Scoring R-CNN",
+    "yml_file" : "ms_rcnn/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2019
+  },
+  {
+    "model_name" : "Cascade Mask R-CNN",
+    "yml_file" : "cascade_rcnn/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2018,
+    "exclude": "cascade_rcnn*"
+  },
+  {
+    "model_name" : "Mask R-CNN",
+    "yml_file" : "mask_rcnn/metafile.yml",
+    "paper_from": "ICCV",
+    "year": 2017
+  }
+]

@@ -3,7 +3,6 @@ from mmdet.registry import TRANSFORMS
 from mmdet.structures.mask import BitmapMasks
 from mmdet.structures.bbox import HorizontalBoxes
 import numpy as np
-import torch
 
 
 @TRANSFORMS.register_module()

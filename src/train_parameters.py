@@ -21,7 +21,7 @@ class TrainParameters:
         self.batch_size_val = 1
         self.num_workers = min(4, multiprocessing.cpu_count())
         self.checkpoint_interval = 1
-        self.optimizer = dict(type="AdamW", lr=0.0002, betas=(0.9, 0.999), weight_decay=0.0001)
+        self.optimizer = dict(type="AdamW", lr=0.0001, betas=(0.9, 0.999), weight_decay=0.0001)
         self.clip_grad_norm = None
         self.warmup_steps = 0
         self.scheduler = None

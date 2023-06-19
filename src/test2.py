@@ -91,22 +91,22 @@ params = TrainParameters.from_config(cfg)
 params.init(task, num_classes, augs_config_path)
 params.batch_size_train = 2
 params.checkpoint_interval = 15
-params.val_interval = 1
+params.val_interval = 3
 params.batch_size_val = 1
-params.num_workers = 4
-params.total_epochs = 30
+params.num_workers = 2
+params.total_epochs = 15
 
 cfg = params.update_config(cfg)
 
 # TODO: to_del:
-cfg.optim_wrapper = dict(
-    type="OptimWrapper",
-    optimizer=dict(type="AdamW", lr=0.0001, weight_decay=0.0001),
-    paramwise_cfg=dict(custom_keys={"backbone": dict(lr_mult=0.1, decay_mult=1.0)}),
-    clip_grad=dict(max_norm=1.0, norm_type=2),
-)
+# cfg.optim_wrapper = dict(
+#     type="OptimWrapper",
+#     optimizer=dict(type="AdamW", lr=0.0001, weight_decay=0.0001),
+#     paramwise_cfg=dict(custom_keys={"backbone": dict(lr_mult=0.1, decay_mult=1.0)}),
+#     clip_grad=dict(max_norm=1.0, norm_type=2),
+# )
 # cfg.load_from = "https://download.openmmlab.com/mmdetection/v2.0/queryinst/queryinst_r50_fpn_1x_coco/queryinst_r50_fpn_1x_coco_20210907_084916-5a8f1998.pth"
-cfg.resume = False
+# cfg.resume = False
 
 
 # cfg.randomness = dict(seed=875212355, deterministic=False)

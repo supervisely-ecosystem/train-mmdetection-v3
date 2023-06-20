@@ -1,7 +1,9 @@
 from random import randint
+import numpy as np
 from typing import Dict, Optional, List, Tuple, Union
 from collections import OrderedDict
-from supervisely.app.widgets import GridPlot, Button, Card, Container, Field
+from supervisely.app.widgets import GridPlot, Button, Card, Container, Field, Slider, LinePlot
+from supervisely.app.content import StateJson, DataJson
 
 NumT = Union[int, float]
 
@@ -88,6 +90,8 @@ class Monitoring(object):
         return container
 
 
+smooth_slider = Slider(0, 0, 1, step=0.1, show_input=True, show_input_controls=True)
+
 train_stage = StageMonitoring("train", "Train", "TRAIN")
 train_stage.create_metric("Loss")
 train_stage.create_series("Loss", "my_loss1")
@@ -101,13 +105,26 @@ monitoring.add_stage(train_stage)
 
 add_btn = Button("add")
 
+size1 = 10
+x1 = list(range(size1))
+y1 = np.random.randint(low=10, high=148, size=size1).tolist()
+s1 = [[x, y] for x, y in zip(x1, y1)]
+
+lp = LinePlot("mlp", [{"name": "frism", "data": s1}])  # , smoothing_weight=0.1)
+
+size2 = 30
+x2 = list(range(size2))
+y2 = np.random.randint(low=0, high=300, size=size2).tolist()
+s2 = [{"x": x, "y": y} for x, y in zip(x2, y2)]
+
+
 card = Card(
     "6️⃣Training progress",
     "Task progress, detailed logs, metrics charts, and other visualizations",
-    content=Container([monitoring.compile_monitoring_container(), add_btn]),
+    content=Container([monitoring.compile_monitoring_container(), add_btn, smooth_slider, lp]),
 )
 
-x = 0
+x = size1
 
 
 @add_btn.click
@@ -117,4 +134,14 @@ def add_rdata():
     monitoring.add_scalars("train", "Loss", {"my_loss1": y0, "my_loss2": y1}, x)
     y3 = randint(-5, 5)
     monitoring.add_scalar("train", "Ssol", "my_ssol1", x, y3)
+    y3 = randint(10, 200)
+    lp.add_to_series("frism", [x, y3])
     x += 1
+
+
+@smooth_slider.value_changed
+def change_smoothness(new_val):
+    lp.change_smoothness(new_val)
+    # lp._options["smoothingWeight"] = new_val  # int(new_val * 100)
+    # DataJson()[lp.widget_id]["options"] = lp._options
+    # DataJson().send_changes()

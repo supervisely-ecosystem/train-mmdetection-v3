@@ -1,8 +1,8 @@
 from mmengine import Config, ConfigDict
 from mmdet import registry
 
-from sly_dataset import SuperviselyDatasetSplit
-from sly_imgaugs import SlyImgAugs
+from src.sly_dataset import SuperviselyDatasetSplit
+from src.sly_imgaugs import SlyImgAugs
 
 # from sly_coco_metric import SuperviselyCocoMetric
 

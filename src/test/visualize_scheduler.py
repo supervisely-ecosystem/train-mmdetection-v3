@@ -1,5 +1,6 @@
 from mmengine.registry import PARAM_SCHEDULERS
 from mmengine.optim.optimizer import OptimWrapper
+from matplotlib import pyplot as plt
 
 
 class DummyOptimWrapper(OptimWrapper):
@@ -45,3 +46,8 @@ def test_schedulers(schedulers_cfg: list, start_lr, dataloader_len=100, total_ep
         step_by_epoch(schedulers)
 
     return lrs
+
+
+def plot_shcedulers(schedulers_cfg: list, start_lr, dataloader_len, total_epochs):
+    lrs = test_schedulers(schedulers_cfg, start_lr, dataloader_len, total_epochs)
+    return plt.plot(lrs)

@@ -85,7 +85,7 @@ cfg = Config.fromfile(config_path)
 
 task = "instance_segmentation"
 selected_classes = ["kiwi"]
-augs_config_path = "medium.json"
+augs_config_path = "../aug_templates/medium.json"
 
 params = TrainParameters.from_config(cfg)
 params.init(task, selected_classes, augs_config_path)

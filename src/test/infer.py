@@ -4,7 +4,7 @@ from mmengine.runner import load_checkpoint
 from mmengine.model.utils import revert_sync_batchnorm
 from mmdet.apis import inference_detector, init_detector
 import sys
-from sly_dataset import SuperviselyDatasetSplit
+from src.sly_dataset import SuperviselyDatasetSplit
 
 import mmengine.config
 

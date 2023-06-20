@@ -8,11 +8,11 @@ from src import sly_dataset, sly_hook, sly_imgaugs
 
 
 class TrainParameters:
-    ACCEPTABLE_TASKS = ["instance_segmentation", "detection"]
+    ACCEPTABLE_TASKS = ["object_detection", "instance_segmentation"]
 
     def __init__(self) -> None:
         self.task = None
-        self.num_classes = None
+        self.selected_classes = None
         self.augs_config_path = None
         self.epoch_based_train = True
         self.total_epochs = 20
@@ -29,6 +29,7 @@ class TrainParameters:
         self.log_interval = 50
         self.chart_update_interval = 5
         self.load_checkpoint = None  # path or http link
+        self.filter_images_without_gt = True
 
     @classmethod
     def from_config(cls, config):
@@ -40,9 +41,9 @@ class TrainParameters:
         self.losses = None
         return self
 
-    def init(self, task, num_classes, augs_config_path):
+    def init(self, task, selected_classes, augs_config_path):
         self.task = task
-        self.num_classes = num_classes
+        self.selected_classes = selected_classes
         self.augs_config_path = augs_config_path
 
     def update_config(self, config: Config):
@@ -50,10 +51,13 @@ class TrainParameters:
         assert self.is_inited(), "Please, first call self.init(...) to fill required parameters."
 
         # change model num_classes
-        modify_num_classes_recursive(cfg.model, self.num_classes)
+        num_classes = len(self.selected_classes)
+        modify_num_classes_recursive(cfg.model, num_classes)
 
         # pipelines
-        train_pipeline, test_pipeline = get_default_pipelines()
+        train_pipeline, test_pipeline = get_default_pipelines(
+            with_mask=self.task == "instance_segmentation"
+        )
         img_aug = dict(type="SlyImgAugs", config_path=self.augs_config_path)
         idx_insert = find_index_for_imgaug(train_pipeline)  # 2 by default
         train_pipeline.insert(idx_insert, img_aug)
@@ -68,13 +72,19 @@ class TrainParameters:
             type="SuperviselyDatasetSplit",
             data_root="sly_project",
             split_file="train_split.json",
+            task=self.task,
+            selected_classes=self.selected_classes,
+            filter_images_without_gt=self.filter_images_without_gt,
             pipeline=train_pipeline,
         )
         val_dataset = dict(
             type="SuperviselyDatasetSplit",
             data_root="sly_project",
             split_file="val_split.json",
+            task=self.task,
             save_coco_ann_file="val_coco_instances.json",
+            selected_classes=self.selected_classes,
+            filter_images_without_gt=self.filter_images_without_gt,
             pipeline=test_pipeline,
             test_mode=True,
         )
@@ -99,7 +109,7 @@ class TrainParameters:
         # evaluators
         # from mmdet.evaluation.metrics import CocoMetric
         coco_metric = "segm" if self.task == "instance_segmentation" else "bbox"
-        classwise = self.num_classes <= 10
+        classwise = num_classes <= 10
 
         cfg.val_evaluator = dict(
             type="CocoMetric",
@@ -166,7 +176,7 @@ class TrainParameters:
         return cfg
 
     def is_inited(self):
-        need_to_check = [self.task, self.num_classes, self.augs_config_path]
+        need_to_check = [self.task, self.selected_classes, self.augs_config_path]
         return all([bool(x) for x in need_to_check]) and self.task in self.ACCEPTABLE_TASKS
 
 
@@ -195,10 +205,10 @@ def find_index_for_imgaug(pipeline):
     return idx_insert
 
 
-def get_default_pipelines():
+def get_default_pipelines(with_mask: bool):
     train_pipeline = [
         dict(type="LoadImageFromFile"),
-        dict(type="LoadAnnotations", with_bbox=True, with_mask=True),
+        dict(type="LoadAnnotations", with_bbox=True, with_mask=with_mask),
         # *imgagus will be here
         dict(type="Resize", scale=(1333, 800), keep_ratio=True),
         dict(
@@ -209,7 +219,7 @@ def get_default_pipelines():
     test_pipeline = [
         dict(type="LoadImageFromFile"),
         dict(type="Resize", scale=(1333, 800), keep_ratio=True),
-        dict(type="LoadAnnotations", with_bbox=True, with_mask=True),
+        dict(type="LoadAnnotations", with_bbox=True, with_mask=with_mask),
         dict(
             type="PackDetInputs",
             meta_keys=("img_id", "img_path", "ori_shape", "img_shape", "scale_factor"),

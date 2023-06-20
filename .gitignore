@@ -3,8 +3,9 @@ cache
 data
 .venv
 /*.jpg
+/*.png
 /mmdetection
-/sly_project
+/sly_project*
 *.pth
 /model
 __pycache__

@@ -75,7 +75,7 @@ cfg.test_dataloader = cfg.val_dataloader.copy()
 # evaluators
 from mmdet.evaluation.metrics import CocoMetric
 
-task = "instance_segmentation"  # or "detection"
+task = "instance_segmentation"  # or "object_detection"
 coco_metric = "segm" if task == "instance_segmentation" else "bbox"
 classwise = num_classes <= 10
 cfg.val_evaluator = dict(

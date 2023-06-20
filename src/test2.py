@@ -75,20 +75,20 @@ def get_manual_config_path():
 config_path = (
     # "tmp_cfg.py"
     # "configs/convnext/cascade-mask-rcnn_convnext-s-p4-w7_fpn_4conv1fc-giou_amp-ms-crop-3x_coco.py"
-    # "configs/cascade_rcnn/cascade-mask-rcnn_r50_fpn_1x_coco.py"
+    "configs/cascade_rcnn/cascade-mask-rcnn_r50_fpn_1x_coco.py"
     # "configs/swin/mask-rcnn_swin-t-p4-w7_fpn_ms-crop-3x_coco.py"
-    get_manual_config_path()
+    # get_manual_config_path()
 )
 print(f"Selected config: {config_path}")
 
 cfg = Config.fromfile(config_path)
 
 task = "instance_segmentation"
-num_classes = 2
+selected_classes = ["kiwi"]
 augs_config_path = "medium.json"
 
 params = TrainParameters.from_config(cfg)
-params.init(task, num_classes, augs_config_path)
+params.init(task, selected_classes, augs_config_path)
 params.batch_size_train = 2
 params.checkpoint_interval = 15
 params.val_interval = 3

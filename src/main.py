@@ -8,6 +8,7 @@ import src.ui.models as models
 import src.ui.classes as classes
 import src.ui.train_val_split as train_val_split
 import src.ui.graphics as graphics
+import src.ui.hyperparameters as hyperparameters
 
 # import src.ui.augmentations as augmentations
 
@@ -17,6 +18,7 @@ widgets = [
     models.card,
     classes.card,
     train_val_split.card,
+    hyperparameters.card,
     graphics.card,
 ]  # , augmentations.card]
 layout = Container(widgets=widgets)

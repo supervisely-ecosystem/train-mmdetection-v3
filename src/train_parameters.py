@@ -1,9 +1,8 @@
-from typing import List
 from mmengine import Config, ConfigDict
 import multiprocessing
 from copy import deepcopy
 
-# register modules:
+# register modules (don't remove):
 from src import sly_dataset, sly_hook, sly_imgaugs
 
 
@@ -11,40 +10,61 @@ class TrainParameters:
     ACCEPTABLE_TASKS = ["object_detection", "instance_segmentation"]
 
     def __init__(self) -> None:
+        # required
         self.task = None
         self.selected_classes = None
         self.augs_config_path = None
+        self.work_dir = None
+
+        # general
         self.epoch_based_train = True
         self.total_epochs = 20
         self.val_interval = 1 if self.epoch_based_train else 1000
         self.batch_size_train = 2
         self.batch_size_val = 1
+        self.input_size = (1333, 800)
         self.num_workers = min(4, multiprocessing.cpu_count())
-        self.checkpoint_interval = 1
-        self.optimizer = dict(type="AdamW", lr=0.0001, betas=(0.9, 0.999), weight_decay=0.0001)
-        self.clip_grad_norm = None
-        self.warmup_steps = 0
-        self.scheduler = None
-        self.losses = None
-        self.log_interval = 50
+        self.load_from = None  # load weights to continue training (path or url)
+        self.log_interval = 50  # for text logger
         self.chart_update_interval = 5
-        self.load_checkpoint = None  # path or http link
         self.filter_images_without_gt = True
 
-    @classmethod
-    def from_config(cls, config):
-        cfg = config
-        self = cls()
-        # TODO: load from config:
-        # self.optim_wrapper = None
+        # checkpoints
+        self.checkpoint_interval = 1
+        self.max_keep_checkpoints = 3
+        self.save_last = True
+        self.save_best = True
+        self.save_optimizer = False
+
+        # optimizer
+        self.optim_wrapper = None
+        self.optimizer = dict(type="AdamW", lr=0.0001, betas=(0.9, 0.999), weight_decay=0.0001)
+        self.clip_grad_norm = None
+
+        # scheduler
+        self.warmup_steps = 0
         self.scheduler = None
-        self.losses = None
+
+        # self.losses = None
+
+    @classmethod
+    def from_config(cls, config: Config):
+        self = cls()
+        size_from_cfg = try_get_size_from_config(config)
+        if size_from_cfg:
+            self.input_size = size_from_cfg
+        self.optim_wrapper = config.optim_wrapper
+        self.optimizer = config.optim_wrapper.optimizer
+        # TODO: load from config:
+        # self.scheduler = None
+        # self.losses = None
         return self
 
-    def init(self, task, selected_classes, augs_config_path):
+    def init(self, task, selected_classes, augs_config_path, work_dir):
         self.task = task
         self.selected_classes = selected_classes
         self.augs_config_path = augs_config_path
+        self.work_dir = work_dir
 
     def update_config(self, config: Config):
         cfg = deepcopy(config)
@@ -70,8 +90,8 @@ class TrainParameters:
         # datasets
         train_dataset = dict(
             type="SuperviselyDatasetSplit",
-            data_root="sly_project",
-            split_file="train_split.json",
+            data_root=f"{self.work_dir}/sly_project",
+            split_file=f"{self.work_dir}/train_split.json",
             task=self.task,
             selected_classes=self.selected_classes,
             filter_images_without_gt=self.filter_images_without_gt,
@@ -79,10 +99,10 @@ class TrainParameters:
         )
         val_dataset = dict(
             type="SuperviselyDatasetSplit",
-            data_root="sly_project",
-            split_file="val_split.json",
+            data_root=f"{self.work_dir}/sly_project",
+            split_file=f"{self.work_dir}/val_split.json",
             task=self.task,
-            save_coco_ann_file="val_coco_instances.json",
+            save_coco_ann_file=f"{self.work_dir}/val_coco_instances.json",
             selected_classes=self.selected_classes,
             filter_images_without_gt=self.filter_images_without_gt,
             pipeline=test_pipeline,
@@ -113,7 +133,7 @@ class TrainParameters:
 
         cfg.val_evaluator = dict(
             type="CocoMetric",
-            ann_file="val_coco_instances.json",
+            ann_file=f"{self.work_dir}/val_coco_instances.json",
             metric=coco_metric,
             classwise=classwise,
         )
@@ -135,16 +155,21 @@ class TrainParameters:
             type="CheckpointHook",
             interval=self.checkpoint_interval,
             by_epoch=self.epoch_based_train,
+            max_keep_ckpts=self.max_keep_checkpoints,
+            save_last=self.save_last,
+            save_best=self.save_best,
+            save_optimizer=self.save_optimizer,
         )
         cfg.log_processor = dict(type="LogProcessor", window_size=10, by_epoch=True)
         cfg.default_hooks.logger["interval"] = self.log_interval
         cfg.custom_hooks = [
             dict(type="NumClassCheckHook"),
-            dict(type="CheckInvalidLossHook", interval=1),
+            # dict(type="CheckInvalidLossHook", interval=1),
             dict(type="SuperviselyHook", interval=self.chart_update_interval),
         ]
 
         # visualization
+        # TODO: debug
         cfg.default_hooks.visualization = dict(type="DetVisualizationHook", draw=True, interval=12)
 
         # optimizer
@@ -170,13 +195,13 @@ class TrainParameters:
         # TODO
         # can we correctly change losses?
 
-        cfg.work_dir = "work_dirs"
-        cfg.load_from = self.load_checkpoint
+        cfg.load_from = self.load_from
+        cfg.work_dir = self.work_dir
 
         return cfg
 
     def is_inited(self):
-        need_to_check = [self.task, self.selected_classes, self.augs_config_path]
+        need_to_check = [self.task, self.selected_classes, self.augs_config_path, self.work_dir]
         return all([bool(x) for x in need_to_check]) and self.task in self.ACCEPTABLE_TASKS
 
 
@@ -248,3 +273,14 @@ def get_default_dataloaders():
     )
 
     return ConfigDict(train_dataloader), ConfigDict(val_dataloader)
+
+
+def try_get_size_from_config(config):
+    pipeline = config.train_dataloader.dataset.pipeline
+    try:
+        for transform in pipeline:
+            if transform["type"] == "Resize":
+                return transform["scale"]
+    except Exception as exc:
+        print(f"can't get size from config: {exc}")
+    return None

@@ -1,6 +1,6 @@
 checkpoints
 cache
-data
+app_data
 .venv
 /*.jpg
 /*.png

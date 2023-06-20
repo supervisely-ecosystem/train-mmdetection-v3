@@ -1,8 +1,10 @@
 from typing import List
+import supervisely as sly
 from supervisely.app.widgets import (
     RadioTabs,
     RadioTable,
     Select,
+    SelectString,
     Input,
     Card,
     Container,
@@ -15,60 +17,109 @@ from supervisely.app.widgets import (
 from src.ui.task import task_selector
 from src.ui.utils import update_custom_params
 from src.sly_globals import TEAM_ID
+from src.utils import parse_yaml_metafile
 
 
-def get_architectures_by_task(task: str) -> List[Select.Item]:
+def load_models_meta(task: str):
     if "segmentation" in task.lower():
-        s = 4
+        models_meta = sly.json.load_json_file("models/instance_segmentation_meta.json")
     else:
-        s = 0
-
-    archs = [Select.Item(value=f"{i}", label=f"l{i}") for i in range(s, s + 4)]
-    arch_links = [
-        "https://github.com/open-mmlab/mmdetection/tree/v2.22.0/configs/queryinst"
-        for _ in range(len(archs))
-    ]
-    return archs, arch_links
+        models_meta = sly.json.load_json_file("models/detection_meta.json")
+    models_meta = {m["model_name"]: m for m in models_meta}
+    return models_meta
 
 
-def get_table_columns(metrics):
+def get_architecture_list(models_meta: dict):
+    arch_names = list(models_meta.keys())
+
+    labels = []
+    right_texts = []
+    for name, item in models_meta.items():
+        if item.get("paper_from") and item.get("year"):
+            label = f"{name}"
+            r_text = f"({item.get('paper_from')} {item.get('year')})"
+        else:
+            label = f"{name}"
+            r_text = ""
+        labels.append(label)
+        right_texts.append(r_text)
+
+    # links to README.md in mmdetection repo
+    base_url = "https://github.com/open-mmlab/mmdetection/tree/main/configs/"
+    links = [base_url + m["yml_file"].split("/")[0] for m in models_meta.values()]
+
+    return arch_names, labels, right_texts, links
+
+
+def get_models_by_architecture(task: str, models_meta: dict, selected_arch_name: str):
+    # parse metafile.yml
+    metafile_path = "configs/" + models_meta[selected_arch_name]["yml_file"]
+    _, models = parse_yaml_metafile(metafile_path)
+
+    # filter models by task
+    if "segmentation" in task.lower():
+        task_name = "Instance Segmentation"
+    else:
+        task_name = "Object Detection"
+    models = [m for m in models if task_name in m["tasks"]]
+    return models
+
+
+def get_table_data(task: str, models: list):
     columns = [
-        {"key": "name", "title": "Checkpoint", "subtitle": None},
-        {"key": "method", "title": "Method", "subtitle": None},
-        {"key": "dataset", "title": "Dataset", "subtitle": None},
-        {"key": "inference_time", "title": "Inference time", "subtitle": "(ms/im)"},
-        {"key": "resolution", "title": "Input size", "subtitle": "(H, W)"},
-        {"key": "epochs", "title": "Epochs", "subtitle": None},
-        {"key": "training_memory", "title": "Memory", "subtitle": "Training (GB)"},
+        "Name",
+        "Method",
+        "Dataset",
+        "Inference Time (ms/im)",
+        "Training Memory (GB)",
+        "box AP",
     ]
-    for metric in metrics:
-        columns.append({"key": metric, "title": metric, "subtitle": "score"})
+    keys = [
+        "name",
+        "method",
+        "dataset",
+        "inference_time",
+        "train_memory",
+        "box AP",
+    ]
+    if "segmentation" in task.lower():
+        columns.append("mask AP")
+        keys.append("mask AP")
 
-    titles = [c["title"] for c in columns]
-    subtitles = [c["subtitle"] for c in columns]
-    return titles, subtitles, columns
+    # check which keys are used
+    add_train_iters = False
+    add_train_epochs = False
+    for model in models:
+        if not add_train_iters and model.get("train_iters"):
+            add_train_iters = True
+            keys.insert(4, "train_iters")
+            columns.insert(4, "Training Iterations")
+        if not add_train_epochs and model.get("train_epochs"):
+            add_train_epochs = True
+            keys.insert(4, "train_epochs")
+            columns.insert(4, "Training Epochs")
 
-
-def get_models_by_architecture(titles, architecture):
-    # models class
-    ml = int(architecture) + 2
-    return [list(range(i, i + len(titles))) for i in range(ml)]
+    # collect rows
+    rows = []
+    for model in models:
+        row = [model.get(k, "-") for k in keys]
+        rows.append(row)
+    return columns, rows
 
 
 cur_task = task_selector.get_value()
-arch, links = get_architectures_by_task(task_selector.get_value())
+models_meta = load_models_meta(cur_task)
+arch_names, labels, right_texts, links = get_architecture_list(models_meta)
 
-arch_select = Select(
-    items=arch,
+arch_select = SelectString(
+    arch_names,
+    labels,
+    items_right_text=right_texts,
     items_links=links,
 )
-
-titles, subtitles, _ = get_table_columns(["ROI"])
-table = RadioTable(
-    columns=titles,
-    rows=get_models_by_architecture(titles, arch_select.get_value()),
-    subtitles=subtitles,
-)
+models = get_models_by_architecture(cur_task, models_meta, arch_names[0])
+columns, rows = get_table_data(cur_task, models)
+table = RadioTable(columns, rows)
 
 text = Text(text=f"selected model: {table.get_selected_row()[0]}")
 
@@ -99,17 +150,21 @@ card = Card(
 
 @task_selector.value_changed
 def update_architecture(selected_task):
+    global models_meta, cur_task
+    cur_task = selected_task
+    models_meta = load_models_meta(selected_task)
+    arch_names, labels, right_texts, links = get_architecture_list(models_meta)
+    arch_select.set(arch_names, labels, right_texts, links)
     update_custom_params(card, {"title": f"3️⃣{selected_task} models"})
-    arch_select.set(get_architectures_by_task(selected_task)[0])
 
 
 @arch_select.value_changed
 def update_models(selected_arch):
-    table.set_data(
-        columns=titles,
-        rows=get_models_by_architecture(titles, selected_arch),
-        subtitles=subtitles,
-    )
+    global models_meta, cur_task
+    models = get_models_by_architecture(cur_task, models_meta, selected_arch)
+    columns, rows = get_table_data(cur_task, models)
+    subtitles = [None] * len(columns)
+    table.set_data(columns, rows, subtitles)
     table.select_row(0)
     text.text = f"selected model: {table.get_selected_row()[0]}"
 

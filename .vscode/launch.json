@@ -46,6 +46,6 @@
                 "PYTHONPATH": "${workspaceFolder}:${PYTHONPATH}",
                 "LOG_LEVEL": "DEBUG",
             }
-        },
+        }
     ]
 }

@@ -1,6 +1,7 @@
+from collections import OrderedDict
 from typing import Callable, Dict, Any, Optional
 from supervisely.app import DataJson
-from supervisely.app.widgets import Button, Widget
+from supervisely.app.widgets import Button, Widget, Container
 
 
 def update_custom_params(
@@ -41,6 +42,12 @@ class InputContainer(object):
         if custom_value_getter is not None:
             self._custom_get_value[name] = custom_value_getter
 
+    def get_params(self) -> Dict[str, Any]:
+        params = {}
+        for name in self._widgets.keys():
+            params[name] = self._get_value(name)
+        return params
+
     def __getattr__(self, __name: str) -> Any:
         if __name in self._widgets:
             return self._get_value(__name)
@@ -53,3 +60,43 @@ class InputContainer(object):
             widget = self._widgets[name]
             return self._custom_get_value[name](widget)
         return self._widgets[name].get_value()
+
+
+class OrderedWidgetWrapper(InputContainer):
+    def __init__(self, name: str) -> None:
+        super().__init__()
+        self._name = name
+        self._wraped_widgets = OrderedDict()
+        self._container = None
+
+    def add_input(
+        self,
+        name: str,
+        widget: Widget,
+        wraped_widget: Widget,
+        custom_value_getter: Optional[Callable[[Widget], Any]] = None,
+    ) -> None:
+        super().add_input(name, widget, custom_value_getter)
+        self._wraped_widgets[name] = wraped_widget
+
+    def create_container(self, hide=False, update=False) -> Container:
+        if self._container is not None and not update:
+            return self._container
+        widgets = [widget for widget in self._wraped_widgets.values()]
+        self._container = Container(widgets)
+        if hide:
+            self.hide()
+        return self._container
+
+    def hide(self):
+        if self._container is None:
+            return
+        self._container.hide()
+
+    def show(self):
+        if self._container is None:
+            return
+        self._container.show()
+
+    def __repr__(self) -> str:
+        return self._name

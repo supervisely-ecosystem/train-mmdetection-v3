@@ -19,6 +19,12 @@ from src.ui.hyperparameters.optimizers import (
     clip_input,
 )
 
+from src.ui.hyperparameters.lr_scheduler import (
+    schedulers_params,
+    select_scheduler,
+    get_scheduler_params,
+)
+
 
 def show_hide_fields(fields: List[Widget], hide: bool = True):
     for field in fields:
@@ -71,3 +77,14 @@ def hide_optim_parameters(new_optim):
         show_hide_fields(adam_fields)
         show_hide_fields(adams_w_fields)
         show_hide_fields(sgd_fields, False)
+
+
+@select_scheduler.value_changed
+def update_scheduler(new_value):
+    print("New params")
+    print(get_scheduler_params().get_params())
+    for scheduler in schedulers_params.keys():
+        if new_value == scheduler:
+            schedulers_params[scheduler].show()
+        else:
+            schedulers_params[scheduler].hide()

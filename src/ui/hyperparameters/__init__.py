@@ -3,11 +3,12 @@ from supervisely.app.widgets import Tabs, Card
 import src.ui.hyperparameters.handlers as handlers
 from src.ui.hyperparameters.checkpoints import checkpoints_tab, checkpoint_params
 from src.ui.hyperparameters.general import general_tab, general_params
+from src.ui.hyperparameters.optimizers import optimizers_params, optimizers_tab
 
 
 content = Tabs(
-    labels=["General", "Checkpoints"],
-    contents=[general_tab, checkpoints_tab],
+    labels=["General", "Checkpoints", "Optimizers"],
+    contents=[general_tab, checkpoints_tab, optimizers_tab],
 )
 
 card = Card(

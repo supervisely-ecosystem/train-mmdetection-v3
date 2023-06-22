@@ -3,15 +3,14 @@ import supervisely as sly
 from supervisely.app.widgets import (
     RadioTabs,
     RadioTable,
-    Select,
     SelectString,
-    Input,
     Card,
     Container,
     Button,
     Text,
     Field,
     TeamFilesSelector,
+    Switch,
 )
 
 from src.ui.task import task_selector
@@ -121,7 +120,11 @@ models = get_models_by_architecture(cur_task, models_meta, arch_names[0])
 columns, rows = get_table_data(cur_task, models)
 table = RadioTable(columns, rows)
 
-text = Text(text=f"selected model: {table.get_selected_row()[0]}")
+text = Text(text=f"Selected model: {table.get_selected_row()[0]}")
+
+load_from = Switch(True)
+load_from_text = Text("Load pretrained model")
+load_container = Container([load_from_text, load_from])
 
 # input_file = Input(placeholder="Path to .pth file in Team Files")
 input_file = TeamFilesSelector(TEAM_ID, selection_file_type="file")
@@ -134,7 +137,7 @@ path_field = Field(
 radio_tabs = RadioTabs(
     titles=["Pretrained models", "Custom weights"],
     contents=[
-        Container(widgets=[arch_select, table, text]),
+        Container(widgets=[arch_select, table, text, load_container]),
         path_field,
     ],
 )

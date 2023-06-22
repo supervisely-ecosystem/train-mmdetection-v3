@@ -44,4 +44,4 @@ def on_architecture_selected(selected_arch):
 
 @models_table.value_changed
 def update_selected_model(selected_row):
-    models_desc.text = f"selected model: {selected_row[0]}"
+    models_desc.text = f"Selected model: {selected_row[0]}"

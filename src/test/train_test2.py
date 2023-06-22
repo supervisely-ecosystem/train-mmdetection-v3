@@ -4,6 +4,9 @@ from mmdet import registry
 import yaml
 from src.train_parameters import TrainParameters
 
+# register modules (don't remove):
+from src import sly_dataset, sly_hook, sly_imgaugs
+
 
 def parse_yaml_metafile(yaml_file):
     with open(yaml_file, "r") as file:
@@ -75,9 +78,9 @@ def get_manual_config_path():
 config_path = (
     # "tmp_cfg.py"
     # "configs/convnext/cascade-mask-rcnn_convnext-s-p4-w7_fpn_4conv1fc-giou_amp-ms-crop-3x_coco.py"
-    "configs/cascade_rcnn/cascade-mask-rcnn_r50_fpn_1x_coco.py"
+    # "configs/cascade_rcnn/cascade-mask-rcnn_r50_fpn_1x_coco.py"
     # "configs/swin/mask-rcnn_swin-t-p4-w7_fpn_ms-crop-3x_coco.py"
-    # get_manual_config_path()
+    get_manual_config_path()
 )
 print(f"Selected config: {config_path}")
 
@@ -85,10 +88,10 @@ cfg = Config.fromfile(config_path)
 
 task = "instance_segmentation"
 selected_classes = ["kiwi"]
-augs_config_path = "../aug_templates/medium.json"
+augs_config_path = "src/aug_templates/medium.json"
 
 params = TrainParameters.from_config(cfg)
-params.init(task, selected_classes, augs_config_path)
+params.init(task, selected_classes, augs_config_path, "work_dirs")
 params.batch_size_train = 2
 params.checkpoint_interval = 15
 params.val_interval = 3
@@ -97,6 +100,7 @@ params.num_workers = 2
 params.total_epochs = 15
 
 cfg = params.update_config(cfg)
+cfg.custom_hooks = []
 
 # TODO: to_del:
 # cfg.optim_wrapper = dict(
@@ -105,7 +109,7 @@ cfg = params.update_config(cfg)
 #     paramwise_cfg=dict(custom_keys={"backbone": dict(lr_mult=0.1, decay_mult=1.0)}),
 #     clip_grad=dict(max_norm=1.0, norm_type=2),
 # )
-# cfg.load_from = "https://download.openmmlab.com/mmdetection/v2.0/queryinst/queryinst_r50_fpn_1x_coco/queryinst_r50_fpn_1x_coco_20210907_084916-5a8f1998.pth"
+cfg.load_from = "https://download.openmmlab.com/mmdetection/v2.0/queryinst/queryinst_r50_fpn_1x_coco/queryinst_r50_fpn_1x_coco_20210907_084916-5a8f1998.pth"
 # cfg.resume = False
 
 

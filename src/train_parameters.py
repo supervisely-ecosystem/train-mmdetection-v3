@@ -202,7 +202,7 @@ class TrainParameters:
         cfg.load_from = self.load_from
         cfg.work_dir = self.work_dir
         cfg.experiment_name = self.experiment_name
-        cfg.launcher = None
+        cfg.launcher = "none"
 
         return cfg
 

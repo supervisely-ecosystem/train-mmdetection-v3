@@ -86,6 +86,7 @@ clip_field = Field(
     description="Select the highest gradient norm value.",
 )
 
+
 optimizers_tab = Container(
     [
         select_optim,
@@ -116,10 +117,16 @@ def update_optimizer_widgets_with_params(params: TrainParameters):
         if param in optimizers_params[name].get_params():
             optimizers_params[name].set(param, value)
 
+    if params.clip_grad_norm is not None:
+        clip_input.value = params.clip_grad_norm
+    else:
+        apply_clip_input.off()
+
 
 def update_optimizer_params_with_widgets(params: TrainParameters) -> TrainParameters:
     name = select_optim.get_value()
     new_params = optimizers_params[name].get_params()
     new_params["type"] = name
     params.optimizer = new_params
+    params.clip_grad_norm = get_clip()
     return params

@@ -6,7 +6,7 @@ from supervisely.app.widgets import (
     Switch,
 )
 
-from src.ui.utils import InputContainer, switch_get_value, switch_set_value
+from src.ui.utils import InputContainer, get_switch_value, set_switch_value
 from src.train_parameters import TrainParameters
 
 
@@ -43,8 +43,8 @@ checkpoint_params.add_input("max_keep_checkpoints", checkpoint_save_count_input)
 checkpoint_params.add_input(
     "saves_limited",
     checkpoint_save_switch,
-    switch_get_value,
-    switch_set_value,
+    get_switch_value,
+    set_switch_value,
 )
 
 # save last
@@ -57,8 +57,8 @@ checkpoint_last_field = Field(
 checkpoint_params.add_input(
     "save_last",
     checkpoint_last_switch,
-    switch_get_value,
-    switch_set_value,
+    get_switch_value,
+    set_switch_value,
 )
 
 # save best
@@ -71,8 +71,8 @@ checkpoint_best_field = Field(
 checkpoint_params.add_input(
     "save_best",
     checkpoint_best_switch,
-    switch_get_value,
-    switch_set_value,
+    get_switch_value,
+    set_switch_value,
 )
 
 # save optim
@@ -84,8 +84,8 @@ checkpoint_optimizer_field = Field(
 checkpoint_params.add_input(
     "save_optimizer",
     checkpoint_optimizer_switch,
-    switch_get_value,
-    switch_set_value,
+    get_switch_value,
+    set_switch_value,
 )
 
 

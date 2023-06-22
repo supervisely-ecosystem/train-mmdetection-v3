@@ -5,12 +5,10 @@ from src.ui.task import select_btn, task_selector, reselect_params, select_param
 from src.ui.models import (
     table as models_table,
     text as models_desc,
-    get_table_data,
-    get_models_by_architecture,
-    get_architecture_list,
-    load_models_meta,
+    update_models,
+    update_architecture,
+    update_selected_model,
     arch_select,
-    card as models_card,
 )
 from src.utils import parse_yaml_metafile
 
@@ -31,25 +29,17 @@ def select_task():
 
 
 # MODELS
+update_architecture(task_selector.get_value())
+
+
 @task_selector.value_changed
-def update_architecture(selected_task):
-    global models_meta, cur_task
-    cur_task = selected_task
-    models_meta = load_models_meta(selected_task)
-    arch_names, labels, right_texts, links = get_architecture_list(models_meta)
-    arch_select.set(arch_names, labels, right_texts, links)
-    update_custom_params(models_card, {"title": f"2️⃣{selected_task} models"})
+def on_task_changed(selected_task):
+    update_architecture(selected_task)
 
 
 @arch_select.value_changed
-def update_models(selected_arch):
-    global models_meta, cur_task
-    models = get_models_by_architecture(cur_task, models_meta, selected_arch)
-    columns, rows = get_table_data(cur_task, models)
-    subtitles = [None] * len(columns)
-    models_table.set_data(columns, rows, subtitles)
-    models_table.select_row(0)
-    models_desc.text = f"selected model: {models_table.get_selected_row()[0]}"
+def on_architecture_selected(selected_arch):
+    update_models(selected_arch)
 
 
 @models_table.value_changed

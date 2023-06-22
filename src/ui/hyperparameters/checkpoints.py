@@ -20,7 +20,7 @@ checkpoint_interval_text = Text(
 )
 checkpoint_interval = Container([checkpoint_interval_input, checkpoint_interval_text])
 checkpoint_interval_field = Field(checkpoint_interval, title="Checkpoints interval")
-checkpoint_params.add_input("interval", checkpoint_interval_input)
+checkpoint_params.add_input("checkpoint_interval", checkpoint_interval_input)
 
 
 def switch_get_value(switch: Switch):
@@ -41,7 +41,7 @@ checkpoint_save_count_field = Field(
         "If option is disabled then it means unlimited."
     ),
 )
-checkpoint_params.add_input("max_saves", checkpoint_save_count_input)
+checkpoint_params.add_input("max_keep_checkpoints", checkpoint_save_count_input)
 checkpoint_params.add_input("saves_limited", checkpoint_save_switch, switch_get_value)
 
 checkpoint_last_switch = Switch()
@@ -60,6 +60,13 @@ checkpoint_best_field = Field(
 )
 checkpoint_params.add_input("save_best", checkpoint_best_switch, switch_get_value)
 
+checkpoint_optimizer_switch = Switch(False)
+checkpoint_optimizer_field = Field(
+    checkpoint_optimizer_switch,
+    title="Save optimizer",
+)
+checkpoint_params.add_input("save_optimizer", checkpoint_optimizer_switch, switch_get_value)
+
 
 checkpoints_tab = Container(
     [
@@ -67,5 +74,6 @@ checkpoints_tab = Container(
         checkpoint_save_count_field,
         checkpoint_last_field,
         checkpoint_best_field,
+        checkpoint_optimizer_field,
     ]
 )

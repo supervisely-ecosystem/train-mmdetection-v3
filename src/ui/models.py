@@ -3,15 +3,14 @@ import supervisely as sly
 from supervisely.app.widgets import (
     RadioTabs,
     RadioTable,
-    Select,
     SelectString,
-    Input,
     Card,
     Container,
     Button,
     Text,
     Field,
     TeamFilesSelector,
+    Switch,
 )
 
 from src.ui.task import task_selector
@@ -146,6 +145,10 @@ arch_select = SelectString([""])
 table = RadioTable([""], [[""]])
 text = Text()
 
+load_from = Switch(True)
+load_from_text = Text("Load pretrained model")
+load_container = Container([load_from_text, load_from])
+
 input_file = TeamFilesSelector(TEAM_ID, selection_file_type="file")
 path_field = Field(
     title="Path to weights file",
@@ -156,7 +159,7 @@ path_field = Field(
 radio_tabs = RadioTabs(
     titles=["Pretrained models", "Custom weights"],
     contents=[
-        Container(widgets=[arch_select, table, text]),
+        Container(widgets=[arch_select, table, text, load_container]),
         path_field,
     ],
 )
@@ -193,7 +196,7 @@ def update_selected_model(selected_row):
     global selected_model, models
     idx = table.get_selected_row_index()
     selected_model = models[idx]
-    text.text = f"selected model: {selected_row[0]}"
+    text.text = f"Selected model: {selected_row[0]}"
 
 
 @task_selector.value_changed

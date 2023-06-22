@@ -27,7 +27,7 @@ general_params.add_input("device", device_input)
 
 epochs_input = InputNumber(NUM_EPOCHS, min=1)
 epochs_field = Field(epochs_input, "Number of epochs")
-general_params.add_input("epochs", epochs_input)
+general_params.add_input("total_epochs", epochs_input)
 
 
 def size_and_prop(inp: BindedInputNumber) -> Tuple[Tuple[int, int], bool]:
@@ -43,7 +43,7 @@ size_field = Field(
     description="Model input resolution",
 )
 
-validation_input = InputNumber(1, 1, general_params.epochs)
+validation_input = InputNumber(1, 1, general_params.total_epochs)
 val_text = Text(
     f"Evaluate validation set every {validation_input.get_value()} epochs",
     status="info",
@@ -59,7 +59,7 @@ validation_field = Field(
         "change the evaluation interval"
     ),
 )
-general_params.add_input("validation_interval", validation_input)
+general_params.add_input("val_interval", validation_input)
 
 
 logfreq_input = InputNumber(1000, 1)
@@ -76,6 +76,6 @@ logfreq_field = Field(
         "How often metrics should be logged, increase if training data is small (by iterations)."
     ),
 )
-general_params.add_input("logging_frequency", logfreq_field)
+general_params.add_input("log_interval", logfreq_field)
 
 general_tab = Container([device_field, epochs_field, size_field, validation_field, logfreq_field])

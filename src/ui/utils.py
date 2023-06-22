@@ -28,11 +28,11 @@ def update_custom_button_params(
     update_custom_params(btn, params)
 
 
-def switch_get_value(switch: Switch):
+def get_switch_value(switch: Switch):
     return switch.is_switched()
 
 
-def switch_set_value(switch: Switch, value: bool):
+def set_switch_value(switch: Switch, value: bool):
     if value:
         switch.on()
     else:

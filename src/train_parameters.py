@@ -40,7 +40,9 @@ class TrainParameters:
         self.clip_grad_norm = None
 
         # scheduler
+        self.warmup_strategy = "constant"
         self.warmup_steps = 0
+        self.warmup_ratio = 0.001
         self.scheduler = None
 
         # self.losses = None

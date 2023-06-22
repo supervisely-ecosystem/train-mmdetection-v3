@@ -20,7 +20,7 @@ widgets = [
     classes.card,
     train_val_split.card,
     hyperparameters.card,
-    train.start_train_btn,
+    train.container,
     graphics.card,
 ]  # , augmentations.card]
 layout = Container(widgets=widgets)

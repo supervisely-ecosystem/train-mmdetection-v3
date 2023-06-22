@@ -9,9 +9,8 @@ select_btn.disable()
 card = Card(
     title="3️⃣Training classes",
     description=(
-        "Select classes, that should be used for training. "
-        "Training supports only classes of shapes Polygon and Bitmap. "
-        "Other classes are ignored"
+        "Select classes that will be used for training. "
+        "Supported shapes are Bitmap, Polygon, Rectangle."
     ),
     content=Container([classes, select_btn]),
 )

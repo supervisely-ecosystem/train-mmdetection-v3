@@ -28,6 +28,7 @@ class TrainParameters:
         self.log_interval = 50  # for text logger
         self.chart_update_interval = 5
         self.filter_images_without_gt = True
+        self.experiment_name = None
 
         # checkpoints
         self.checkpoint_interval = 1
@@ -151,21 +152,24 @@ class TrainParameters:
         # from sly_hook import SuperviselyHook
         # from mmdet.engine.hooks import CheckInvalidLossHook, MeanTeacherHook, NumClassCheckHook
         # from mmengine.hooks import CheckpointHook
+        save_best = "auto" if self.save_best else None
         cfg.default_hooks.checkpoint = dict(
             type="CheckpointHook",
             interval=self.checkpoint_interval,
             by_epoch=self.epoch_based_train,
             max_keep_ckpts=self.max_keep_checkpoints,
             save_last=self.save_last,
-            save_best=self.save_best,
+            save_best=save_best,
             save_optimizer=self.save_optimizer,
         )
-        cfg.log_processor = dict(type="LogProcessor", window_size=10, by_epoch=True)
+        cfg.log_processor = dict(
+            type="LogProcessor", window_size=self.chart_update_interval, by_epoch=True
+        )
         cfg.default_hooks.logger["interval"] = self.log_interval
         cfg.custom_hooks = [
             dict(type="NumClassCheckHook"),
             # dict(type="CheckInvalidLossHook", interval=1),
-            dict(type="SuperviselyHook", interval=self.chart_update_interval),
+            dict(type="SuperviselyHook", chart_update_interval=self.chart_update_interval),
         ]
 
         # visualization
@@ -197,6 +201,8 @@ class TrainParameters:
 
         cfg.load_from = self.load_from
         cfg.work_dir = self.work_dir
+        cfg.experiment_name = self.experiment_name
+        cfg.launcher = None
 
         return cfg
 

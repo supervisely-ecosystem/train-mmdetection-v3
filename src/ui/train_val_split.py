@@ -11,7 +11,9 @@ card = Card(
 )
 
 
-def dump_train_val_splits():
+def dump_train_val_splits(project_dir):
+    splits._project_id = None
+    splits._project_fs = sly.Project(project_dir, sly.OpenMode.READ)
     train_split, val_split = splits.get_splits()
     app_dir = sly.app.get_data_dir()
     sly.json.dump_json_file(train_split, f"{app_dir}/train_split.json")

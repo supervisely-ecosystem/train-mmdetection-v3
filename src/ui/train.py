@@ -13,6 +13,9 @@ import src.ui.models as models_ui
 
 # from src.ui.augmentations import augments
 
+# register modules (don't remove):
+from src import sly_dataset, sly_hook, sly_imgaugs
+
 
 def get_task():
     if "segmentation" in task_selector.get_value().lower():
@@ -49,7 +52,7 @@ def download_custom_model(remote_weights_path: str):
     save_dir = remote_weights_path.split("checkpoints")
     files = g.api.file.listdir(g.TEAM_ID, save_dir)
     # find config by name in save_dir
-    remote_config_path = [f for f in files if f.startswith("config") and f.endswith(".py")]
+    remote_config_path = [f for f in files if f.endswith(".py")]
     assert len(remote_config_path) > 0, f"Can't find config in {save_dir}."
     remote_config_path = remote_config_path[0]
     config_name = remote_config_path.split("/")[-1]

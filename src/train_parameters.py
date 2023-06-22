@@ -2,9 +2,6 @@ from mmengine import Config, ConfigDict
 import multiprocessing
 from copy import deepcopy
 
-# register modules (don't remove):
-from src import sly_dataset, sly_hook, sly_imgaugs
-
 
 class TrainParameters:
     ACCEPTABLE_TASKS = ["object_detection", "instance_segmentation"]
@@ -82,6 +79,8 @@ class TrainParameters:
         img_aug = dict(type="SlyImgAugs", config_path=self.augs_config_path)
         idx_insert = find_index_for_imgaug(train_pipeline)  # 2 by default
         train_pipeline.insert(idx_insert, img_aug)
+        train_pipeline[3]["scale"] = self.input_size
+        test_pipeline[1]["scale"] = self.input_size
         # remove unused:
         if cfg.get("train_pipeline"):
             cfg.train_pipeline = None

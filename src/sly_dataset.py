@@ -122,7 +122,7 @@ class SuperviselyDatasetSplit(BaseDataset):
 
         instance_id = 0
         for i, data_item in enumerate(self.data_list):
-            image_id = i + 1
+            image_id = data_item["img_id"]
 
             image_info = {
                 "id": image_id,

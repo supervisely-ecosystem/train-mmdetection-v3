@@ -179,7 +179,7 @@ def update_architecture(selected_task):
     models_meta = _load_models_meta(selected_task)
     arch_names, labels, right_texts, links = _get_architecture_list(models_meta)
     arch_select.set(arch_names, labels, right_texts, links)
-    update_custom_params(card, {"title": f"3️⃣{selected_task} models"})
+    update_custom_params(card, {"title": f"2️⃣{selected_task} models"})
     update_models(arch_select.get_value())
 
 
@@ -199,19 +199,18 @@ def update_selected_model(selected_row):
     text.text = f"Selected model: {selected_row[0]}"
 
 
-@task_selector.value_changed
-def on_task_changed(selected_task):
-    update_architecture(selected_task)
+# @task_selector.value_changed
+# def on_task_changed(selected_task):
+#     update_architecture(selected_task)
 
 
-@arch_select.value_changed
-def on_architecture_selected(selected_arch):
-    update_models(selected_arch)
+# @arch_select.value_changed
+# def on_architecture_selected(selected_arch):
+#     update_models(selected_arch)
 
 
-@table.value_changed
-def on_model_selected(selected_row):
-    update_selected_model(selected_row)
-
+# @table.value_changed
+# def update_selected_model(selected_row):
+#     text.text = f"selected model: {selected_row[0]}"
 
 update_architecture(cur_task)

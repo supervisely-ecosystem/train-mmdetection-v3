@@ -9,6 +9,7 @@ import src.ui.classes as classes
 import src.ui.train_val_split as train_val_split
 import src.ui.graphics as graphics
 import src.ui.hyperparameters as hyperparameters
+import src.ui.handlers
 import src.ui.train as train
 
 # import src.ui.augmentations as augmentations

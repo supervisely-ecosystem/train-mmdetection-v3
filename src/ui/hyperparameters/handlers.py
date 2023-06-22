@@ -8,6 +8,8 @@ from src.ui.hyperparameters.general import (
     logfreq_input,
     validation_input,
     epochs_input,
+    smaller_size_input,
+    bigger_size_input,
 )
 
 from src.ui.hyperparameters.optimizers import (
@@ -80,3 +82,13 @@ def update_optim(new_value):
             optimizers_params[optim].show()
         else:
             optimizers_params[optim].hide()
+
+
+@smaller_size_input.value_changed
+def set_min_for_max_size(new_min):
+    bigger_size_input.min = new_min
+
+
+@bigger_size_input.value_changed
+def set_max_for_min_size(new_max):
+    smaller_size_input.max = new_max

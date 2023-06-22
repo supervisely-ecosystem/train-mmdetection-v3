@@ -22,7 +22,6 @@ from src.ui.hyperparameters.optimizers import (
 from src.ui.hyperparameters.lr_scheduler import (
     schedulers_params,
     select_scheduler,
-    get_scheduler_params,
 )
 
 
@@ -81,8 +80,6 @@ def hide_optim_parameters(new_optim):
 
 @select_scheduler.value_changed
 def update_scheduler(new_value):
-    print("New params")
-    print(get_scheduler_params().get_params())
     for scheduler in schedulers_params.keys():
         if new_value == scheduler:
             schedulers_params[scheduler].show()

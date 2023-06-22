@@ -20,7 +20,7 @@ from src.sly_globals import TEAM_ID
 from src.utils import parse_yaml_metafile
 
 
-def load_models_meta(task: str):
+def _load_models_meta(task: str):
     if "segmentation" in task.lower():
         models_meta = sly.json.load_json_file("models/instance_segmentation_meta.json")
     else:
@@ -29,7 +29,7 @@ def load_models_meta(task: str):
     return models_meta
 
 
-def get_architecture_list(models_meta: dict):
+def _get_architecture_list(models_meta: dict):
     arch_names = list(models_meta.keys())
 
     labels = []
@@ -51,7 +51,7 @@ def get_architecture_list(models_meta: dict):
     return arch_names, labels, right_texts, links
 
 
-def get_models_by_architecture(task: str, models_meta: dict, selected_arch_name: str):
+def _get_models_by_architecture(task: str, models_meta: dict, selected_arch_name: str):
     # parse metafile.yml
     metafile_path = "configs/" + models_meta[selected_arch_name]["yml_file"]
     _, models = parse_yaml_metafile(metafile_path)
@@ -65,7 +65,7 @@ def get_models_by_architecture(task: str, models_meta: dict, selected_arch_name:
     return models
 
 
-def get_table_data(task: str, models: list):
+def _get_table_data(task: str, models: list):
     columns = [
         "Name",
         "Method",
@@ -104,26 +104,48 @@ def get_table_data(task: str, models: list):
     for model in models:
         row = [model.get(k, "-") for k in keys]
         rows.append(row)
-    return columns, rows
+
+    subtitles = [None] * len(columns)
+    return columns, rows, subtitles
+
+
+def is_pretrained_model_selected():
+    custom_path = get_selected_custom_path()
+    if radio_tabs.get_active_tab() == "Pretrained models":
+        if custom_path:
+            raise Exception(
+                "Active tab is Pretrained models, but the path to the custom weights is selected. This is ambiguous."
+            )
+        return True
+    else:
+        if custom_path:
+            return False
+        else:
+            raise Exception(
+                "Active tab is Custom weights, but the path to the custom weights isn't selected."
+            )
+
+
+def get_selected_pretrained_model() -> dict:
+    global selected_model
+    if selected_model:
+        return selected_model
+
+
+def get_selected_custom_path() -> str:
+    paths = input_file.get_selected_paths()
+    return paths[0] if len(paths) > 0 else ""
 
 
 cur_task = task_selector.get_value()
-models_meta = load_models_meta(cur_task)
-arch_names, labels, right_texts, links = get_architecture_list(models_meta)
+selected_model: dict = None
+models_meta: dict = None
+models: list = None
 
-arch_select = SelectString(
-    arch_names,
-    labels,
-    items_right_text=right_texts,
-    items_links=links,
-)
-models = get_models_by_architecture(cur_task, models_meta, arch_names[0])
-columns, rows = get_table_data(cur_task, models)
-table = RadioTable(columns, rows)
+arch_select = SelectString([""])
+table = RadioTable([""], [[""]])
+text = Text()
 
-text = Text(text=f"selected model: {table.get_selected_row()[0]}")
-
-# input_file = Input(placeholder="Path to .pth file in Team Files")
 input_file = TeamFilesSelector(TEAM_ID, selection_file_type="file")
 path_field = Field(
     title="Path to weights file",
@@ -148,27 +170,45 @@ card = Card(
 )
 
 
-@task_selector.value_changed
 def update_architecture(selected_task):
     global models_meta, cur_task
     cur_task = selected_task
-    models_meta = load_models_meta(selected_task)
-    arch_names, labels, right_texts, links = get_architecture_list(models_meta)
+    models_meta = _load_models_meta(selected_task)
+    arch_names, labels, right_texts, links = _get_architecture_list(models_meta)
     arch_select.set(arch_names, labels, right_texts, links)
     update_custom_params(card, {"title": f"3️⃣{selected_task} models"})
+    update_models(arch_select.get_value())
+
+
+def update_models(selected_arch):
+    global models_meta, cur_task, models
+    models = _get_models_by_architecture(cur_task, models_meta, selected_arch)
+    columns, rows, subtitles = _get_table_data(cur_task, models)
+    table.set_data(columns, rows, subtitles)
+    table.select_row(0)
+    update_selected_model(table.get_selected_row())
+
+
+def update_selected_model(selected_row):
+    global selected_model, models
+    idx = table.get_selected_row_index()
+    selected_model = models[idx]
+    text.text = f"selected model: {selected_row[0]}"
+
+
+@task_selector.value_changed
+def on_task_changed(selected_task):
+    update_architecture(selected_task)
 
 
 @arch_select.value_changed
-def update_models(selected_arch):
-    global models_meta, cur_task
-    models = get_models_by_architecture(cur_task, models_meta, selected_arch)
-    columns, rows = get_table_data(cur_task, models)
-    subtitles = [None] * len(columns)
-    table.set_data(columns, rows, subtitles)
-    table.select_row(0)
-    text.text = f"selected model: {table.get_selected_row()[0]}"
+def on_architecture_selected(selected_arch):
+    update_models(selected_arch)
 
 
 @table.value_changed
-def update_selected_model(selected_row):
-    text.text = f"selected model: {selected_row[0]}"
+def on_model_selected(selected_row):
+    update_selected_model(selected_row)
+
+
+update_architecture(cur_task)

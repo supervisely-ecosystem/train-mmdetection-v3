@@ -13,3 +13,4 @@ __pycache__
 /train_split.json
 /val_coco_instances.json
 /val_split.json
+todo.txt

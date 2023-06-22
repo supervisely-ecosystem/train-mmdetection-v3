@@ -151,27 +151,27 @@ card = Card(
 )
 
 
-@task_selector.value_changed
-def update_architecture(selected_task):
-    global models_meta, cur_task
-    cur_task = selected_task
-    models_meta = load_models_meta(selected_task)
-    arch_names, labels, right_texts, links = get_architecture_list(models_meta)
-    arch_select.set(arch_names, labels, right_texts, links)
-    update_custom_params(card, {"title": f"3️⃣{selected_task} models"})
+# @task_selector.value_changed
+# def update_architecture(selected_task):
+#     global models_meta, cur_task
+#     cur_task = selected_task
+#     models_meta = load_models_meta(selected_task)
+#     arch_names, labels, right_texts, links = get_architecture_list(models_meta)
+#     arch_select.set(arch_names, labels, right_texts, links)
+#     update_custom_params(card, {"title": f"2️⃣{selected_task} models"})
 
 
-@arch_select.value_changed
-def update_models(selected_arch):
-    global models_meta, cur_task
-    models = get_models_by_architecture(cur_task, models_meta, selected_arch)
-    columns, rows = get_table_data(cur_task, models)
-    subtitles = [None] * len(columns)
-    table.set_data(columns, rows, subtitles)
-    table.select_row(0)
-    text.text = f"selected model: {table.get_selected_row()[0]}"
+# @arch_select.value_changed
+# def update_models(selected_arch):
+#     global models_meta, cur_task
+#     models = get_models_by_architecture(cur_task, models_meta, selected_arch)
+#     columns, rows = get_table_data(cur_task, models)
+#     subtitles = [None] * len(columns)
+#     table.set_data(columns, rows, subtitles)
+#     table.select_row(0)
+#     text.text = f"selected model: {table.get_selected_row()[0]}"
 
 
-@table.value_changed
-def update_selected_model(selected_row):
-    text.text = f"selected model: {selected_row[0]}"
+# @table.value_changed
+# def update_selected_model(selected_row):
+#     text.text = f"selected model: {selected_row[0]}"

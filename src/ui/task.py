@@ -46,15 +46,15 @@ card = Card(
 )
 
 
-@select_btn.click
-def select_task():
-    # TODO: load task config if selected
-    if select_btn._click_handled:
-        task_selector.disable()
-        update_custom_button_params(select_btn, reselect_params)
-        select_btn._click_handled = False
-    else:
-        task_selector.enable()
-        update_custom_button_params(select_btn, select_params)
-        select_btn._click_handled = True
-        # TODO: restart all steps
+# @select_btn.click
+# def select_task():
+#     # TODO: load task config if selected
+#     if select_btn._click_handled:
+#         task_selector.disable()
+#         update_custom_button_params(select_btn, reselect_params)
+#         select_btn._click_handled = False
+#     else:
+#         task_selector.enable()
+#         update_custom_button_params(select_btn, select_params)
+#         select_btn._click_handled = True
+#         # TODO: restart all steps

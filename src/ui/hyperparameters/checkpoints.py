@@ -8,6 +8,7 @@ from supervisely.app.widgets import (
 
 from src.ui.utils import InputContainer
 from src.ui.hyperparameters.base_params import NUM_EPOCHS
+from src.train_parameters import TrainParameters
 
 
 # checkpoints
@@ -77,3 +78,34 @@ checkpoints_tab = Container(
         checkpoint_optimizer_field,
     ]
 )
+
+
+def update_checkpoint_widgets_with_params(params: TrainParameters):
+    checkpoint_interval_input.value = params.checkpoint_interval
+
+    if checkpoint_save_switch.is_switched():
+        checkpoint_save_count_input.value = params.max_keep_checkpoints
+
+    if params.save_best:
+        checkpoint_best_switch.on()
+    else:
+        checkpoint_best_switch.off()
+
+    if params.save_last:
+        checkpoint_last_switch.on()
+    else:
+        checkpoint_last_switch.off()
+
+    if params.save_optimizer:
+        checkpoint_optimizer_switch.on()
+    else:
+        checkpoint_optimizer_switch.off()
+
+
+def update_checkpoint_params_with_widgets(params: TrainParameters) -> TrainParameters:
+    params.checkpoint_interval = checkpoint_params.checkpoint_interval
+    params.save_best = checkpoint_params.save_best
+    params.save_last = checkpoint_params.save_last
+    params.save_optimizer = checkpoint_params.save_optimizer
+    # нужен ли свитчер вообще?
+    params.max_keep_checkpoints = checkpoint_params.max_keep_checkpoints

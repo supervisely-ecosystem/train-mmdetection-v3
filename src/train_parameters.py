@@ -55,6 +55,12 @@ class TrainParameters:
             self.input_size = size_from_cfg
         self.optim_wrapper = config.optim_wrapper
         self.optimizer = config.optim_wrapper.optimizer
+        try:
+            if self.optim_wrapper.clip_grad.max_norm is not None:
+                self.clip_grad_norm = self.optim_wrapper.clip_grad.max_norm
+                self.optim_wrapper.clip_grad.norm_type = 2
+        except AttributeError:
+            self.optim_wrapper.clip_grad = None
         # TODO: load from config:
         # self.scheduler = None
         # self.losses = None
@@ -83,11 +89,10 @@ class TrainParameters:
         train_pipeline.insert(idx_insert, img_aug)
         train_pipeline[3]["scale"] = self.input_size
         test_pipeline[1]["scale"] = self.input_size
-        # remove unused:
         if cfg.get("train_pipeline"):
-            cfg.train_pipeline = None
+            cfg.train_pipeline = train_pipeline
         if cfg.get("test_pipeline"):
-            cfg.test_pipeline = None
+            cfg.test_pipeline = test_pipeline
 
         # datasets
         train_dataset = dict(
@@ -282,9 +287,11 @@ def get_default_dataloaders():
     return ConfigDict(train_dataloader), ConfigDict(val_dataloader)
 
 
-def try_get_size_from_config(config):
-    pipeline = config.train_dataloader.dataset.pipeline
+def try_get_size_from_config(config: Config):
     try:
+        pipeline = (
+            getattr(config, "train_pipeline", None) or config.train_dataloader.dataset.pipeline
+        )
         for transform in pipeline:
             if transform["type"] == "Resize":
                 return transform["scale"]

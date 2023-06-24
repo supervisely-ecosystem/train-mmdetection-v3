@@ -36,9 +36,9 @@ def size_and_prop(inp: BindedInputNumber) -> Tuple[Tuple[int, int], bool]:
     return inp.get_value(), inp.proportional
 
 
-bigger_size_input = InputNumber(1333, 800)
+bigger_size_input = InputNumber(1333, 1)
 bigger_size = Field(bigger_size_input, "Bigger side size")
-smaller_size_input = InputNumber(900, 1, 1333)
+smaller_size_input = InputNumber(900, 1)
 smaller_size = Field(smaller_size_input, "Smaller side size")
 general_params.add_input("bigger_size", bigger_size_input)
 general_params.add_input("smaller_size", smaller_size_input)

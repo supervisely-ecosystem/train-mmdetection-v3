@@ -119,6 +119,7 @@ def update_optimizer_widgets_with_params(params: TrainParameters):
 
     if params.clip_grad_norm is not None:
         clip_input.value = params.clip_grad_norm
+        apply_clip_input.on()
     else:
         apply_clip_input.off()
 

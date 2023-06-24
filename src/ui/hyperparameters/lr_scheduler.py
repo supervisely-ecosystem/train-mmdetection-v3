@@ -1,5 +1,13 @@
 from typing import List
-from supervisely.app.widgets import Select, Container, Field, Input, InputNumber, Empty
+from supervisely.app.widgets import (
+    Select,
+    Container,
+    Field,
+    Input,
+    InputNumber,
+    Empty,
+    SelectString,
+)
 
 from src.ui.utils import OrderedWidgetWrapper
 from src.train_parameters import TrainParameters
@@ -119,11 +127,12 @@ def get_scheduler_params() -> OrderedWidgetWrapper:
 def update_scheduler_widgets_with_params(params: TrainParameters):
     if params.scheduler is None:
         select_scheduler.set_value("empty")
+        return
 
     name = params.scheduler["type"]
     select_scheduler.set_value(name)
 
-    for param, value in params.select_scheduler.items():
+    for param, value in select_scheduler.items():
         if param in schedulers_params[name].get_params():
             schedulers_params[name].set(param, value)
 

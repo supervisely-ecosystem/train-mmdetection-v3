@@ -8,6 +8,12 @@ from src.ui.hyperparameters.lr_scheduler import (
     schedulers_params,
     get_scheduler_params,
 )
+from src.train_parameters import TrainParameters
+
+from src.ui.hyperparameters import general
+from src.ui.hyperparameters import checkpoints
+from src.ui.hyperparameters import optimizers
+from src.ui.hyperparameters import lr_scheduler
 
 
 content = Tabs(
@@ -25,3 +31,24 @@ card = Card(
     description="Partially taken from default model configs",
     content=content,
 )
+
+
+def reset_widgets():
+    card.lock("Select a model to unlock.")
+
+
+def update_widgets_with_params(params: TrainParameters):
+    general.update_general_widgets_with_params(params)
+    checkpoints.update_checkpoint_widgets_with_params(params)
+    optimizers.update_optimizer_widgets_with_params(params)
+    lr_scheduler.update_scheduler_widgets_with_params(params)
+
+
+def update_params_with_widgets(params: TrainParameters):
+    general.update_general_params_with_widgets(params)
+    checkpoints.update_checkpoint_params_with_widgets(params)
+    optimizers.update_optimizer_params_with_widgets(params)
+    lr_scheduler.update_scheduler_params_with_widgets(params)
+
+
+reset_widgets()

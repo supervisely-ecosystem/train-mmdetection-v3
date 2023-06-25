@@ -17,7 +17,7 @@
                 "8000",
                 "--ws",
                 "websockets",
-                "--reload"
+                // "--reload"
             ],
             "justMyCode": false,
             "env": {

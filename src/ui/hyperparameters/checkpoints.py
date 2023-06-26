@@ -62,6 +62,7 @@ checkpoint_params.add_input(
 )
 
 # save best
+# TODO: change desc
 checkpoint_best_switch = Switch(True)
 checkpoint_best_field = Field(
     checkpoint_best_switch,

@@ -29,12 +29,14 @@ content = Tabs(
 card = Card(
     title="Training hyperparameters",
     description="Partially taken from default model configs",
+    lock_message="Select model",
     content=content,
 )
+card.lock()
 
 
-def reset_widgets():
-    card.lock("Select a model to unlock.")
+# def reset_widgets():
+#     card.lock("Select a model to unlock.")
 
 
 def update_widgets_with_params(params: TrainParameters):
@@ -51,4 +53,4 @@ def update_params_with_widgets(params: TrainParameters):
     lr_scheduler.update_scheduler_params_with_widgets(params)
 
 
-reset_widgets()
+# reset_widgets()

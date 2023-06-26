@@ -35,9 +35,6 @@ task_selector = RadioGroup(
 select_field = Field(title="Select deep learning problem to solve", content=task_selector)
 select_btn = Button(text="Select task")
 
-select_params = {"icon": None, "plain": False, "text": "Select task"}
-reselect_params = {"icon": "zmdi zmdi-refresh", "plain": True, "text": "Reselect task"}
-
 card = Card(
     title="1️⃣MMDetection task",
     description="Select task from list below",

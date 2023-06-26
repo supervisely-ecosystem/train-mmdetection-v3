@@ -1,7 +1,11 @@
 from collections import OrderedDict
-from typing import Callable, Dict, Any, Optional
+from typing import Callable, Dict, Any, List, Optional
 from supervisely.app import DataJson
-from supervisely.app.widgets import Button, Widget, Container, Switch
+from supervisely.app.widgets import Button, Widget, Container, Switch, Card
+
+
+select_params = {"icon": None, "plain": False, "text": "Select"}
+reselect_params = {"icon": "zmdi zmdi-refresh", "plain": True, "text": "Reselect"}
 
 
 def update_custom_params(
@@ -131,3 +135,43 @@ class OrderedWidgetWrapper(InputContainer):
 
     def __repr__(self) -> str:
         return self._name
+
+
+def disable_enable(widgets: List[Widget], disable: bool = True):
+    for w in widgets:
+        if disable:
+            w.disable()
+        else:
+            w.enable()
+
+
+def unlock_lock(cards: List[Card], unlock: bool = True):
+    for w in cards:
+        if unlock:
+            w.unlock()
+        else:
+            w.lock()
+
+
+def button_selected(
+    select_btn: Button,
+    disable_widgets: List[Widget],
+    lock_cards: List[Card],
+    lock_without_click: bool = False,
+):
+    if lock_without_click:
+        disable_enable(disable_widgets, disable=False)
+        unlock_lock(lock_cards, unlock=False)
+        update_custom_button_params(select_btn, select_params)
+        select_btn._click_handled = True
+        return
+
+    disable_enable(disable_widgets, select_btn._click_handled)
+    unlock_lock(lock_cards, select_btn._click_handled)
+
+    if select_btn._click_handled:
+        update_custom_button_params(select_btn, reselect_params)
+        select_btn._click_handled = False
+    else:
+        update_custom_button_params(select_btn, select_params)
+        select_btn._click_handled = True

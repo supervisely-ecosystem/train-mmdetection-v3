@@ -170,7 +170,9 @@ card = Card(
     title=f"2️⃣{cur_task} models",
     description="Choose model architecture and how weights should be initialized",
     content=Container([radio_tabs, select_btn]),
+    lock_message="Select task",
 )
+card.lock()
 
 
 def update_architecture(selected_task):
@@ -213,4 +215,4 @@ def update_selected_model(selected_row):
 # def update_selected_model(selected_row):
 #     text.text = f"selected model: {selected_row[0]}"
 
-update_architecture(cur_task)
+# update_architecture(cur_task)

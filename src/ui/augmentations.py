@@ -40,7 +40,9 @@ card = Card(
     title="5️⃣Training augmentations",
     description="Choose one of the prepared templates or provide custom pipeline",
     content=container,
+    lock_message="Select model",
 )
+card.lock()
 
 
 def update_task(task_name):

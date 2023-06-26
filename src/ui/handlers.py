@@ -12,6 +12,20 @@ from src.ui import hyperparameters
 from src.ui import augmentations
 
 
+def model_select_button_state_change(without_click: bool = False):
+    button_selected(
+        models.select_btn,
+        disable_widgets=[
+            models.radio_tabs,
+            models.arch_select,
+            models.path_field,
+            models.table,
+        ],
+        lock_cards=[augmentations.card, hyperparameters.card],
+        lock_without_click=without_click,
+    )
+
+
 # TASK
 def on_task_changed(selected_task):
     models.update_architecture(selected_task)
@@ -20,7 +34,12 @@ def on_task_changed(selected_task):
 
 @select_btn.click
 def select_task():
-    button_selected(select_btn, [task_selector], [models.card])
+    button_selected(
+        select_btn,
+        [task_selector],
+        lock_cards=[models.card],
+    )
+    model_select_button_state_change(True)
     on_task_changed(task_selector.get_value())
 
 
@@ -41,16 +60,8 @@ def update_selected_model(selected_row):
 @models.select_btn.click
 def on_model_selected():
     # update default hyperparameters in UI
-    button_selected(
-        models.select_btn,
-        disable_widgets=[
-            models.radio_tabs,
-            models.arch_select,
-            models.path_field,
-            models.table,
-        ],
-        unlock_cards=[augmentations.card, hyperparameters.card],
-    )
+
+    model_select_button_state_change(False)
 
     if models.is_pretrained_model_selected():
         selected_model = models.get_selected_pretrained_model()

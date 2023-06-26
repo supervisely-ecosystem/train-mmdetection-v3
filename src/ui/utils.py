@@ -156,10 +156,18 @@ def unlock_lock(cards: List[Card], unlock: bool = True):
 def button_selected(
     select_btn: Button,
     disable_widgets: List[Widget],
-    unlock_cards: List[Card],
+    lock_cards: List[Card],
+    lock_without_click: bool = False,
 ):
+    if lock_without_click:
+        disable_enable(disable_widgets, disable=False)
+        unlock_lock(lock_cards, unlock=False)
+        update_custom_button_params(select_btn, select_params)
+        select_btn._click_handled = True
+        return
+
     disable_enable(disable_widgets, select_btn._click_handled)
-    unlock_lock(unlock_cards, select_btn._click_handled)
+    unlock_lock(lock_cards, select_btn._click_handled)
 
     if select_btn._click_handled:
         update_custom_button_params(select_btn, reselect_params)

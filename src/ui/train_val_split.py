@@ -1,8 +1,8 @@
 import supervisely as sly
 from supervisely.app.widgets import TrainValSplits, Card, Container
-from src.sly_globals import PROJECT_ID
+import src.sly_globals as g
 
-splits = TrainValSplits(project_id=PROJECT_ID)
+splits = TrainValSplits(project_id=g.PROJECT_ID)
 
 card = Card(
     title="4️⃣Train / Validation splits",
@@ -15,6 +15,6 @@ def dump_train_val_splits(project_dir):
     splits._project_id = None
     splits._project_fs = sly.Project(project_dir, sly.OpenMode.READ)
     train_split, val_split = splits.get_splits()
-    app_dir = sly.app.get_data_dir()
+    app_dir = g.app_dir
     sly.json.dump_json_file(train_split, f"{app_dir}/train_split.json")
     sly.json.dump_json_file(val_split, f"{app_dir}/val_split.json")

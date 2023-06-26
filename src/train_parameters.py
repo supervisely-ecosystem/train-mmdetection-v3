@@ -206,9 +206,10 @@ class TrainParameters:
         # can we correctly change losses?
 
         cfg.load_from = self.load_from
-        cfg.work_dir = self.work_dir
+        cfg.work_dir = self.work_dir + "/work_dir"
         cfg.experiment_name = self.experiment_name
         cfg.launcher = "none"
+        # cfg.env_cfg.mp_cfg.mp_start_method = "spawn"
 
         return cfg
 

@@ -37,9 +37,9 @@ def size_and_prop(inp: BindedInputNumber) -> Tuple[Tuple[int, int], bool]:
 
 
 bigger_size_input = InputNumber(1333, 1)
-bigger_size = Field(bigger_size_input, "Bigger side size")
-smaller_size_input = InputNumber(900, 1)
-smaller_size = Field(smaller_size_input, "Smaller side size")
+bigger_size = Field(bigger_size_input, "Longer edge")
+smaller_size_input = InputNumber(800, 1)
+smaller_size = Field(smaller_size_input, "Shorter edge")
 general_params.add_input("bigger_size", bigger_size_input)
 general_params.add_input("smaller_size", smaller_size_input)
 general_params.set("smaller_size", 800)
@@ -53,7 +53,8 @@ size_input = Container(
 size_field = Field(
     size_input,
     title="Input size",
-    description="Model input resolution",
+    description="Images will be scaled approximately to the given sizes keeping aspect ratio. "
+    "Those sizes are passed as 'scale' parameter to the 'Resize' class in mmcv.",
 )
 
 bs_train_input = InputNumber(1, 1)

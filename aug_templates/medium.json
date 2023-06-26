@@ -73,8 +73,8 @@
                 "keep_size": false,
                 "sample_independently": true
             },
-            "sometimes": 0.5,
-            "python": "iaa.Sometimes(0.5, iaa.size.CropAndPad(percent=(-0.2, 0.2), pad_mode='constant', pad_cval=0, keep_size=False, sample_independently=True))"
+            "sometimes": 0.4,
+            "python": "iaa.Sometimes(0.4, iaa.size.CropAndPad(percent=(-0.2, 0.2), pad_mode='constant', pad_cval=0, keep_size=False, sample_independently=True))"
         },
         {
             "category": "flip",

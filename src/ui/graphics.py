@@ -5,6 +5,9 @@ from collections import OrderedDict
 from supervisely.app.widgets import GridPlot, Button, Card, Container, Field, Slider, LinePlot
 from supervisely.app.content import StateJson, DataJson
 
+from src.ui.task import task_selector
+from src.ui.classes import classes
+
 NumT = Union[int, float]
 
 
@@ -94,14 +97,27 @@ smooth_slider = Slider(0, 0, 1, step=0.1, show_input=True, show_input_controls=T
 
 train_stage = StageMonitoring("train", "Train", "TRAIN")
 train_stage.create_metric("Loss")
-train_stage.create_series("Loss", "my_loss1")
-train_stage.create_series("Loss", "my_loss2")
+train_stage.create_series("Loss", "loss")
+# train_stage.create_series("Loss", "my_loss2")
+train_stage.create_metric("Learning Rate")
+train_stage.create_series("Learning Rate", "lr")
 
-train_stage.create_metric("Ssol")
-train_stage.create_series("Ssol", "my_ssol1")
+val_stage = StageMonitoring("val", "Val", "Validation")
+# val_stage.create_metric("Loss")
+# val_stage.create_series("Loss", "loss")
+# task = task_selector.get_value()
+# if "segmentation" in task.lower():
+val_stage.create_metric("Metrics")
+val_stage.create_series("Metrics", "mAP")
+val_stage.create_series("Metrics", "mAP@50")
+val_stage.create_series("Metrics", "mAP@75")
+
+val_stage.create_metric("Per-class precision")
+
 
 monitoring = Monitoring()
 monitoring.add_stage(train_stage)
+monitoring.add_stage(val_stage)
 
 add_btn = Button("add")
 

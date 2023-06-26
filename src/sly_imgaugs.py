@@ -15,6 +15,13 @@ class SlyImgAugs(object):
                 config["pipeline"], random_order=config["random_order"]
             )
 
+            sly.logger.debug(
+                "SlyImgAugs loaded: ",
+                extra=dict(config_path=self.config_path, pipeline=config["pipeline"]),
+            )
+        else:
+            sly.logger.debug("SlyImgAugs: config_path is None.")
+
     def _apply_augs(self, results):
         if self.config_path is None:
             return

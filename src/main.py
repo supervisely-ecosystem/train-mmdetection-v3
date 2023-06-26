@@ -11,8 +11,7 @@ import src.ui.graphics as graphics
 import src.ui.hyperparameters as hyperparameters
 import src.ui.handlers
 import src.ui.train as train
-
-# import src.ui.augmentations as augmentations
+import src.ui.augmentations as augmentations
 
 
 widgets = [
@@ -20,10 +19,11 @@ widgets = [
     models.card,
     classes.card,
     train_val_split.card,
+    augmentations.card,
     hyperparameters.card,
     train.container,
     graphics.card,
-]  # , augmentations.card]
+]
 layout = Container(widgets=widgets)
 app = sly.Application(layout=layout)
 

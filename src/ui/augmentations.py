@@ -1,17 +1,69 @@
-from supervisely.app.widgets import AugmentationsWithTabs, Card, Container
+from pathlib import Path
+import os
+from supervisely.app.widgets import AugmentationsWithTabs, Card, Container, Switch
+import supervisely as sly
 
 from src.ui.task import task_selector
+import src.sly_globals as g
 
 
-_templates = [{"value": "import всякое from конкретного", "label": "Light"}]
-if "segmentation" in task_selector.get_value().lower():
-    task_type = "segmentation"
-else:
-    task_type = "detection"
+def format_task_name(task: str):
+    if "segmentation" in task:
+        task = "segmentation"
+    else:
+        task = "detection"
+    return task
 
-augments = AugmentationsWithTabs(task_type=task_type, templates=_templates)
+
+def name_from_path(aug_path):
+    return os.path.basename(aug_path).split(".json")[0].capitalize()
+
+
+template_dir = "src/aug_templates"
+template_paths = list(map(str, Path(template_dir).glob("*.json")))
+
+templates = [{"label": name_from_path(path), "value": path} for path in template_paths]
+
+
+swithcer = Switch(True)
+augments = AugmentationsWithTabs(
+    g, task_type=format_task_name(task_selector.get_value()), templates=templates
+)
+
+
+container = Container([swithcer, augments])
+
 card = Card(
     title="5️⃣Training augmentations",
     description="Choose one of the prepared templates or provide custom pipeline",
-    content=augments,
+    content=container,
 )
+
+
+def update_task(task_name):
+    task = format_task_name(task_name)
+    augments._augs1._task_type = task
+    augments._augs2._task_type = task
+
+
+def reset_widgets():
+    if swithcer.is_switched():
+        augments.show()
+    else:
+        augments.hide()
+
+
+def get_selected_aug():
+    # path to aug pipline (.json file)
+    if swithcer.is_switched():
+        return augments._current_augs._template_path
+    else:
+        return None
+
+
+@swithcer.value_changed
+def on_switch(is_switched: bool):
+    reset_widgets()
+
+
+reset_widgets()

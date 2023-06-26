@@ -20,6 +20,7 @@ from src.utils import parse_yaml_metafile
 from src import sly_utils
 from src.train_parameters import TrainParameters
 from src.ui import hyperparameters
+from src.ui import augmentations
 
 
 # TASK
@@ -44,6 +45,7 @@ update_architecture(task_selector.get_value())
 @task_selector.value_changed
 def on_task_changed(selected_task):
     update_architecture(selected_task)
+    augmentations.update_task(selected_task)
 
 
 @arch_select.value_changed

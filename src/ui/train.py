@@ -11,8 +11,8 @@ from src.ui.train_val_split import dump_train_val_splits
 from src.ui.classes import classes
 import src.ui.models as models_ui
 from src import sly_utils
-
-# from src.ui.augmentations import augments
+from src.ui.hyperparameters import update_params_with_widgets
+from src.ui.augmentations import get_selected_aug
 
 # register modules (don't remove):
 from src import sly_dataset, sly_hook, sly_imgaugs
@@ -28,13 +28,15 @@ def get_task():
 def get_train_params(cfg) -> TrainParameters:
     task = get_task()
     selected_classes = classes.get_selected_classes()
-    # augs_config_path = ...
-    augs_config_path = "src/aug_templates/medium.json"
-    work_dir = sly.app.get_data_dir()
+    augs_config_path = get_selected_aug()
+    work_dir = g.app_dir
 
+    # create params from config
     params = TrainParameters.from_config(cfg)
     params.init(task, selected_classes, augs_config_path, work_dir)
-    # params.total_epochs = ...
+
+    # update from UI
+    update_params_with_widgets(params)
     return params
 
 
@@ -64,7 +66,15 @@ def train():
     # create config
     cfg = Config.fromfile(config_path)
     params = get_train_params(cfg)
-    # update config with user's parameteres
+
+    ### TODO: debug
+    params.checkpoint_interval = 5
+    params.save_best = False
+    params.val_interval = 5
+    params.num_workers = 0
+    ###
+
+    # get config from params
     train_cfg = params.update_config(cfg)
     # update load_from with custom_weights_path
     if custom_weights_path and params.load_from:
@@ -72,17 +82,20 @@ def train():
 
     # dump config locally
     config_name = config_path.split("/")[-1]
-    train_cfg.dump(f"{sly.app.get_data_dir()}/{config_name}")
+    train_cfg.dump(f"{g.app_dir}/{config_name}")
+
+    # add in globals
+    g.config_name = config_name
 
     # its grace, the Trainer
     runner = RUNNERS.build(train_cfg)
     try:
         runner.train()
     except StopIteration as exc:
-        # stop training
-        print(exc)
+        # training was stopped
+        sly.logger.debug(exc)
 
-    # sly_utils.upload_artifacts(train_cfg.work_dir)
+    sly_utils.upload_artifacts(train_cfg.work_dir)
 
 
 start_train_btn = Button("Train")

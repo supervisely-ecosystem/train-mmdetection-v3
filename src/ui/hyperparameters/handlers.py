@@ -3,13 +3,14 @@ from supervisely.app.widgets import Widget
 
 from src.ui.hyperparameters.checkpoints import checkpoint_interval_text, checkpoint_interval_input
 from src.ui.hyperparameters.general import (
-    logfreq_text,
+    chart_update_text,
     val_text,
-    logfreq_input,
+    chart_update_input,
     validation_input,
     epochs_input,
     smaller_size_input,
     bigger_size_input,
+    epoch_based_input,
 )
 
 from src.ui.hyperparameters.optimizers import (
@@ -41,14 +42,21 @@ def epoch_num_changes(new_value):
     checkpoint_interval_input.max = new_value
 
 
+@epoch_based_input.value_changed
+def update_validatio_type(new_value):
+    val = validation_input.value
+    val_type = "epochs" if new_value is True else "iterations"
+    val_text.text = f"Evaluate validation set every {val} {val_type}"
+
+
 @validation_input.value_changed
 def update_validation_desc(new_value):
     val_text.text = f"Evaluate validation set every {new_value} epochs"
 
 
-@logfreq_input.value_changed
-def update_logging_desc(new_value):
-    logfreq_text.text = f"Log metrics every {new_value} iterations"
+@chart_update_input.value_changed
+def update_chart_desc(new_value):
+    chart_update_text.text = f"Update chart every {new_value} iterations"
 
 
 @checkpoint_interval_input.value_changed

@@ -16,11 +16,14 @@ def format_task_name(task: str):
 
 
 def name_from_path(aug_path):
-    return os.path.basename(aug_path).split(".json")[0].capitalize()
+    name = os.path.basename(aug_path).split(".json")[0].capitalize()
+    name = " + ".join(name.split("_"))
+    return name
 
 
-template_dir = "src/aug_templates"
+template_dir = "aug_templates"
 template_paths = list(map(str, Path(template_dir).glob("*.json")))
+template_paths = sorted(template_paths)[::-1]
 
 templates = [{"label": name_from_path(path), "value": path} for path in template_paths]
 

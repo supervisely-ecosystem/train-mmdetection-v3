@@ -11,6 +11,7 @@ class TrainParameters:
         self.task = None
         self.selected_classes = None
         self.augs_config_path = None
+        self.app_dir = None
         self.work_dir = None
 
         # general
@@ -26,6 +27,7 @@ class TrainParameters:
         self.chart_update_interval = 5
         self.filter_images_without_gt = True
         self.experiment_name = None
+        self.add_classwise_metric = True
 
         # checkpoints
         self.checkpoint_interval = 1
@@ -66,15 +68,16 @@ class TrainParameters:
         # self.losses = None
         return self
 
-    def init(self, task, selected_classes, augs_config_path, work_dir):
+    def init(self, task, selected_classes, augs_config_path, app_dir):
         self.task = task
         self.selected_classes = selected_classes
         self.augs_config_path = augs_config_path
-        self.work_dir = work_dir
+        self.app_dir = app_dir
+        self.work_dir = app_dir + "/work_dir"
 
     def update_config(self, config: Config):
         cfg = deepcopy(config)
-        assert self.is_inited(), "Please, first call self.init(...) to fill required parameters."
+        assert self.is_inited(), "TrainParameters: wrong initialization parameters."
 
         # change model num_classes
         num_classes = len(self.selected_classes)
@@ -97,8 +100,8 @@ class TrainParameters:
         # datasets
         train_dataset = dict(
             type="SuperviselyDatasetSplit",
-            data_root=f"{self.work_dir}/sly_project",
-            split_file=f"{self.work_dir}/train_split.json",
+            data_root=f"{self.app_dir}/sly_project",
+            split_file=f"{self.app_dir}/train_split.json",
             task=self.task,
             selected_classes=self.selected_classes,
             filter_images_without_gt=self.filter_images_without_gt,
@@ -106,10 +109,10 @@ class TrainParameters:
         )
         val_dataset = dict(
             type="SuperviselyDatasetSplit",
-            data_root=f"{self.work_dir}/sly_project",
-            split_file=f"{self.work_dir}/val_split.json",
+            data_root=f"{self.app_dir}/sly_project",
+            split_file=f"{self.app_dir}/val_split.json",
             task=self.task,
-            save_coco_ann_file=f"{self.work_dir}/val_coco_instances.json",
+            save_coco_ann_file=f"{self.app_dir}/val_coco_instances.json",
             selected_classes=self.selected_classes,
             filter_images_without_gt=self.filter_images_without_gt,
             pipeline=test_pipeline,
@@ -136,13 +139,12 @@ class TrainParameters:
         # evaluators
         # from mmdet.evaluation.metrics import CocoMetric
         coco_metric = "segm" if self.task == "instance_segmentation" else "bbox"
-        classwise = num_classes <= 10
 
         cfg.val_evaluator = dict(
             type="CocoMetric",
-            ann_file=f"{self.work_dir}/val_coco_instances.json",
+            ann_file=f"{self.app_dir}/val_coco_instances.json",
             metric=coco_metric,
-            classwise=classwise,
+            classwise=self.add_classwise_metric,
         )
 
         cfg.test_evaluator = cfg.val_evaluator.copy()
@@ -205,8 +207,8 @@ class TrainParameters:
         # TODO
         # can we correctly change losses?
 
-        cfg.load_from = self.load_from
-        cfg.work_dir = self.work_dir + "/work_dir"
+        # cfg.load_from = self.load_from  # will set later as we don't know 'weights_path' so far
+        cfg.work_dir = self.work_dir
         cfg.experiment_name = self.experiment_name
         cfg.launcher = "none"
         # cfg.env_cfg.mp_cfg.mp_start_method = "spawn"

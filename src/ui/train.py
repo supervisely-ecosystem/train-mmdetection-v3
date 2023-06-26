@@ -13,6 +13,7 @@ import src.ui.models as models_ui
 from src import sly_utils
 from src.ui.hyperparameters import update_params_with_widgets
 from src.ui.augmentations import get_selected_aug
+from src.ui.graphics import add_classwise_metric
 
 # register modules (don't remove):
 from src import sly_dataset, sly_hook, sly_imgaugs
@@ -29,28 +30,31 @@ def get_train_params(cfg) -> TrainParameters:
     task = get_task()
     selected_classes = classes.get_selected_classes()
     augs_config_path = get_selected_aug()
-    work_dir = g.app_dir
 
     # create params from config
     params = TrainParameters.from_config(cfg)
-    params.init(task, selected_classes, augs_config_path, work_dir)
+    params.init(task, selected_classes, augs_config_path, g.app_dir)
 
-    # update from UI
+    # update params with UI
     update_params_with_widgets(params)
+    params.load_from = models_ui.load_from.is_switched()
+    params.add_classwise_metric = len(selected_classes) <= g.MAX_CLASSES_TO_SHOW_CLASSWISE_METRIC
+    # TODO: filter_images_without_gt
+    # params.filter_images_without_gt = ...
     return params
 
 
 def prepare_model():
     # download custom model if needed
-    # returns config and weights paths
+    # returns config path and weights path
     if models_ui.is_pretrained_model_selected():
         selected_model = models_ui.get_selected_pretrained_model()
         config_path = selected_model["config"]
-        custom_weights_path = None
+        weights_path_or_url = selected_model["weights"]
     else:
         remote_weights_path = models_ui.get_selected_custom_path()
-        custom_weights_path, config_path = sly_utils.download_custom_model(remote_weights_path)
-    return config_path, custom_weights_path
+        weights_path_or_url, config_path = sly_utils.download_custom_model(remote_weights_path)
+    return config_path, weights_path_or_url
 
 
 def train():
@@ -61,7 +65,7 @@ def train():
     dump_train_val_splits(project_dir)
 
     # prepare model files
-    config_path, custom_weights_path = prepare_model()
+    config_path, weights_path_or_url = prepare_model()
 
     # create config
     cfg = Config.fromfile(config_path)
@@ -70,22 +74,28 @@ def train():
     ### TODO: debug
     params.checkpoint_interval = 5
     params.save_best = False
-    params.val_interval = 5
+    params.val_interval = 1
     params.num_workers = 0
     ###
 
     # get config from params
     train_cfg = params.update_config(cfg)
     # update load_from with custom_weights_path
-    if custom_weights_path and params.load_from:
-        train_cfg.load_from = custom_weights_path
+    if params.load_from and weights_path_or_url:
+        train_cfg.load_from = weights_path_or_url
 
-    # dump config locally
-    config_name = config_path.split("/")[-1]
-    train_cfg.dump(f"{g.app_dir}/{config_name}")
+    if params.add_classwise_metric:
+        add_classwise_metric(classes.get_selected_classes())
+        sly.logger.debug("Added classwise metrics")
 
     # add in globals
+    config_name = config_path.split("/")[-1]
     g.config_name = config_name
+    g.params = params
+
+    # clean work_dir
+    if sly.fs.dir_exists(params.work_dir):
+        sly.fs.remove_dir(params.work_dir)
 
     # its grace, the Trainer
     runner = RUNNERS.build(train_cfg)
@@ -95,7 +105,13 @@ def train():
         # training was stopped
         sly.logger.debug(exc)
 
-    sly_utils.upload_artifacts(train_cfg.work_dir)
+    # TODO: params.experiment_name
+    sly_utils.upload_artifacts(
+        params.work_dir,
+        params.experiment_name,
+        # TODO: make correct monitor
+        iter_progress(message="Uploading to Team Files...", unit="MB"),
+    )
 
 
 start_train_btn = Button("Train")
@@ -126,3 +142,4 @@ def start_train():
 def stop_train():
     # end up training, upload files to Team Files
     g.stop_training = True
+    stop_train_btn.disable()

@@ -5,14 +5,13 @@ from collections import OrderedDict
 from supervisely.app.widgets import GridPlot, Button, Card, Container, Field, Slider, LinePlot
 from supervisely.app.content import StateJson, DataJson
 
-from src.ui.task import task_selector
-from src.ui.classes import classes
+import src.sly_globals as g
 
 NumT = Union[int, float]
 
 
 class StageMonitoring(object):
-    def __init__(self, stage_id: str, title: str, description: str) -> None:
+    def __init__(self, stage_id: str, title: str, description: str = None) -> None:
         self._name = stage_id
         self._metrics = OrderedDict()
         self._title = title
@@ -95,24 +94,18 @@ class Monitoring(object):
 
 smooth_slider = Slider(0, 0, 1, step=0.1, show_input=True, show_input_controls=True)
 
-train_stage = StageMonitoring("train", "Train", "TRAIN")
-train_stage.create_metric("Loss")
-train_stage.create_series("Loss", "loss")
-# train_stage.create_series("Loss", "my_loss2")
-train_stage.create_metric("Learning Rate")
-train_stage.create_series("Learning Rate", "lr")
+train_stage = StageMonitoring("train", "Train")
+train_stage.create_metric("Loss", ["loss"])
+train_stage.create_metric("Learning Rate", ["lr"])
 
-val_stage = StageMonitoring("val", "Val", "Validation")
-# val_stage.create_metric("Loss")
-# val_stage.create_series("Loss", "loss")
-# task = task_selector.get_value()
-# if "segmentation" in task.lower():
-val_stage.create_metric("Metrics")
-val_stage.create_series("Metrics", "mAP")
-val_stage.create_series("Metrics", "mAP@50")
-val_stage.create_series("Metrics", "mAP@75")
+val_stage = StageMonitoring("val", "Validation")
+val_stage.create_metric("Metrics", g.COCO_MTERIC_KEYS)
+val_stage.create_metric("Classwise mAP")
 
-val_stage.create_metric("Per-class precision")
+
+def add_classwise_metric(selected_classes):
+    gp: GridPlot = monitoring._stages["val"]["raw"]
+    gp._widgets["Classwise mAP"].show()
 
 
 monitoring = Monitoring()
@@ -139,6 +132,9 @@ card = Card(
     "Task progress, detailed logs, metrics charts, and other visualizations",
     content=Container([monitoring.compile_monitoring_container(), add_btn, smooth_slider, lp]),
 )
+
+gp: GridPlot = monitoring._stages["val"]["raw"]
+gp._widgets["Classwise mAP"].hide()
 
 x = size1
 

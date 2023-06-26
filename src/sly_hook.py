@@ -1,9 +1,8 @@
-from typing import Dict, Optional
+from typing import Dict
 from mmdet.registry import HOOKS
-from mmengine.hooks import LoggerHook, Hook, CheckpointHook
+from mmengine.hooks import Hook  # LoggerHook, CheckpointHook
 from mmengine.hooks.hook import DATA_BATCH
-from mmengine.runner import Runner, LogProcessor
-import numpy as np
+from mmengine.runner import Runner
 import supervisely as sly
 import torch
 
@@ -23,6 +22,11 @@ class SuperviselyHook(Hook):
         self.chart_update_interval = chart_update_interval
         self.epoch_progress = None
         self.iter_progress = None
+
+        if train_ui.get_task() == "instance_segmentation":
+            self.task = "segm"
+        else:
+            self.task = "bbox"
 
     def before_train(self, runner: Runner) -> None:
         self.epoch_progress = train_ui.epoch_progress(message="Epochs", total=runner.max_epochs)
@@ -50,7 +54,6 @@ class SuperviselyHook(Hook):
         # Stop training
         if g.stop_training:
             sly.logger.info("The training is stopped by user.")
-            # force upload (maybe not here)
             raise StopIteration()
 
     def after_train_epoch(self, runner: Runner) -> None:
@@ -61,10 +64,19 @@ class SuperviselyHook(Hook):
         )
 
     def after_val_epoch(self, runner: Runner, metrics: Dict[str, float] = None) -> None:
-        # update val charts
-        classwise_keys = [m for m in metrics if m.endswith("_precision")]
-        mAP_keys = ["coco/segm_mAP", "coco/segm_mAP_50", "coco/segm_mAP_75"]
-        # mAP_keys = ["coco/box_mAP", "coco/box_mAP_50", "coco/box_mAP_75"]
-        dataset_meta = runner.val_dataloader.dataset.metainfo
-        segm_mAP = metrics["coco/segm_mAP"]
-        monitoring.add_scalar("val", "Metrics", "mAP", runner.epoch, segm_mAP)
+        # Add mAP metrics
+        metric_keys = [f"coco/{self.task}_{metric}" for metric in g.COCO_MTERIC_KEYS]
+        for metric_key, metric_name in zip(metric_keys, g.COCO_MTERIC_KEYS):
+            value = metrics[metric_key]
+            monitoring.add_scalar("val", "Metrics", metric_name, runner.epoch, value)
+
+        # Add classwise metrics
+        if g.params.add_classwise_metric:
+            # colors = runner.val_dataloader.dataset.metainfo["palette"]
+            classwise_metrics = {
+                k.split("_precision")[0][5:]: v
+                for k, v in metrics.items()
+                if k.endswith("_precision")
+            }
+            for class_name, value in classwise_metrics.items():
+                monitoring.add_scalar("val", "Classwise mAP", class_name, runner.epoch, value)

@@ -75,6 +75,10 @@ select_optim = SelectString(
     optimizers_names,
     items_links=[link for _ in range(len(optimizers_names))],
 )
+select_optim_field = Field(
+    select_optim,
+    title="Select optimizer",
+)
 
 
 apply_clip_input = Switch(True)
@@ -89,7 +93,7 @@ clip_field = Field(
 
 optimizers_tab = Container(
     [
-        select_optim,
+        select_optim_field,
         adam.create_container(),
         adamw.create_container(True),
         sgd.create_container(True),

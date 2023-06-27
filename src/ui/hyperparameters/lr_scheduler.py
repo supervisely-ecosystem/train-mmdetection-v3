@@ -137,10 +137,14 @@ schedulers_params = {
 }
 
 select_scheduler = Select([Select.Item(val, label) for val, label in schedulers])
+select_scheduler_field = Field(
+    select_scheduler,
+    title="Select scheduler",
+)
 
 schedulres_tab = Container(
     [
-        select_scheduler,
+        select_scheduler_field,
         step_scheduler.create_container(hide=True),
         multi_steps_scheduler.create_container(hide=True),
         exp_scheduler.create_container(hide=True),

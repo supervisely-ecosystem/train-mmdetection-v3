@@ -57,6 +57,7 @@ class StageMonitoring(object):
 class Monitoring(object):
     def __init__(self) -> None:
         self._stages = {}
+        self.container = None
 
     def add_stage(self, stage: StageMonitoring):
         field, grid = stage.compile_grid_field()
@@ -87,12 +88,13 @@ class Monitoring(object):
             x,
         )
 
-    def compile_monitoring_container(self) -> Container:
-        container = Container([stage["compiled"] for stage in self._stages.values()])
-        return container
+    def compile_monitoring_container(self, hide: bool = False) -> Container:
+        if self.container is None:
+            self.container = Container([stage["compiled"] for stage in self._stages.values()])
+        if hide:
+            self.container.hide()
+        return self.container
 
-
-smooth_slider = Slider(0, 0, 1, step=0.1, show_input=True, show_input_controls=True)
 
 train_stage = StageMonitoring("train", "Train")
 train_stage.create_metric("Loss", ["loss"])
@@ -112,48 +114,7 @@ monitoring = Monitoring()
 monitoring.add_stage(train_stage)
 monitoring.add_stage(val_stage)
 
-add_btn = Button("add")
-
-size1 = 10
-x1 = list(range(size1))
-y1 = np.random.randint(low=10, high=148, size=size1).tolist()
-s1 = [[x, y] for x, y in zip(x1, y1)]
-
-lp = LinePlot("mlp", [{"name": "frism", "data": s1}])  # , smoothing_weight=0.1)
-
-size2 = 30
-x2 = list(range(size2))
-y2 = np.random.randint(low=0, high=300, size=size2).tolist()
-s2 = [{"x": x, "y": y} for x, y in zip(x2, y2)]
-
-
-card = Card(
-    "6️⃣Training progress",
-    "Task progress, detailed logs, metrics charts, and other visualizations",
-    content=Container([monitoring.compile_monitoring_container(), add_btn, smooth_slider, lp]),
-)
+# add_btn = Button("add")
 
 gp: GridPlot = monitoring._stages["val"]["raw"]
 gp._widgets["Classwise mAP"].hide()
-
-x = size1
-
-
-@add_btn.click
-def add_rdata():
-    global x
-    y0, y1 = randint(-3, 3), randint(-4, 4)
-    monitoring.add_scalars("train", "Loss", {"my_loss1": y0, "my_loss2": y1}, x)
-    y3 = randint(-5, 5)
-    monitoring.add_scalar("train", "Ssol", "my_ssol1", x, y3)
-    y3 = randint(10, 200)
-    lp.add_to_series("frism", [x, y3])
-    x += 1
-
-
-@smooth_slider.value_changed
-def change_smoothness(new_val):
-    lp.change_smoothness(new_val)
-    # lp._options["smoothingWeight"] = new_val  # int(new_val * 100)
-    # DataJson()[lp.widget_id]["options"] = lp._options
-    # DataJson().send_changes()

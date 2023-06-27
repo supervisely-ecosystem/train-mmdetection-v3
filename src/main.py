@@ -22,8 +22,7 @@ widgets = [
     train_val_split.card,
     augmentations.card,
     hyperparameters.card,
-    train.container,
-    graphics.card,
+    train.card,
 ]
 layout = Container(widgets=widgets)
 app = sly.Application(layout=layout)

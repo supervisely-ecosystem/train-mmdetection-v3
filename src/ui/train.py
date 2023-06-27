@@ -2,7 +2,7 @@ from mmengine import Config
 from mmdet.registry import RUNNERS
 
 import supervisely as sly
-from supervisely.app.widgets import Card, Button, Container, Progress
+from supervisely.app.widgets import Card, Button, Container, Progress, Empty
 
 import src.sly_globals as g
 from src.train_parameters import TrainParameters
@@ -13,7 +13,7 @@ import src.ui.models as models_ui
 from src import sly_utils
 from src.ui.hyperparameters import update_params_with_widgets
 from src.ui.augmentations import get_selected_aug
-from src.ui.graphics import add_classwise_metric
+from src.ui.graphics import add_classwise_metric, monitoring
 
 # register modules (don't remove):
 from src import sly_dataset, sly_hook, sly_imgaugs
@@ -120,16 +120,44 @@ stop_train_btn = Button("Stop", "danger")
 stop_train_btn.disable()
 
 epoch_progress = Progress("Epoch")
-iter_progress = Progress("Iteration")
+epoch_progress.hide()
 
-btn_container = Container([start_train_btn, stop_train_btn], "horizontal", overflow="scroll")
-container = Container([btn_container, epoch_progress, iter_progress])
+iter_progress = Progress("Iteration")
+iter_progress.hide()
+
+btn_container = Container(
+    [start_train_btn, stop_train_btn, Empty()],
+    "horizontal",
+    overflow="scroll",
+    fractions=[1, 1, 5],
+    gap=1,
+)
+
+container = Container(
+    [
+        btn_container,
+        epoch_progress,
+        iter_progress,
+        monitoring.compile_monitoring_container(True),
+    ]
+)
 # card = Card("Training progress", content=container)
+
+card = Card(
+    "6️⃣Training progress",
+    "Task progress, detailed logs, metrics charts, and other visualizations",
+    content=container,
+    lock_message="Select model",
+)
+card.lock()
 
 
 @start_train_btn.click
 def start_train():
+    monitoring.container.show()
     stop_train_btn.enable()
+    epoch_progress.show()
+    iter_progress.show()
     train()
 
 

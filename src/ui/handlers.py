@@ -10,6 +10,7 @@ from src import sly_utils
 from src.train_parameters import TrainParameters
 from src.ui import hyperparameters
 from src.ui import augmentations
+import src.ui.train as train
 
 
 def model_select_button_state_change(without_click: bool = False):
@@ -21,7 +22,7 @@ def model_select_button_state_change(without_click: bool = False):
             models.path_field,
             models.table,
         ],
-        lock_cards=[augmentations.card, hyperparameters.card],
+        lock_cards=[augmentations.card, hyperparameters.card, train.card],
         lock_without_click=without_click,
     )
 

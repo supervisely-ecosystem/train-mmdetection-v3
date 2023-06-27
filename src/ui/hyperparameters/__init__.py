@@ -27,7 +27,7 @@ content = Tabs(
 )
 
 card = Card(
-    title="Training hyperparameters",
+    title="6️⃣Training hyperparameters",
     description="Partially taken from default model configs",
     lock_message="Select model",
     content=content,

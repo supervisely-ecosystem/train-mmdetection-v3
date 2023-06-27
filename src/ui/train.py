@@ -144,7 +144,7 @@ container = Container(
 # card = Card("Training progress", content=container)
 
 card = Card(
-    "6️⃣Training progress",
+    "7️⃣Training progress",
     "Task progress, detailed logs, metrics charts, and other visualizations",
     content=container,
     lock_message="Select model",

@@ -145,7 +145,7 @@ schedulres_tab = Container(
         multi_steps_scheduler.create_container(hide=True),
         exp_scheduler.create_container(hide=True),
         enable_warmup_field,
-        warmup.create_container(hide=True),
+        warmup.create_container(),
     ]
 )
 

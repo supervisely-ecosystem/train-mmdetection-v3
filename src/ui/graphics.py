@@ -17,7 +17,7 @@ class StageMonitoring(object):
         self._title = title
         self._description = description
 
-    def create_metric(self, metric: str, series: Optional[List[str]] = None):
+    def create_metric(self, metric: str, series: Optional[List[str]] = None, **kwargs):
         if metric in self._metrics:
             raise ArithmeticError("Metric already exists.")
 
@@ -36,6 +36,7 @@ class StageMonitoring(object):
             "title": metric,
             "series": srs,
         }
+        self._metrics[metric].update(kwargs)
 
     def create_series(self, metric: str, series: Union[List[str], str]):
         if isinstance(series, str):
@@ -98,7 +99,7 @@ class Monitoring(object):
 
 train_stage = StageMonitoring("train", "Train")
 train_stage.create_metric("Loss", ["loss"])
-train_stage.create_metric("Learning Rate", ["lr"])
+train_stage.create_metric("Learning Rate", ["lr"], decimals_in_float=5)
 
 val_stage = StageMonitoring("val", "Validation")
 val_stage.create_metric("Metrics", g.COCO_MTERIC_KEYS)
@@ -113,6 +114,7 @@ def add_classwise_metric(selected_classes):
 monitoring = Monitoring()
 monitoring.add_stage(train_stage)
 monitoring.add_stage(val_stage)
+
 
 # add_btn = Button("add")
 

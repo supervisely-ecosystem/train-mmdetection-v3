@@ -146,8 +146,11 @@ table = RadioTable([""], [[""]])
 text = Text()
 
 load_from = Switch(True)
-load_from_text = Text("Load pretrained model")
-load_container = Container([load_from_text, load_from])
+load_from_field = Field(
+    load_from,
+    "Download pre-trained model",
+    "Whether to download pre-trained weights and finetune the model or train it from scratch.",
+)
 
 input_file = TeamFilesSelector(TEAM_ID, selection_file_type="file")
 path_field = Field(
@@ -159,7 +162,7 @@ path_field = Field(
 radio_tabs = RadioTabs(
     titles=["Pretrained models", "Custom weights"],
     contents=[
-        Container(widgets=[arch_select, table, text, load_container]),
+        Container(widgets=[arch_select, table, text, load_from_field]),
         path_field,
     ],
 )
@@ -167,10 +170,10 @@ radio_tabs = RadioTabs(
 select_btn = Button(text="Select model")
 
 card = Card(
-    title=f"2️⃣{cur_task} models",
+    title=f"2️⃣ {cur_task} models",
     description="Choose model architecture and how weights should be initialized",
     content=Container([radio_tabs, select_btn]),
-    lock_message="Select task",
+    lock_message="Select a task to unlock.",
 )
 card.lock()
 

@@ -37,10 +37,10 @@ augments = AugmentationsWithTabs(
 container = Container([swithcer, augments])
 
 card = Card(
-    title="5️⃣Training augmentations",
+    title="5️⃣ Training augmentations",
     description="Choose one of the prepared templates or provide custom pipeline",
     content=container,
-    lock_message="Select model",
+    lock_message="Select a model to unlock.",
 )
 card.lock()
 

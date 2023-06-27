@@ -20,16 +20,16 @@ content = Tabs(
     labels=[
         "General",
         "Checkpoints",
-        "Optimizers (Advanced)",
+        "Optimizer (Advanced)",
         "Learning rate scheduler (Advanced)",
     ],
     contents=[general_tab, checkpoints_tab, optimizers_tab, schedulres_tab],
 )
 
 card = Card(
-    title="Training hyperparameters",
-    description="Partially taken from default model configs",
-    lock_message="Select model",
+    title="6️⃣ Training hyperparameters",
+    description="Configure the training process.",
+    lock_message="Select a model to unlock.",
     content=content,
 )
 card.lock()

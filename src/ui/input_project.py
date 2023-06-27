@@ -11,7 +11,7 @@ project_th = ProjectThumbnail(project_info)
 
 
 card = Card(
-    title="1️⃣Input project",
+    title="Input project",
     description="Selected project from which images and annotations will be downloaded",
     content=project_th,
 )

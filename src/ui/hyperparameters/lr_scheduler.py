@@ -17,10 +17,18 @@ schedulers = [("empty", "Without scheduler")]
 
 # TODO: add 'by_epoch'
 by_epoch_input = Switch(True)
-by_epoch_field = Field(by_epoch_input, "Epoch based scheduler")
+by_epoch_field = Field(by_epoch_input, "By epoch")
 
 # Step scheduler
 step_scheduler = OrderedWidgetWrapper("StepParamScheduler")
+step_scheduler.add_input(
+    "by_epoch",
+    by_epoch_input,
+    by_epoch_field,
+    get_switch_value,
+    set_switch_value,
+)
+
 step_input = InputNumber(3, 1, step=1)
 step_field = Field(step_input, "LR sheduler step")
 step_scheduler.add_input(
@@ -32,13 +40,6 @@ step_scheduler.add_input(
 step_gamma_input = InputNumber(0.1, 0, step=1e-5, size="medium")
 step_gamma_field = Field(step_gamma_input, "Gamma")
 step_scheduler.add_input("gamma", step_gamma_input, step_gamma_field)
-step_scheduler.add_input(
-    "by_epoch",
-    by_epoch_input,
-    by_epoch_field,
-    get_switch_value,
-    set_switch_value,
-)
 schedulers.append((repr(step_scheduler), "Step LR"))
 
 
@@ -53,6 +54,14 @@ def set_multisteps(input_w: Input, value: List[int]):
 
 
 multi_steps_scheduler = OrderedWidgetWrapper("MultiStepParamScheduler")
+multi_steps_scheduler.add_input(
+    "by_epoch",
+    by_epoch_input,
+    by_epoch_field,
+    get_switch_value,
+    set_switch_value,
+)
+
 multi_steps_input = Input("16,22")
 multi_steps_field = Field(
     multi_steps_input,
@@ -70,20 +79,10 @@ multi_steps_scheduler.add_input(
 multi_steps_gamma_input = InputNumber(0.1, 0, step=1e-5, size="medium")
 multi_steps_gamma_field = Field(multi_steps_gamma_input, "Gamma")
 multi_steps_scheduler.add_input("gamma", multi_steps_gamma_input, multi_steps_gamma_field)
-multi_steps_scheduler.add_input(
-    "by_epoch",
-    by_epoch_input,
-    by_epoch_field,
-    get_switch_value,
-    set_switch_value,
-)
 schedulers.append((repr(multi_steps_scheduler), "Multistep LR"))
 
 # exponential
 exp_scheduler = OrderedWidgetWrapper("ExponentialParamScheduler")
-exp_gamma_input = InputNumber(0.1, 0, step=1e-5, size="medium")
-exp_gamma_field = Field(exp_gamma_input, "Gamma")
-exp_scheduler.add_input("gamma", exp_gamma_input, exp_gamma_field)
 exp_scheduler.add_input(
     "by_epoch",
     by_epoch_input,
@@ -91,14 +90,18 @@ exp_scheduler.add_input(
     get_switch_value,
     set_switch_value,
 )
+
+exp_gamma_input = InputNumber(0.1, 0, step=1e-5, size="medium")
+exp_gamma_field = Field(exp_gamma_input, "Gamma")
+exp_scheduler.add_input("gamma", exp_gamma_input, exp_gamma_field)
 schedulers.append((repr(exp_scheduler), "Exponential LR"))
 
 
 # warmup
-enable_warmup_input = Switch(False)
+enable_warmup_input = Switch(True)
 enable_warmup_field = Field(enable_warmup_input, "Enable warmup")
 
-warmup_strategy = ["constant", "linear", "exp"]
+warmup_strategy = ["linear", "constant", "exp"]
 warmup = OrderedWidgetWrapper("warmup")
 warmup_selector = SelectString(warmup_strategy, warmup_strategy)
 warmup_strategy_field = Field(warmup_selector, "Warmup strategy")
@@ -110,13 +113,13 @@ warmup.add_input(
     custom_value_setter=lambda w, v: w.set_value(v),
 )
 
-warmup_iterations = InputNumber(0, 0)
+warmup_iterations = InputNumber(400, 0)
 warmup_iterations_field = Field(
     warmup_iterations, "Warmup iterations", "The number of iterations that warmup lasts"
 )
 warmup.add_input("warmup_steps", warmup_iterations, warmup_iterations_field)
 
-warmup_ratio = InputNumber(0, 0)
+warmup_ratio = InputNumber(0.001, step=1e-4)
 warmup_ratio_field = Field(
     warmup_ratio,
     "Warmup ratio",

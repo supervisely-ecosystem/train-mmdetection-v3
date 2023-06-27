@@ -59,7 +59,6 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, pbar: tqdm = No
         f"/mmdetection-3/{task_id}_{experiment_name}",
         progress_size_cb=cb,
     )
-    raise
 
 
 def download_project():

@@ -80,10 +80,8 @@ def on_model_selected():
         remote_weights_path = models.get_selected_custom_path()
         assert os.path.splitext(remote_weights_path)[1].startswith(
             ".pt"
-        ), "Please, select model weights file (.pth) as path to custom model."
+        ), "Please, select checkpoint file with model weights (.pth)"
         config_path = sly_utils.download_custom_config(remote_weights_path)
-
-    model_select_button_state_change(False)
 
     cfg = Config.fromfile(config_path)
     if not is_pretrained_model:
@@ -96,5 +94,5 @@ def on_model_selected():
     params = TrainParameters.from_config(cfg)
     hyperparameters.update_widgets_with_params(params)
 
-    # unlock card
-    # hyperparameters.card.unlock()
+    # unlock cards
+    model_select_button_state_change(False)

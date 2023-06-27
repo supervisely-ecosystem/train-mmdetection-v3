@@ -74,4 +74,4 @@ def on_model_selected():
     hyperparameters.update_widgets_with_params(params)
 
     # unlock card
-    hyperparameters.card.unlock()
+    # hyperparameters.card.unlock()

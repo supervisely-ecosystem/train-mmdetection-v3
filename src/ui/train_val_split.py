@@ -1,5 +1,5 @@
 import supervisely as sly
-from supervisely.app.widgets import TrainValSplits, Card, Container
+from supervisely.app.widgets import TrainValSplits, Card
 import src.sly_globals as g
 
 splits = TrainValSplits(project_id=g.PROJECT_ID)

@@ -47,10 +47,8 @@ general_params.add_input("smaller_size", smaller_size_input)
 general_params.set("smaller_size", 800)
 
 size_input = Container(
-    [bigger_size, smaller_size, Empty()], direction="horizontal", fractions=[1, 1, 2]
+    [bigger_size, smaller_size, Empty()], direction="horizontal", fractions=[1, 1, 3]
 )
-# size_input = BindedInputNumber(640, 320, proportional=False)
-# general_params.add_input("size_and_prop", size_input, size_and_prop)
 
 size_field = Field(
     size_input,
@@ -59,6 +57,20 @@ size_field = Field(
     "Those sizes are passed as 'scale' parameter to the 'Resize' class in mmcv.",
 )
 
+filter_images_without_gt_input = Switch(True)
+filter_images_without_gt_field = Field(
+    filter_images_without_gt_input,
+    title="Filter images",
+    description="Filter images without ground truth annotation",
+)
+general_params.add_input(
+    "filter_images_without_gt",
+    filter_images_without_gt_input,
+    get_switch_value,
+    set_switch_value,
+)
+
+
 bs_train_input = InputNumber(1, 1)
 bs_train_field = Field(bs_train_input, "Train batch size")
 general_params.add_input("batch_size_train", bs_train_input)
@@ -66,13 +78,6 @@ general_params.add_input("batch_size_train", bs_train_input)
 bs_val_input = InputNumber(1, 1)
 bs_val_field = Field(bs_val_input, "Validation batch size")
 general_params.add_input("batch_size_val", bs_val_input)
-
-# epoch_based_input = Switch(True)
-# epoch_based_field = Field(
-#     epoch_based_input,
-#     "Epoch based train",
-# )
-# general_params.add_input("epoch_based_train", epoch_based_input, get_switch_value, set_switch_value)
 
 
 validation_input = InputNumber(1, 1, general_params.total_epochs)
@@ -113,6 +118,7 @@ general_tab = Container(
         device_field,
         epochs_field,
         size_field,
+        filter_images_without_gt_field,
         bs_train_field,
         bs_val_field,
         # epoch_based_field,
@@ -130,6 +136,7 @@ def update_general_widgets_with_params(params: TrainParameters):
     general_params.set("bigger_size", max(params.input_size))
     general_params.set("smaller_size", min(params.input_size))
     general_params.set("chart_update_interval", params.chart_update_interval)
+    general_params.set("filter_images_without_gt", params.filter_images_without_gt)
     # general_params.set("epoch_based_train", params.epoch_based_train)
 
     chart_update_text.text = f"Update chart every {params.chart_update_interval} iterations"
@@ -144,3 +151,4 @@ def update_general_params_with_widgets(params: TrainParameters):
     params.input_size = (general_params.bigger_size, general_params.smaller_size)
     params.chart_update_interval = general_params.chart_update_interval
     params.epoch_based_train = general_params.epoch_based_train
+    params.filter_images_without_gt = general_params.filter_images_without_gt

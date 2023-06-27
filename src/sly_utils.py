@@ -1,5 +1,8 @@
 import os
 import shutil
+from requests_toolbelt import MultipartEncoderMonitor
+
+from tqdm import tqdm
 import src.sly_globals as g
 import supervisely as sly
 
@@ -36,7 +39,7 @@ def download_custom_model(remote_weights_path: str):
     return weights_path, config_path
 
 
-def upload_artifacts(work_dir: str, experiment_name: str = None):
+def upload_artifacts(work_dir: str, experiment_name: str = None, pbar: tqdm = None):
     task_id = g.api.task_id or ""
     paths = [path for path in os.listdir(work_dir) if path.endswith(".py")]
     assert len(paths) > 0, "Can't find config file saved during training."
@@ -45,7 +48,19 @@ def upload_artifacts(work_dir: str, experiment_name: str = None):
     shutil.move(cfg_path, f"{work_dir}/config.py")
     if not experiment_name:
         experiment_name = f"{g.config_name.split('.py')[0]}"
-    g.api.file.upload_directory(g.TEAM_ID, work_dir, f"/mmdetction-2/{task_id}_{experiment_name}")
+    sly.logger.debug("Uploading checkpoints to Team Files...")
+    from functools import partial
+
+    def cb(monitor: MultipartEncoderMonitor):
+        pbar.update(monitor.bytes_read / 1024 / 1024 - pbar.n)
+
+    g.api.file.upload_directory(
+        g.TEAM_ID,
+        work_dir,
+        f"/mmdetction-2/{task_id}_{experiment_name}",
+        progress_size_cb=cb,
+    )
+    raise
 
 
 def download_project():

@@ -10,7 +10,6 @@ from src.ui.hyperparameters.general import (
     epochs_input,
     smaller_size_input,
     bigger_size_input,
-    epoch_based_input,
 )
 
 from src.ui.hyperparameters.optimizers import (
@@ -40,13 +39,6 @@ def show_hide_fields(fields: List[Widget], hide: bool = True):
 def epoch_num_changes(new_value):
     validation_input.max = new_value
     checkpoint_interval_input.max = new_value
-
-
-@epoch_based_input.value_changed
-def update_validatio_type(new_value):
-    val = validation_input.value
-    val_type = "epochs" if new_value is True else "iterations"
-    val_text.text = f"Evaluate validation set every {val} {val_type}"
 
 
 @validation_input.value_changed

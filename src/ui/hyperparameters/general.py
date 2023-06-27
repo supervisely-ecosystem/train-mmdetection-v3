@@ -67,12 +67,12 @@ bs_val_input = InputNumber(1, 1)
 bs_val_field = Field(bs_val_input, "Validation batch size")
 general_params.add_input("batch_size_val", bs_val_input)
 
-epoch_based_input = Switch(True)
-epoch_based_field = Field(
-    epoch_based_input,
-    "Epoch based train",
-)
-general_params.add_input("epoch_based_train", epoch_based_input, get_switch_value, set_switch_value)
+# epoch_based_input = Switch(True)
+# epoch_based_field = Field(
+#     epoch_based_input,
+#     "Epoch based train",
+# )
+# general_params.add_input("epoch_based_train", epoch_based_input, get_switch_value, set_switch_value)
 
 
 validation_input = InputNumber(1, 1, general_params.total_epochs)
@@ -115,7 +115,7 @@ general_tab = Container(
         size_field,
         bs_train_field,
         bs_val_field,
-        epoch_based_field,
+        # epoch_based_field,
         validation_field,
         chart_update_field,
     ]
@@ -130,7 +130,7 @@ def update_general_widgets_with_params(params: TrainParameters):
     general_params.set("bigger_size", max(params.input_size))
     general_params.set("smaller_size", min(params.input_size))
     general_params.set("chart_update_interval", params.chart_update_interval)
-    general_params.set("epoch_based_train", params.epoch_based_train)
+    # general_params.set("epoch_based_train", params.epoch_based_train)
 
     chart_update_text.text = f"Update chart every {params.chart_update_interval} iterations"
     val_text.text = f"Evaluate validation set every {params.val_interval} epochs"

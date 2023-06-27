@@ -10,13 +10,15 @@ from supervisely.app.widgets import (
     Switch,
 )
 
-from src.ui.utils import InputContainer, get_switch_value, set_switch_value
+from src.ui.utils import InputContainer, get_switch_value, set_switch_value, get_devices
 from src.train_parameters import TrainParameters
 
 NUM_EPOCHS = 10
 # General
 general_params = InputContainer()
-device_input = Select([Select.Item(0, 0), Select.Item(1, 1)])
+
+device_names, torch_devices = get_devices()
+device_input = Select([Select.Item(v, l) for v, l in zip(torch_devices, device_names)])
 device_field = Field(
     device_input,
     title="Device",

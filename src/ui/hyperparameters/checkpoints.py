@@ -66,8 +66,8 @@ checkpoint_params.add_input(
 checkpoint_best_switch = Switch(True)
 checkpoint_best_field = Field(
     checkpoint_best_switch,
-    title="Save last checkpoint",
-    description="Whether to force the last checkpoint to be saved regardless of interval",
+    title="Save best checkpoint",
+    description="Best checkpoint will be marked with prefix 'best_'",
 )
 checkpoint_params.add_input(
     "save_best",

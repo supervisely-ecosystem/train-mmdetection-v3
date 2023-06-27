@@ -1,3 +1,4 @@
+import torch
 from collections import OrderedDict
 from typing import Callable, Dict, Any, List, Optional
 from supervisely.app import DataJson
@@ -175,3 +176,13 @@ def button_selected(
     else:
         update_custom_button_params(select_btn, select_params)
         select_btn._click_handled = True
+
+
+def get_devices():
+    cuda_names = [
+        f"cuda:{i} ({torch.cuda.get_device_name(i)})" for i in range(torch.cuda.device_count())
+    ]
+    cuda_devices = [f"cuda:{i}" for i in range(torch.cuda.device_count())]
+    device_names = cuda_names + ["cpu"]
+    torch_devices = cuda_devices + ["cpu"]
+    return device_names, torch_devices

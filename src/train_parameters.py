@@ -22,7 +22,7 @@ class TrainParameters:
         self.batch_size_val = 1
         self.input_size = (1333, 800)
         self.num_workers = min(4, multiprocessing.cpu_count())
-        self.load_from = None  # load weights to continue training (path or url)
+        self.load_from: bool = True  # load weights to continue training (path or url in config)
         self.log_interval = 50  # for text logger
         self.chart_update_interval = 5
         self.filter_images_without_gt = True
@@ -216,7 +216,7 @@ class TrainParameters:
         return cfg
 
     def is_inited(self):
-        need_to_check = [self.task, self.selected_classes, self.augs_config_path, self.work_dir]
+        need_to_check = [self.task, self.selected_classes, self.work_dir]
         return all([bool(x) for x in need_to_check]) and self.task in self.ACCEPTABLE_TASKS
 
 

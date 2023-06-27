@@ -11,6 +11,8 @@ from src.train_parameters import TrainParameters
 from src.ui import hyperparameters
 from src.ui import augmentations
 import src.ui.train as train
+import src.ui.classes as classes_ui
+import src.ui.train_val_split as splits_ui
 
 
 def model_select_button_state_change(without_click: bool = False):
@@ -22,7 +24,13 @@ def model_select_button_state_change(without_click: bool = False):
             models.path_field,
             models.table,
         ],
-        lock_cards=[augmentations.card, hyperparameters.card, train.card],
+        lock_cards=[
+            classes_ui.card,
+            splits_ui.card,
+            augmentations.card,
+            hyperparameters.card,
+            train.card,
+        ],
         lock_without_click=without_click,
     )
 

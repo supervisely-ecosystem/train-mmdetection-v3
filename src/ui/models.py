@@ -184,7 +184,7 @@ def update_architecture(selected_task):
     models_meta = _load_models_meta(selected_task)
     arch_names, labels, right_texts, links = _get_architecture_list(models_meta)
     arch_select.set(arch_names, labels, right_texts, links)
-    update_custom_params(card, {"title": f"2️⃣{selected_task} models"})
+    update_custom_params(card, {"title": f"2️⃣ {selected_task} models"})
     update_models(arch_select.get_value())
 
 

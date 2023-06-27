@@ -1,4 +1,4 @@
-from supervisely.app.widgets import ClassesTable, Card, Container, Button
+from supervisely.app.widgets import ClassesTable, Card, Container, Button, Switch, Field
 from supervisely.app.content import StateJson
 
 from src.sly_globals import PROJECT_ID
@@ -14,8 +14,13 @@ def select_all(cls_tbl: ClassesTable):
 
 classes = ClassesTable(project_id=PROJECT_ID)
 select_all(classes)
-# select_btn = Button(text="Select classes")
-# select_btn.disable()
+
+filter_images_without_gt_input = Switch(True)
+filter_images_without_gt_field = Field(
+    filter_images_without_gt_input,
+    title="Filter images without annotations",
+    description="After selecting classes, some images may not have any annotations. Whether to remove them?",
+)
 
 card = Card(
     title="3️⃣ Training classes",
@@ -23,9 +28,10 @@ card = Card(
         "Select classes that will be used for training. "
         "Supported shapes are Bitmap, Polygon, Rectangle."
     ),
-    content=classes,
+    content=Container([classes, filter_images_without_gt_field]),
 )
 
+card.lock()
 
 # @classes.value_changed
 # def confirmation_message(selected_classes):

@@ -9,6 +9,7 @@ card = Card(
     description="Define how to split your data to train/val subsets.",
     content=splits,
 )
+card.lock()
 
 
 def dump_train_val_splits(project_dir):

@@ -37,10 +37,7 @@ def get_train_params(cfg) -> TrainParameters:
 
     # update params with UI
     update_params_with_widgets(params)
-    params.load_from = models_ui.load_from.is_switched()
     params.add_classwise_metric = len(selected_classes) <= g.MAX_CLASSES_TO_SHOW_CLASSWISE_METRIC
-    # TODO: filter_images_without_gt
-    # params.filter_images_without_gt = ...
     return params
 
 
@@ -76,19 +73,22 @@ def train():
     params.save_best = False
     params.val_interval = 1
     params.num_workers = 0
+    params.input_size = (400, 300)
     ###
 
-    # get config from params
+    # create config from params
     train_cfg = params.update_config(cfg)
+
     # update load_from with custom_weights_path
     if params.load_from and weights_path_or_url:
         train_cfg.load_from = weights_path_or_url
 
+    # show classwise chart
     if params.add_classwise_metric:
         add_classwise_metric(classes.get_selected_classes())
         sly.logger.debug("Added classwise metrics")
 
-    # add in globals
+    # update globals
     config_name = config_path.split("/")[-1]
     g.config_name = config_name
     g.params = params
@@ -97,7 +97,10 @@ def train():
     if sly.fs.dir_exists(params.work_dir):
         sly.fs.remove_dir(params.work_dir)
 
-    # its grace, the Trainer
+    # TODO: debug
+    train_cfg.dump()
+
+    # Its grace, the Runner!
     runner = RUNNERS.build(train_cfg)
     try:
         runner.train()
@@ -129,7 +132,7 @@ btn_container = Container(
     [start_train_btn, stop_train_btn, Empty()],
     "horizontal",
     overflow="scroll",
-    fractions=[1, 1, 5],
+    fractions=[1, 1, 10],
     gap=1,
 )
 

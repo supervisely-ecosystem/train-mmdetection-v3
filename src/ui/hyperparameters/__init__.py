@@ -14,6 +14,8 @@ from src.ui.hyperparameters import general
 from src.ui.hyperparameters import checkpoints
 from src.ui.hyperparameters import optimizers
 from src.ui.hyperparameters import lr_scheduler
+from src.ui import classes
+from src.ui import models
 
 
 content = Tabs(
@@ -45,12 +47,24 @@ def update_widgets_with_params(params: TrainParameters):
     optimizers.update_optimizer_widgets_with_params(params)
     lr_scheduler.update_scheduler_widgets_with_params(params)
 
+    if params.load_from:
+        models.load_from.on()
+    else:
+        models.load_from.off()
+
+    if params.filter_images_without_gt:
+        classes.filter_images_without_gt_input.on()
+    else:
+        classes.filter_images_without_gt_input.off()
+
 
 def update_params_with_widgets(params: TrainParameters):
     general.update_general_params_with_widgets(params)
     checkpoints.update_checkpoint_params_with_widgets(params)
     optimizers.update_optimizer_params_with_widgets(params)
     lr_scheduler.update_scheduler_params_with_widgets(params)
+    params.load_from = models.load_from.is_switched()
+    params.filter_images_without_gt = classes.filter_images_without_gt_input.is_switched()
 
 
 # reset_widgets()

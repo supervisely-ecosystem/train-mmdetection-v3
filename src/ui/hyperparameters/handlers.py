@@ -68,7 +68,6 @@ def enable_disable_clip(new_value):
 
 @select_scheduler.value_changed
 def update_scheduler(new_value):
-    # print(get_scheduler_params().get_params())
     for scheduler in schedulers_params.keys():
         if new_value == scheduler:
             schedulers_params[scheduler].show()
@@ -78,7 +77,6 @@ def update_scheduler(new_value):
 
 @select_optim.value_changed
 def update_optim(new_value):
-    print(get_optimizer_params().get_params())
     for optim in optimizers_params.keys():
         if new_value == optim:
             optimizers_params[optim].show()

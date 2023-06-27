@@ -95,6 +95,8 @@ schedulers.append((repr(exp_scheduler), "Exponential LR"))
 
 
 # warmup
+enable_warmup_input = Switch(False)
+enable_warmup_field = Field(enable_warmup_input, "Enable warmup")
 
 warmup_strategy = ["constant", "linear", "exp"]
 warmup = OrderedWidgetWrapper("warmup")
@@ -139,7 +141,8 @@ schedulres_tab = Container(
         step_scheduler.create_container(hide=True),
         multi_steps_scheduler.create_container(hide=True),
         exp_scheduler.create_container(hide=True),
-        warmup.create_container(),
+        enable_warmup_field,
+        warmup.create_container(hide=True),
     ]
 )
 
@@ -168,7 +171,10 @@ def update_scheduler_widgets_with_params(params: TrainParameters):
 
 def update_scheduler_params_with_widgets(params: TrainParameters) -> TrainParameters:
     params.warmup_strategy = warmup.warmup_strategy
-    params.warmup_steps = warmup.warmup_steps
+    if enable_warmup_input.is_switched():
+        params.warmup_steps = warmup.warmup_steps
+    else:
+        params.warmup_steps = 0
     params.warmup_ratio = warmup.warmup_ratio
 
     name = select_scheduler.get_value()
@@ -180,6 +186,5 @@ def update_scheduler_params_with_widgets(params: TrainParameters) -> TrainParame
     new_params = scheduler_widget.get_params()
     new_params["type"] = repr(scheduler_widget)
     params.scheduler = new_params
-    print(params.scheduler)
 
     return params

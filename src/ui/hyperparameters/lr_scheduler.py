@@ -7,13 +7,17 @@ from supervisely.app.widgets import (
     InputNumber,
     Empty,
     SelectString,
+    Switch,
 )
 
-from src.ui.utils import OrderedWidgetWrapper
+from src.ui.utils import OrderedWidgetWrapper, set_switch_value, get_switch_value
 from src.train_parameters import TrainParameters
 
 schedulers = [("empty", "Without scheduler")]
 
+# TODO: add 'by_epoch'
+by_epoch_input = Switch(True)
+by_epoch_field = Field(by_epoch_input, "Epoch based scheduler")
 
 # Step scheduler
 step_scheduler = OrderedWidgetWrapper("StepParamScheduler")
@@ -28,6 +32,13 @@ step_scheduler.add_input(
 step_gamma_input = InputNumber(0.1, 0, step=1e-5, size="medium")
 step_gamma_field = Field(step_gamma_input, "Gamma")
 step_scheduler.add_input("gamma", step_gamma_input, step_gamma_field)
+step_scheduler.add_input(
+    "by_epoch",
+    by_epoch_input,
+    by_epoch_field,
+    get_switch_value,
+    set_switch_value,
+)
 schedulers.append((repr(step_scheduler), "Step LR"))
 
 
@@ -59,6 +70,13 @@ multi_steps_scheduler.add_input(
 multi_steps_gamma_input = InputNumber(0.1, 0, step=1e-5, size="medium")
 multi_steps_gamma_field = Field(multi_steps_gamma_input, "Gamma")
 multi_steps_scheduler.add_input("gamma", multi_steps_gamma_input, multi_steps_gamma_field)
+multi_steps_scheduler.add_input(
+    "by_epoch",
+    by_epoch_input,
+    by_epoch_field,
+    get_switch_value,
+    set_switch_value,
+)
 schedulers.append((repr(multi_steps_scheduler), "Multistep LR"))
 
 # exponential
@@ -66,6 +84,13 @@ exp_scheduler = OrderedWidgetWrapper("ExponentialParamScheduler")
 exp_gamma_input = InputNumber(0.1, 0, step=1e-5, size="medium")
 exp_gamma_field = Field(exp_gamma_input, "Gamma")
 exp_scheduler.add_input("gamma", exp_gamma_input, exp_gamma_field)
+exp_scheduler.add_input(
+    "by_epoch",
+    by_epoch_input,
+    by_epoch_field,
+    get_switch_value,
+    set_switch_value,
+)
 schedulers.append((repr(exp_scheduler), "Exponential LR"))
 
 
@@ -155,5 +180,6 @@ def update_scheduler_params_with_widgets(params: TrainParameters) -> TrainParame
     new_params = scheduler_widget.get_params()
     new_params["type"] = repr(scheduler_widget)
     params.scheduler = new_params
+    print(params.scheduler)
 
     return params

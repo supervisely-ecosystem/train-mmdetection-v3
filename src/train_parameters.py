@@ -28,6 +28,7 @@ class TrainParameters:
         self.filter_images_without_gt = True
         self.experiment_name = None
         self.add_classwise_metric = True
+        self.device_name = "cuda:0"  # selecting device doesn't supported now
 
         # checkpoints
         self.checkpoint_interval = 1
@@ -42,8 +43,8 @@ class TrainParameters:
         self.clip_grad_norm = None
 
         # scheduler
-        self.warmup_strategy = "constant"
-        self.warmup_steps = 0
+        self.warmup_strategy = "linear"
+        self.warmup_steps = 400
         self.warmup_ratio = 0.001
         self.scheduler = None
 

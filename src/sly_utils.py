@@ -8,13 +8,16 @@ import supervisely as sly
 
 
 def download_custom_config(remote_weights_path: str):
-    # download config_xxx.py
-    save_dir = remote_weights_path.split("checkpoints")
-    files = g.api.file.listdir(g.TEAM_ID, save_dir)
-    # find config by name in save_dir
-    remote_config_path = [f for f in files if f.endswith(".py")]
-    assert len(remote_config_path) > 0, f"Can't find config in {save_dir}."
-    remote_config_path = remote_config_path[0]
+    # # download config_xxx.py
+    # save_dir = remote_weights_path.split("checkpoints")
+    # files = g.api.file.listdir(g.TEAM_ID, save_dir)
+    # # find config by name in save_dir
+    # remote_config_path = [f for f in files if f.endswith(".py")]
+    # assert len(remote_config_path) > 0, f"Can't find config in {save_dir}."
+
+    # download config.py
+    remote_dir = os.path.dirname(remote_weights_path)
+    remote_config_path = remote_dir + "/config.py"
     config_name = remote_config_path.split("/")[-1]
     config_path = g.app_dir + f"/{config_name}"
     g.api.file.download(g.TEAM_ID, remote_config_path, config_path)
@@ -23,17 +26,13 @@ def download_custom_config(remote_weights_path: str):
 
 def download_custom_model_weights(remote_weights_path: str):
     # download .pth
-    model_name = remote_weights_path.split("/")[-1]
-    weights_path = g.app_dir + f"/{model_name}"
+    file_name = os.path.basename(remote_weights_path)
+    weights_path = g.app_dir + f"/{file_name}"
     g.api.file.download(g.TEAM_ID, remote_weights_path, weights_path)
     return weights_path
 
 
 def download_custom_model(remote_weights_path: str):
-    # save_dir structure:
-    # - checkpoints
-    # - logs
-    # - config_xxx.py
     config_path = download_custom_config(remote_weights_path)
     weights_path = download_custom_model_weights(remote_weights_path)
     return weights_path, config_path
@@ -57,7 +56,7 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, pbar: tqdm = No
     g.api.file.upload_directory(
         g.TEAM_ID,
         work_dir,
-        f"/mmdetction-2/{task_id}_{experiment_name}",
+        f"/mmdetection-3/{task_id}_{experiment_name}",
         progress_size_cb=cb,
     )
     raise

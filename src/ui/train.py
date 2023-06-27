@@ -1,3 +1,4 @@
+import os
 from mmengine import Config
 from mmdet.registry import RUNNERS
 
@@ -24,6 +25,14 @@ def get_task():
         return "instance_segmentation"
     else:
         return "object_detection"
+
+
+def set_device_env(device_name: str):
+    if device_name == "cpu":
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+    else:
+        device_id = device_name.split(":")[1].strip()
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(device_id)
 
 
 def get_train_params(cfg) -> TrainParameters:
@@ -68,6 +77,11 @@ def train():
     cfg = Config.fromfile(config_path)
     params = get_train_params(cfg)
 
+    # set device
+    # set_device_env(params.device_name)
+    # doesn't work :(
+    # may because of torch has been imported earlier and it already read CUDA_VISIBLE_DEVICES
+
     ### TODO: debug
     params.checkpoint_interval = 5
     params.save_best = False
@@ -98,7 +112,7 @@ def train():
         sly.fs.remove_dir(params.work_dir)
 
     # TODO: debug
-    train_cfg.dump()
+    train_cfg.dump("debug_config.py")
 
     # Its grace, the Runner!
     runner = RUNNERS.build(train_cfg)
@@ -131,7 +145,7 @@ iter_progress.hide()
 btn_container = Container(
     [start_train_btn, stop_train_btn, Empty()],
     "horizontal",
-    overflow="scroll",
+    overflow="wrap",
     fractions=[1, 1, 10],
     gap=1,
 )

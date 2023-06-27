@@ -1,3 +1,4 @@
+import os
 from mmengine import Config
 
 import src.ui.hyperparameters.handlers as handlers
@@ -70,15 +71,28 @@ def update_selected_model(selected_row):
 def on_model_selected():
     # update default hyperparameters in UI
 
-    model_select_button_state_change(False)
+    is_pretrained_model = models.is_pretrained_model_selected()
 
-    if models.is_pretrained_model_selected():
+    if is_pretrained_model:
         selected_model = models.get_selected_pretrained_model()
         config_path = selected_model["config"]
     else:
         remote_weights_path = models.get_selected_custom_path()
+        assert os.path.splitext(remote_weights_path)[1].startswith(
+            ".pt"
+        ), "Please, select model weights file (.pth) as path to custom model."
         config_path = sly_utils.download_custom_config(remote_weights_path)
+
+    model_select_button_state_change(False)
+
     cfg = Config.fromfile(config_path)
+    if not is_pretrained_model:
+        # check task type is correct
+        model_task = cfg.train_dataloader.dataset.task
+        selected_task = train.get_task()
+        assert (
+            model_task == selected_task
+        ), f"The selected model was trained in {model_task} task, but you've selected the {selected_task} task. Please, check your selected task."
     params = TrainParameters.from_config(cfg)
     hyperparameters.update_widgets_with_params(params)
 

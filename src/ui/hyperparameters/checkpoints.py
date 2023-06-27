@@ -30,7 +30,7 @@ checkpoint_save_switch = Switch(switched=True)
 checkpoint_save_count = Container([checkpoint_save_switch, checkpoint_save_count_input])
 checkpoint_save_count_field = Field(
     checkpoint_save_count,
-    title="Checkpoints save count",
+    title="Max checkpoints to keep",
     description=(
         "The maximum checkpoints to keep. "
         "In some cases we want only the latest "
@@ -117,5 +117,6 @@ def update_checkpoint_params_with_widgets(params: TrainParameters) -> TrainParam
     params.save_best = checkpoint_params.save_best
     params.save_last = checkpoint_params.save_last
     params.save_optimizer = checkpoint_params.save_optimizer
-    # нужен ли свитчер вообще?
     params.max_keep_checkpoints = checkpoint_params.max_keep_checkpoints
+    if not checkpoint_params.saves_limited:
+        params.max_keep_checkpoints = -1

@@ -160,17 +160,22 @@ def get_scheduler_params() -> OrderedWidgetWrapper:
 
 
 def update_scheduler_widgets_with_params(params: TrainParameters):
+    # scheduler
     if params.scheduler is None:
         select_scheduler.set_value("empty")
-        return
+    else:
+        name = params.scheduler["type"]
+        select_scheduler.set_value(name)
 
-    name = params.scheduler["type"]
-    select_scheduler.set_value(name)
+        for param, value in select_scheduler.items():
+            if param in schedulers_params[name].get_params():
+                schedulers_params[name].set(param, value)
 
-    for param, value in select_scheduler.items():
-        if param in schedulers_params[name].get_params():
-            schedulers_params[name].set(param, value)
-
+    # warmup
+    if params.warmup_steps:
+        enable_warmup_input.on()
+    else:
+        enable_warmup_input.off()
     warmup.set("warmup_strategy", params.warmup_strategy)
     warmup.set("warmup_steps", params.warmup_steps)
     warmup.set("warmup_ratio", params.warmup_ratio)

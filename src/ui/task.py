@@ -2,25 +2,11 @@ from supervisely.app.widgets import Card, Container, RadioGroup, Button, Notific
 
 from src.ui.utils import update_custom_button_params
 
-msg = (
-    "MMDetection provides tool for training models to solve "
-    "different deep learning problems. Currently "
-    "Supervisely supports two kind of tasks: object detection "
-    "and instance segmentation. Panoptic Segmentation, "
-    "Contrastive Learning or Knowledge Distillation tasks "
-    "from MMDetection are not supported now. At this step you "
-    "should select problem that you want to solve. Of course, "
-    "you should have appropriate data with markup for this task. "
-    "Available labels: bitmap masks or polygons for instance "
-    "segmentation (polygons will be converted to bitmaps) and "
-    "any objects except points for object detection "
-    "(bounding box will be calculated automatically). "
-    "Outputs of object detection models - only bounding boxes "
-    "with confidence. Outputs of instance segmentation models "
-    "in addition contain object masks. Selected task at this "
-    "step defines models list to choose. If you want to train "
-    "model based on already trained custom model, choose the appropriate task."
-)
+msg = """Select the task you are going to solve.
+    Object detection: the model will predict bounding boxes of objects
+    and all annotations will be converted to Rectangles.
+    Instance Segmentation: the model will predict bounding boxes and masks of the objects.
+    Only Bitmap and Polygon annotations will be used."""
 
 info = NotificationBox(title="INFO: How to select task?", description=msg, box_type="info")
 task_selector = RadioGroup(
@@ -41,17 +27,3 @@ card = Card(
     content=Container(widgets=[info, select_field, select_btn], direction="vertical"),
     lock_message="Please, select project and load data.",
 )
-
-
-# @select_btn.click
-# def select_task():
-#     # TODO: load task config if selected
-#     if select_btn._click_handled:
-#         task_selector.disable()
-#         update_custom_button_params(select_btn, reselect_params)
-#         select_btn._click_handled = False
-#     else:
-#         task_selector.enable()
-#         update_custom_button_params(select_btn, select_params)
-#         select_btn._click_handled = True
-#         # TODO: restart all steps

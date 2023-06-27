@@ -1,7 +1,12 @@
 from typing import List
 from supervisely.app.widgets import Widget
 
-from src.ui.hyperparameters.checkpoints import checkpoint_interval_text, checkpoint_interval_input
+from src.ui.hyperparameters.checkpoints import (
+    checkpoint_interval_text,
+    checkpoint_interval_input,
+    checkpoint_save_switch,
+    checkpoint_save_count_input,
+)
 from src.ui.hyperparameters.general import (
     chart_update_text,
     val_text,
@@ -100,3 +105,11 @@ def show_hide_scheduler(new_value):
         warmup.show()
     else:
         warmup.hide()
+
+
+@checkpoint_save_switch.value_changed
+def on_checkpoint_save_limit_switch(is_switched):
+    if is_switched:
+        checkpoint_save_count_input.show()
+    else:
+        checkpoint_save_count_input.hide()

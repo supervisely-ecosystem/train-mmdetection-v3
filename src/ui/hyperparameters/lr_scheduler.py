@@ -20,7 +20,7 @@ by_epoch_input = Switch(True)
 by_epoch_field = Field(by_epoch_input, "By epoch")
 
 # Step scheduler
-step_scheduler = OrderedWidgetWrapper("StepParamScheduler")
+step_scheduler = OrderedWidgetWrapper("StepLR")
 step_scheduler.add_input(
     "by_epoch",
     by_epoch_input,
@@ -53,7 +53,7 @@ def set_multisteps(input_w: Input, value: List[int]):
     input_w.set_value(",".join(value))
 
 
-multi_steps_scheduler = OrderedWidgetWrapper("MultiStepParamScheduler")
+multi_steps_scheduler = OrderedWidgetWrapper("MultiStepLR")
 multi_steps_scheduler.add_input(
     "by_epoch",
     by_epoch_input,
@@ -82,7 +82,7 @@ multi_steps_scheduler.add_input("gamma", multi_steps_gamma_input, multi_steps_ga
 schedulers.append((repr(multi_steps_scheduler), "Multistep LR"))
 
 # exponential
-exp_scheduler = OrderedWidgetWrapper("ExponentialParamScheduler")
+exp_scheduler = OrderedWidgetWrapper("ExponentialLR")
 exp_scheduler.add_input(
     "by_epoch",
     by_epoch_input,

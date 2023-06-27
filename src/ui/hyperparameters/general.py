@@ -150,5 +150,5 @@ def update_general_params_with_widgets(params: TrainParameters):
     params.batch_size_val = general_params.batch_size_val
     params.input_size = (general_params.bigger_size, general_params.smaller_size)
     params.chart_update_interval = general_params.chart_update_interval
-    params.epoch_based_train = general_params.epoch_based_train
+    # params.epoch_based_train = general_params.epoch_based_train
     params.filter_images_without_gt = general_params.filter_images_without_gt

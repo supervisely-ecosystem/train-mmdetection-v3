@@ -5,9 +5,10 @@ from dotenv import load_dotenv
 from src.train_parameters import TrainParameters
 
 load_dotenv(os.path.expanduser("~/supervisely.env"))
+load_dotenv("local.env")
 
-PROJECT_ID = 18337
-TEAM_ID = 453
+PROJECT_ID = sly.env.project_id()
+TEAM_ID = sly.env.team_id()
 
 api: sly.Api = sly.Api.from_env()
 app_dir = sly.app.get_data_dir()

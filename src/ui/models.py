@@ -204,18 +204,5 @@ def update_selected_model(selected_row):
     text.text = f"Selected model: {selected_row[0]}"
 
 
-# @task_selector.value_changed
-# def on_task_changed(selected_task):
-#     update_architecture(selected_task)
-
-
-# @arch_select.value_changed
-# def on_architecture_selected(selected_arch):
-#     update_models(selected_arch)
-
-
-# @table.value_changed
-# def update_selected_model(selected_row):
-#     text.text = f"selected model: {selected_row[0]}"
-
-# update_architecture(cur_task)
+def get_selected_arch_name() -> str:
+    return arch_select.get_value()

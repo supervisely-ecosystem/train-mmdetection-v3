@@ -1,5 +1,5 @@
 import os
-from mmengine import Config
+from mmengine import Config, ConfigDict
 from mmdet.registry import RUNNERS
 
 import supervisely as sly
@@ -63,9 +63,39 @@ def prepare_model():
     return config_path, weights_path_or_url
 
 
+def add_metadata(cfg: Config):
+    is_pretrained = models_ui.is_pretrained_model_selected()
+
+    if not is_pretrained and not hasattr(cfg, "sly_metadata"):
+        # realy custom model
+        sly.logger.warn(
+            "There are no sly_metadata in config, seems the custom model wasn't trained in Supervisely."
+        )
+        cfg.sly_metadata = {
+            "model_name": "custom",
+            "architecture_name": "custom",
+            "task_type": get_task(),
+        }
+
+    if is_pretrained:
+        selected_model = models_ui.get_selected_pretrained_model()
+        metadata = {
+            "model_name": selected_model["name"],
+            "architecture_name": models_ui.get_selected_arch_name(),
+            "task_type": get_task(),
+        }
+    else:
+        metadata = cfg.sly_metadata
+
+    metadata["project_id"] = g.PROJECT_ID
+    metadata["project_name"] = g.api.project.get_info_by_id(g.PROJECT_ID).name
+
+    cfg.sly_metadata = ConfigDict(metadata)
+
+
 def train():
     # download dataset
-    project_dir = sly_utils.download_project()
+    project_dir = sly_utils.download_project(iter_progress)
 
     # prepare split files
     dump_train_val_splits(project_dir)
@@ -83,11 +113,11 @@ def train():
     # may because of torch has been imported earlier and it already read CUDA_VISIBLE_DEVICES
 
     ### TODO: debug
-    params.checkpoint_interval = 5
-    params.save_best = False
-    params.val_interval = 1
-    params.num_workers = 0
-    params.input_size = (400, 300)
+    # params.checkpoint_interval = 5
+    # params.save_best = False
+    # params.val_interval = 1
+    # params.num_workers = 0
+    # params.input_size = (400, 300)
     ###
 
     # create config from params
@@ -96,6 +126,9 @@ def train():
     # update load_from with custom_weights_path
     if params.load_from and weights_path_or_url:
         train_cfg.load_from = weights_path_or_url
+
+    # add sly_metadata
+    add_metadata(train_cfg)
 
     # show classwise chart
     if params.add_classwise_metric:
@@ -112,34 +145,40 @@ def train():
         sly.fs.remove_dir(params.work_dir)
 
     # TODO: debug
-    train_cfg.dump("debug_config.py")
+    # train_cfg.dump("debug_config.py")
 
     # Its grace, the Runner!
     runner = RUNNERS.build(train_cfg)
     try:
         runner.train()
     except StopIteration as exc:
-        # training was stopped
-        sly.logger.debug(exc)
+        sly.logger.info("The training is stopped.")
 
+    epoch_progress.hide()
+
+    # uploading checkpoints and data
     # TODO: params.experiment_name
-    sly_utils.upload_artifacts(
+    out_path = sly_utils.upload_artifacts(
         params.work_dir,
         params.experiment_name,
-        # TODO: make correct monitor
-        iter_progress(message="Uploading to Team Files...", unit="MB"),
+        iter_progress,
     )
+
+    # set task results
+    if sly.is_production():
+        file_id = g.api.file.get_info_by_path(g.TEAM_ID, out_path + "/config.py").id
+        g.api.task.set_output_directory(g.api.task_id, file_id, out_path)
+        g.api.task.stop(g.api.task_id)
 
 
 start_train_btn = Button("Train")
-# pause_train_btn = Button("Pause")
 stop_train_btn = Button("Stop", "danger")
 stop_train_btn.disable()
 
-epoch_progress = Progress("Epoch")
+epoch_progress = Progress("Epochs")
 epoch_progress.hide()
 
-iter_progress = Progress("Iteration")
+iter_progress = Progress("Iterations")
 iter_progress.hide()
 
 btn_container = Container(
@@ -158,7 +197,6 @@ container = Container(
         monitoring.compile_monitoring_container(True),
     ]
 )
-# card = Card("Training progress", content=container)
 
 card = Card(
     "7️⃣ Training progress",
@@ -178,13 +216,7 @@ def start_train():
     train()
 
 
-# @pause_train_btn.click
-# def pause_train():
-#     pass
-
-
 @stop_train_btn.click
 def stop_train():
-    # end up training, upload files to Team Files
     g.stop_training = True
     stop_train_btn.disable()

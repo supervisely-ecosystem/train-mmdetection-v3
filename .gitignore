@@ -14,3 +14,5 @@ __pycache__
 /val_coco_instances.json
 /val_split.json
 todo.txt
+debug_config.py
+local.env

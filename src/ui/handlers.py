@@ -91,6 +91,11 @@ def on_model_selected():
         assert (
             model_task == selected_task
         ), f"The selected model was trained in {model_task} task, but you've selected the {selected_task} task. Please, check your selected task."
+        # check if config is from mmdet v3.0
+        assert hasattr(
+            cfg, "optim_wrapper"
+        ), "Missing some parameters in config. Please, check if your custom model was trained in mmdetection v3.0."
+
     params = TrainParameters.from_config(cfg)
     hyperparameters.update_widgets_with_params(params)
 

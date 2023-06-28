@@ -53,7 +53,6 @@ class SuperviselyHook(Hook):
 
         # Stop training
         if g.stop_training:
-            sly.logger.info("The training is stopped by user.")
             raise StopIteration()
 
     def after_train_epoch(self, runner: Runner) -> None:

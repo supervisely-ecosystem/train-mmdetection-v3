@@ -1,6 +1,8 @@
 import os
+from pathlib import Path
 import shutil
 from requests_toolbelt import MultipartEncoderMonitor
+from supervisely.app.widgets import Progress
 
 from tqdm import tqdm
 import src.sly_globals as g
@@ -38,32 +40,54 @@ def download_custom_model(remote_weights_path: str):
     return weights_path, config_path
 
 
-def upload_artifacts(work_dir: str, experiment_name: str = None, pbar: tqdm = None):
+def upload_artifacts(work_dir: str, experiment_name: str = None, progress_widget: Progress = None):
     task_id = g.api.task_id or ""
     paths = [path for path in os.listdir(work_dir) if path.endswith(".py")]
     assert len(paths) > 0, "Can't find config file saved during training."
     assert len(paths) == 1, "Found more then 1 .py file"
     cfg_path = f"{work_dir}/{paths[0]}"
     shutil.move(cfg_path, f"{work_dir}/config.py")
+
+    # rm symlink
+    sly.fs.silent_remove(f"{work_dir}/last_checkpoint")
+
     if not experiment_name:
         experiment_name = f"{g.config_name.split('.py')[0]}"
     sly.logger.debug("Uploading checkpoints to Team Files...")
-    from functools import partial
 
-    def cb(monitor: MultipartEncoderMonitor):
-        pbar.update(monitor.bytes_read / 1024 / 1024 - pbar.n)
+    if progress_widget:
+        progress_widget.show()
+        work_dir_p = Path(work_dir)
+        nbytes = sum(f.stat().st_size for f in work_dir_p.glob("**/*") if f.is_file())
+        pbar = progress_widget(
+            message="Uploading to Team Files...",
+            total=int(nbytes / 1024 / 1024),
+            unit="MB",
+        )
 
-    g.api.file.upload_directory(
+        def cb(monitor: MultipartEncoderMonitor):
+            pbar.update(int(monitor.bytes_read / 1024 / 1024 - pbar.n))
+
+    else:
+        cb = None
+
+    out_path = g.api.file.upload_directory(
         g.TEAM_ID,
         work_dir,
         f"/mmdetection-3/{task_id}_{experiment_name}",
         progress_size_cb=cb,
     )
+    return out_path
 
 
-def download_project():
+def download_project(progress_widget):
     project_dir = f"{g.app_dir}/sly_project"
+
     if sly.fs.dir_exists(project_dir):
         sly.fs.remove_dir(project_dir)
-    sly.Project.download(g.api, g.PROJECT_ID, project_dir)
+
+    n = g.api.project.get_info_by_id(g.PROJECT_ID).items_count
+    with progress_widget(message="Downloading project...", total=n) as pbar:
+        sly.Project.download(g.api, g.PROJECT_ID, project_dir, progress_cb=pbar.update)
+
     return project_dir

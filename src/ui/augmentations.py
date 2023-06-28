@@ -8,7 +8,7 @@ import src.sly_globals as g
 
 
 def format_task_name(task: str):
-    if "segmentation" in task:
+    if "segmentation" in task.lower():
         task = "segmentation"
     else:
         task = "detection"

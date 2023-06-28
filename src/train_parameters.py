@@ -44,7 +44,7 @@ class TrainParameters:
 
         # scheduler
         self.warmup_strategy = "linear"
-        self.warmup_steps = 400
+        self.warmup_steps = 100
         self.warmup_ratio = 0.001
         self.scheduler = None
 
@@ -64,9 +64,7 @@ class TrainParameters:
                 self.optim_wrapper.clip_grad.norm_type = 2
         except AttributeError:
             self.optim_wrapper.clip_grad = None
-        # TODO: load from config:
-        # self.scheduler = None
-        # self.losses = None
+        # TODO: load general params if it is custom config
         return self
 
     def init(self, task, selected_classes, augs_config_path, app_dir):
@@ -182,8 +180,9 @@ class TrainParameters:
         ]
 
         # visualization
+        # from mmdet.engine.hooks import DetVisualizationHook
         # TODO: debug
-        cfg.default_hooks.visualization = dict(type="DetVisualizationHook", draw=True, interval=12)
+        cfg.default_hooks.visualization = dict(type="DetVisualizationHook", draw=True, interval=100)
 
         # optimizer
         # from mmengine.optim.optimizer import OptimWrapper
@@ -204,9 +203,7 @@ class TrainParameters:
                 self.scheduler["begin"] = self.warmup_steps
             cfg.param_scheduler.append(self.scheduler)
 
-        # losses
-        # TODO
-        # can we correctly change losses?
+        # TODO: loss. can we correctly change losses?
 
         # cfg.load_from = self.load_from  # will set later as we don't know 'weights_path' so far
         cfg.work_dir = self.work_dir

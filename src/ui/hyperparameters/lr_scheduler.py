@@ -15,7 +15,6 @@ from src.train_parameters import TrainParameters
 
 schedulers = [("empty", "Without scheduler")]
 
-# TODO: add 'by_epoch'
 by_epoch_input = Switch(True)
 by_epoch_field = Field(by_epoch_input, "By epoch")
 

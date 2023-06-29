@@ -44,7 +44,7 @@ class TrainParameters:
 
         # scheduler
         self.warmup_strategy = "linear"
-        self.warmup_steps = 100
+        self.warmup_steps = 100  # by default it will be changed to 1 epoch
         self.warmup_ratio = 0.001
         self.scheduler = None
 
@@ -83,6 +83,19 @@ class TrainParameters:
         modify_num_classes_recursive(cfg.model, num_classes)
         modify_num_classes_recursive(cfg.model, num_classes, "num_things_classes")
         modify_num_classes_recursive(cfg.model, 0, "num_stuff_classes")
+
+        # can we just remove batch_augments?
+        if hasattr(cfg.model.data_preprocessor, "batch_augments"):
+            cfg.model.data_preprocessor.batch_augments = None
+
+        # Mask2Former fix:
+        if cfg.model.type == "Mask2Former":
+            cfg.model.panoptic_head.loss_cls["class_weight"] = [1.0] * num_classes + [0.1]
+
+        # RTMDet fix:
+        if cfg.model.type == "RTMDet":
+            cfg.model.data_preprocessor.pad_mask = True
+            cfg.model.data_preprocessor.pad_size_divisor = 32
 
         # pipelines
         train_pipeline, test_pipeline = get_default_pipelines(

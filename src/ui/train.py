@@ -101,6 +101,7 @@ def train():
     dump_train_val_splits(project_dir)
 
     # prepare model files
+    iter_progress(message="Preparing the model...", total=1)
     config_path, weights_path_or_url = prepare_model()
 
     # create config
@@ -117,7 +118,12 @@ def train():
     # params.save_best = False
     # params.val_interval = 1
     # params.num_workers = 0
-    # params.input_size = (400, 300)
+    # params.input_size = (409, 640)
+    # from mmengine.visualization import Visualizer
+    # from mmdet.visualization import DetLocalVisualizer
+
+    # Visualizer._instance_dict.clear()
+    # DetLocalVisualizer._instance_dict.clear()
     ###
 
     # create config from params
@@ -146,6 +152,8 @@ def train():
 
     # TODO: debug
     # train_cfg.dump("debug_config.py")
+
+    iter_progress(message="Preparing the model...", total=1)
 
     # Its grace, the Runner!
     runner = RUNNERS.build(train_cfg)
@@ -178,7 +186,7 @@ stop_train_btn.disable()
 epoch_progress = Progress("Epochs")
 epoch_progress.hide()
 
-iter_progress = Progress("Iterations")
+iter_progress = Progress("Iterations", hide_on_finish=False)
 iter_progress.hide()
 
 btn_container = Container(
@@ -209,9 +217,10 @@ card.lock()
 
 @start_train_btn.click
 def start_train():
+    g.stop_training = False
     monitoring.container.show()
     stop_train_btn.enable()
-    epoch_progress.show()
+    # epoch_progress.show()
     iter_progress.show()
     train()
 

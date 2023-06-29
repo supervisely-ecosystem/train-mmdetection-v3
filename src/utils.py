@@ -31,8 +31,12 @@ def parse_yaml_metafile(yaml_file, exclude: str = None):
         # skip by exclude regexp
         if exclude:
             name: str = model["Name"]
-            if exclude.endswith("*") and name.startswith(exclude):
-                continue
+            if exclude.endswith("*"):
+                if name.startswith(exclude[:-1]):
+                    continue
+            elif exclude.startswith("*"):
+                if name.endswith(exclude[1:]):
+                    continue
             else:
                 raise NotImplementedError(f"can't parse the exculde pattern: {exclude}")
 

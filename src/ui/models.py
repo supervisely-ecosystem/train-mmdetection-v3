@@ -53,7 +53,8 @@ def _get_architecture_list(models_meta: dict):
 def _get_models_by_architecture(task: str, models_meta: dict, selected_arch_name: str):
     # parse metafile.yml
     metafile_path = "configs/" + models_meta[selected_arch_name]["yml_file"]
-    _, models = parse_yaml_metafile(metafile_path)
+    exclude = models_meta[selected_arch_name].get("exclude")
+    _, models = parse_yaml_metafile(metafile_path, exclude)
 
     # filter models by task
     if "segmentation" in task.lower():

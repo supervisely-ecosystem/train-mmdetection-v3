@@ -210,6 +210,7 @@ class TrainParameters:
         cfg.experiment_name = self.experiment_name
         cfg.launcher = "none"
         # cfg.env_cfg.mp_cfg.mp_start_method = "spawn"
+        cfg.num_classes = len(self.selected_classes)
 
         return cfg
 

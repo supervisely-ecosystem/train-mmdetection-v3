@@ -47,16 +47,6 @@ def update_widgets_with_params(params: TrainParameters):
     optimizers.update_optimizer_widgets_with_params(params)
     lr_scheduler.update_scheduler_widgets_with_params(params)
 
-    if params.load_from:
-        models.load_from.on()
-    else:
-        models.load_from.off()
-
-    if params.filter_images_without_gt:
-        classes.filter_images_without_gt_input.on()
-    else:
-        classes.filter_images_without_gt_input.off()
-
 
 def update_params_with_widgets(params: TrainParameters):
     general.update_general_params_with_widgets(params)

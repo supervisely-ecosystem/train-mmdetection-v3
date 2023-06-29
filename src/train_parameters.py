@@ -81,6 +81,8 @@ class TrainParameters:
         # change model num_classes
         num_classes = len(self.selected_classes)
         modify_num_classes_recursive(cfg.model, num_classes)
+        modify_num_classes_recursive(cfg.model, num_classes, "num_things_classes")
+        modify_num_classes_recursive(cfg.model, 0, "num_stuff_classes")
 
         # pipelines
         train_pipeline, test_pipeline = get_default_pipelines(
@@ -219,15 +221,15 @@ class TrainParameters:
         return all([bool(x) for x in need_to_check]) and self.task in self.ACCEPTABLE_TASKS
 
 
-def modify_num_classes_recursive(d, num_classes):
+def modify_num_classes_recursive(d, num_classes, key="num_classes"):
     if isinstance(d, ConfigDict):
-        if d.get("num_classes") is not None:
-            d["num_classes"] = num_classes
+        if d.get(key) is not None:
+            d[key] = num_classes
         for k, v in d.items():
-            modify_num_classes_recursive(v, num_classes)
+            modify_num_classes_recursive(v, num_classes, key)
     elif isinstance(d, (list, tuple)):
         for v in d:
-            modify_num_classes_recursive(v, num_classes)
+            modify_num_classes_recursive(v, num_classes, key)
 
 
 def find_index_for_imgaug(pipeline):

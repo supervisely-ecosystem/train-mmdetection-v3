@@ -64,7 +64,7 @@ def on_architecture_selected(selected_arch):
 
 @models.table.value_changed
 def update_selected_model(selected_row):
-    models.text.text = f"Selected model: {selected_row[0]}"
+    models.update_selected_model(selected_row)
 
 
 @models.select_btn.click

@@ -3,58 +3,14 @@ import os
 # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import json
 from mmengine import Config
+from mmengine.runner import Runner
 from mmdet import registry
 import yaml
 from src.train_parameters import TrainParameters
+from src.utils import parse_yaml_metafile
 
 # register modules (don't remove):
-from src import sly_dataset, sly_hook, sly_imgaugs
-
-
-def parse_yaml_metafile(yaml_file):
-    with open(yaml_file, "r") as file:
-        yaml_content = yaml.safe_load(file)
-
-    collections = {}  # Name: metadata
-    yaml_models = []
-    if isinstance(yaml_content, dict):
-        if yaml_content.get("Collections"):
-            if isinstance(yaml_content["Collections"], list):
-                for c in yaml_content["Collections"]:
-                    collections[c["Name"]] = c
-            else:
-                raise NotImplementedError()
-        else:
-            print(f"Has not collections: {yaml_file}.")
-        if yaml_content.get("Models"):
-            yaml_models = yaml_content["Models"]
-    elif isinstance(yaml_content, list):
-        yaml_models = yaml_content
-        print(f"Only list: {yaml_file}.")
-    else:
-        raise NotImplementedError()
-
-    models = []
-    for m in yaml_models:
-        if not m.get("Weights"):
-            print(f"skip {m['Name']} in {yaml_file}, weights don't exists.")
-            continue
-        # collection = m["In Collection"]
-        metrics = {}
-        for result in m["Results"]:
-            for metric_name, metric_val in result["Metrics"].items():
-                metrics[metric_name] = metric_val
-            metrics["dataset"] = result["Dataset"]
-        m = {
-            "name": m["Name"],
-            "config": m["Config"],
-            "tasks": [r["Task"] for r in m["Results"]],
-            "weights": m["Weights"],
-            **metrics,
-        }
-        models.append(m)
-
-    return collections, models
+from src import sly_dataset, sly_imgaugs
 
 
 def json_dump(obj, file):
@@ -67,60 +23,60 @@ def json_load(file):
         return json.load(f)
 
 
-def get_manual_config_path():
-    det_meta = json_load("models/detection_meta.json")
-    segm_meta = json_load("models/instance_segmentation_meta.json")
-
-    # select model
-    model_item = segm_meta[0]
-    _, models = parse_yaml_metafile("configs/" + model_item["yml_file"])
+def get_config_path(model_meta: dict):
+    metafile_path = "configs/" + model_meta["yml_file"]
+    exclude = model_meta.get("exclude")
+    _, models = parse_yaml_metafile(metafile_path, exclude)
     model_item = models[0]
     return model_item["config"]
 
 
-config_path = (
-    # "tmp_cfg.py"
-    # "configs/convnext/cascade-mask-rcnn_convnext-s-p4-w7_fpn_4conv1fc-giou_amp-ms-crop-3x_coco.py"
-    # "configs/cascade_rcnn/cascade-mask-rcnn_r50_fpn_1x_coco.py"
-    # "configs/swin/mask-rcnn_swin-t-p4-w7_fpn_ms-crop-3x_coco.py"
-    get_manual_config_path()
-    # "configs/tood/tood_r50_fpn_1x_coco.py"
-)
-print(f"Selected config: {config_path}")
+def run_test(config_path, task):
+    cfg = Config.fromfile(config_path)
 
-cfg = Config.fromfile(config_path)
+    selected_classes = ["kiwi", "lemon"]
+    augs_config_path = "src/test/medium_test.json"
 
-# task = "object_detection"
-task = "instance_segmentation"
-selected_classes = ["kiwi", "lemon"]
-augs_config_path = "src/aug_templates/medium.json"
+    # create config
+    cfg = Config.fromfile(config_path)
 
-params = TrainParameters.from_config(cfg)
-params.init(task, selected_classes, augs_config_path, "work_dirs")
-params.batch_size_train = 2
-params.checkpoint_interval = 15
-params.val_interval = 3
-params.batch_size_val = 1
-params.num_workers = 2
-params.total_epochs = 20
-params.input_size = (600, 400)
+    params = TrainParameters.from_config(cfg)
+    params.init(task, selected_classes, augs_config_path, app_dir="app_data")
 
-cfg = params.update_config(cfg)
-cfg.custom_hooks = []
+    params.total_epochs = 2
+    params.checkpoint_interval = 6
+    params.save_best = False
+    params.save_last = False
+    params.val_interval = 2
+    params.num_workers = 2
+    params.input_size = (409, 640)
+    # from mmengine.visualization import Visualizer
+    # from mmdet.visualization import DetLocalVisualizer
 
-# TODO: to_del:
-cfg.optim_wrapper = dict(
-    type="OptimWrapper",
-    optimizer=dict(type="AdamW", lr=0.0001, weight_decay=0.0001),
-    paramwise_cfg=dict(custom_keys={"backbone": dict(lr_mult=0.1, decay_mult=1.0)}),
-    clip_grad=dict(max_norm=1.0, norm_type=2),
-)
-cfg.load_from = "https://download.openmmlab.com/mmdetection/v2.0/queryinst/queryinst_r50_fpn_1x_coco/queryinst_r50_fpn_1x_coco_20210907_084916-5a8f1998.pth"
-# cfg.resume = False
+    # Visualizer._instance_dict.clear()
+    # DetLocalVisualizer._instance_dict.clear()
+
+    # create config from params
+    train_cfg = params.update_config(cfg)
+
+    train_cfg.default_hooks.visualization = dict(
+        type="DetVisualizationHook", draw=True, interval=12
+    )
+    train_cfg.custom_hooks.pop(-1)
+    train_cfg.load_from = None
+    train_cfg.log_level = "ERROR"
+
+    # cfg.randomness = dict(seed=875212355, deterministic=False)
+    runner: Runner = registry.RUNNERS.build(train_cfg)
+    runner.train()
 
 
-# cfg.randomness = dict(seed=875212355, deterministic=False)
-runner = registry.RUNNERS.build(cfg)
-runner.train()
+det_meta = json_load("models/detection_meta.json")
+segm_meta = json_load("models/instance_segmentation_meta.json")
 
-from mmengine.runner import Runner
+for task, models in zip(TrainParameters.ACCEPTABLE_TASKS, [det_meta, segm_meta]):
+    print("TASK:", task)
+    for model_meta in models[:5]:
+        config_path = get_config_path(model_meta)
+        print(f"Selected config: {config_path}")
+        run_test(config_path, task)

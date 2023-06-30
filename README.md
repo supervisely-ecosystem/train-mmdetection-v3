@@ -239,37 +239,35 @@ Application key points:
 
 # How to Run
 
-**Step 1.** Run app from context menu of the project with annotations (`polygon` and `bitmap` for instance segmentation or `rectangle` for object detection) [(example)](https://ecosystem.supervise.ly/projects/lemons-annotated) or launch the app from Ecosystem
-
-<img src="xxx" width="100%" style='padding-top: 10px'>  
+**Step 1.** Run the app from context menu of the project with annotations or from the Ecosystem
 
 **Step 2.** Select the MMDetection task you need to solve 
 
-<img src="xxx" width="100%" style='padding-top: 10px'>  
+<img src="https://github.com/supervisely-ecosystem/train-mmdetection-v3/assets/115161827/136a8a5e-4066-4a1f-86f8-b14e266527b7" width="100%" style='padding-top: 10px'>  
 
 **Step 3.** Choose the pretrained or custom object detection model
 
-<img src="xxx" width="100%" style='padding-top: 10px'>  
+<img src="https://github.com/supervisely-ecosystem/train-mmdetection-v3/assets/115161827/b07114db-d620-469b-893f-202d3ce356c6" width="100%" style='padding-top: 10px'>  
 
 **Step 4.** Select the classes you want to train MMDetection on
 
-<img src="xxx" width="100%" style='padding-top: 10px'>  
+<img src="https://github.com/supervisely-ecosystem/train-mmdetection-v3/assets/115161827/29b0b4ab-44a5-4d1f-92f6-d5f0aee54b77" width="100%" style='padding-top: 10px'>  
 
 **Step 5.** Define the train/val splits
 
-<img src="xxx" width="100%" style='padding-top: 10px'>  
+<img src="https://github.com/supervisely-ecosystem/train-mmdetection-v3/assets/115161827/ea58fe7d-c592-43b0-8492-8535117d5a06" width="100%" style='padding-top: 10px'>  
 
 **Step 6.** Choose either ready-to-use augmentation template or provide custom pipeline
 
-<img src="xxx" width="100%" style='padding-top: 10px'>  
+<img src="https://github.com/supervisely-ecosystem/train-mmdetection-v3/assets/115161827/18664fa4-398c-4848-b252-9f22b93055d5" width="100%" style='padding-top: 10px'>  
 
 **Step 7.** Configure the training parameters
 
-<img src="xxx" width="100%" style='padding-top: 10px'>  
+<img src="https://github.com/supervisely-ecosystem/train-mmdetection-v3/assets/115161827/a7c9e642-0488-4175-967a-e1d1f2727efb" width="100%" style='padding-top: 10px'>  
 
 **Step 8.** Click `Train` button and observe the training progress, metrics charts and visualizations 
 
-<img src="xxx" width="100%" style='padding-top: 10px'>  
+<img src="https://github.com/supervisely-ecosystem/train-mmdetection-v3/assets/115161827/b6b890d4-ae85-4d15-9a02-7fd43f017abd" width="100%" style='padding-top: 10px'>  
 
 # Acknowledgment
 

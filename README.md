@@ -1,6 +1,6 @@
 <div align="center" markdown>
 
-<img src="xxx"/>  
+<img src="https://github.com/supervisely-ecosystem/train-mmdetection-2/assets/115161827/a2a022a9-b1b1-4231-9a8d-37e4d3898acf"/>  
 
 # Train MMDetection 3.0
 
@@ -20,7 +20,7 @@
 
 # Overview
 
-Train MMDetection (v3.0) models in Supervisely.
+Train MMDetection 3.0 models in Supervisely.
 
 Application key points:
 - Supports Object Detection and Instance Segmentation

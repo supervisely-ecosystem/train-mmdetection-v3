@@ -25,9 +25,9 @@
     "context_root": "Neural Networks",
     "context_category": "MM Detection"
   },
-  "icon": "",
+  "icon": "https://github.com/supervisely-ecosystem/train-mmdetection-2/assets/115161827/a617b067-a939-4a98-be8d-cda0b09f3361",
   "icon_cover": true,
-  "poster": "",
+  "poster": "https://github.com/supervisely-ecosystem/train-mmdetection-2/assets/115161827/a2a022a9-b1b1-4231-9a8d-37e4d3898acf",
   "need_gpu": true,
   "community_agent": false,
   "license": {

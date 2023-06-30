@@ -96,6 +96,43 @@ exp_scheduler.add_input("gamma", exp_gamma_input, exp_gamma_field)
 schedulers.append((repr(exp_scheduler), "Exponential LR"))
 
 
+# reduce on plateau
+reduce_plateau_scheduler = OrderedWidgetWrapper("ReduceOnPlateauLR")
+reduce_plateau_scheduler.add_input(
+    "by_epoch",
+    by_epoch_input,
+    by_epoch_field,
+    get_switch_value,
+    set_switch_value,
+)
+
+reduce_plateau_factor_input = InputNumber(0.1, 0, step=1e-5, size="medium")
+reduce_plateau_factor_field = Field(
+    reduce_plateau_factor_input,
+    "Factor",
+    "Factor by which the learning rate will be reduced. new_param = param * factor",
+)
+reduce_plateau_scheduler.add_input(
+    "factor",
+    reduce_plateau_factor_input,
+    reduce_plateau_factor_field,
+)
+
+reduce_plateau_patience_input = InputNumber(10, 2, step=1, size="medium")
+reduce_plateau_patience_field = Field(
+    reduce_plateau_patience_input,
+    "Patience",
+    "Number of epochs with no improvement after which learning rate will be reduced.",
+)
+reduce_plateau_scheduler.add_input(
+    "patience",
+    reduce_plateau_patience_input,
+    reduce_plateau_patience_field,
+)
+
+reduce_plateau_scheduler.append((repr(reduce_plateau_scheduler), "Reduce On Plateau LR"))
+
+
 # warmup
 enable_warmup_input = Switch(True)
 enable_warmup_field = Field(enable_warmup_input, "Enable warmup")

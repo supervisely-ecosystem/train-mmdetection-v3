@@ -7,16 +7,14 @@
 <p align="center">
   <a href="#Overview">Overview</a> •
   <a href="#How-To-Run">How To Run</a> •
-  <a href="#Demo">Demo</a> •
-  <a href="#Screenshot">Screenshot</a> •
   <a href="#Acknowledgment">Acknowledgment</a>
 </p>
 
-[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/train-mmdetection-2)
+[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/train-mmdetection-v3)
 [![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervise.ly/slack)
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/supervisely-ecosystem/train-mmdetection-2)
-[![views](https://app.supervise.ly/img/badges/views/supervisely-ecosystem/train-mmdetection-2.png)](https://supervise.ly)
-[![runs](https://app.supervise.ly/img/badges/runs/supervisely-ecosystem/train-mmdetection-2.png)](https://supervise.ly)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/supervisely-ecosystem/train-mmdetection-v3)
+[![views](https://app.supervise.ly/img/badges/views/supervisely-ecosystem/train-mmdetection-v3.png)](https://supervise.ly)
+[![runs](https://app.supervise.ly/img/badges/runs/supervisely-ecosystem/train-mmdetection-v3.png)](https://supervise.ly)
 
 </div>
 
@@ -241,24 +239,37 @@ Application key points:
 
 # How to Run
 
-**Step 1.** Add [Train MMDetection](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/train-mmdetection-2) to your team
-
-<img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/mmdetection/train" src="xxx" width="350px" style='padding-bottom: 10px'/>
-
-**Step 2.** Run app from context menu of the project with annotations (`polygon` and `bitmap` for instance segmentation or `rectangle` for object detection) [(example)](https://ecosystem.supervise.ly/projects/lemons-annotated)
+**Step 1.** Run app from context menu of the project with annotations (`polygon` and `bitmap` for instance segmentation or `rectangle` for object detection) [(example)](https://ecosystem.supervise.ly/projects/lemons-annotated) or launch the app from Ecosystem
 
 <img src="xxx" width="100%" style='padding-top: 10px'>  
 
+**Step 2.** Select the MMDetection task you need to solve 
 
-<!-- # Demo -->
+<img src="xxx" width="100%" style='padding-top: 10px'>  
 
-<!-- <a data-key="sly-embeded-video-link" href="https://youtu.be/aYVutH46-Y4" data-video-code="aYVutH46-Y4">
-    <img src="https://i.imgur.com/ChgrlXV.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:80%;">
-</a> -->
+**Step 3.** Choose the pretrained or custom object detection model
 
-# Screenshot
+<img src="xxx" width="100%" style='padding-top: 10px'>  
 
-<img src="xxx" width="100%" style='padding-top: 10px'>
+**Step 4.** Select the classes you want to train MMDetection on
+
+<img src="xxx" width="100%" style='padding-top: 10px'>  
+
+**Step 5.** Define the train/val splits
+
+<img src="xxx" width="100%" style='padding-top: 10px'>  
+
+**Step 6.** Choose either ready-to-use augmentation template or provide custom pipeline
+
+<img src="xxx" width="100%" style='padding-top: 10px'>  
+
+**Step 7.** Configure the training parameters
+
+<img src="xxx" width="100%" style='padding-top: 10px'>  
+
+**Step 8.** Click `Train` button and observe the training progress, metrics charts and visualizations 
+
+<img src="xxx" width="100%" style='padding-top: 10px'>  
 
 # Acknowledgment
 

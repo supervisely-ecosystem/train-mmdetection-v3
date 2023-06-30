@@ -15,6 +15,7 @@ from src import sly_utils
 from src.ui.hyperparameters import update_params_with_widgets
 from src.ui.augmentations import get_selected_aug
 from src.ui.graphics import add_classwise_metric, monitoring
+from src.main import app
 
 # register modules (don't remove):
 from src import sly_dataset, sly_hook, sly_imgaugs
@@ -176,7 +177,7 @@ def train():
     if sly.is_production():
         file_id = g.api.file.get_info_by_path(g.TEAM_ID, out_path + "/config.py").id
         g.api.task.set_output_directory(g.api.task_id, file_id, out_path)
-        g.api.task.stop(g.api.task_id)
+        app.stop()
 
 
 start_train_btn = Button("Train")

@@ -276,13 +276,15 @@ linear_scheduler.add_input(
     set_switch_value,
 )
 
-linear_start_factor_input = InputNumber(1./3., 1e-4, step=1e-4)
+linear_start_factor_input = InputNumber(0.333, 1e-4, step=1e-4)
 linear_start_factor_field = Field(
     linear_start_factor_input,
     "Start factor",
-    description=("The number we multiply learning rate in the "
-            "first epoch. The multiplication factor changes towards end_factor "
-            "in the following epochs")
+    description=(
+        "The number we multiply learning rate in the "
+        "first epoch. The multiplication factor changes towards end_factor "
+        "in the following epochs"
+    ),
 )
 linear_scheduler.add_input("start_factor", linear_start_factor_input, linear_start_factor_field)
 
@@ -291,8 +293,7 @@ linear_end_factor_input = InputNumber(1.0, 1e-4, step=1e-4)
 linear_end_factor_field = Field(
     linear_end_factor_input,
     "End factor",
-    description=("The number we multiply learning rate at the end "
-            "of linear changing process")
+    description=("The number we multiply learning rate at the end " "of linear changing process"),
 )
 linear_scheduler.add_input("end_factor", linear_end_factor_input, linear_end_factor_field)
 schedulers.append((repr(linear_scheduler), "Linear LR"))
@@ -308,7 +309,22 @@ poly_scheduler.add_input(
     set_switch_value,
 )
 
+poly_eta_input = InputNumber(0, 0, step=1e-6, size="small")
+poly_eta_field = Field(poly_eta_input, "Min LR", "Minimum learning rate at the end of scheduling")
+poly_scheduler.add_input(
+    "eta_min",
+    poly_eta_input,
+    poly_eta_field,
+)
 
+poly_power_input = InputNumber(1, 1e-3, step=1e-1, size="small")
+poly_power_field = Field(poly_power_input, "Power", "The power of the polynomial")
+poly_scheduler.add_input(
+    "power",
+    poly_power_input,
+    poly_power_field,
+)
+schedulers.append((repr(poly_scheduler), "Polynomial LR"))
 
 # OneCycleLR
 
@@ -354,6 +370,7 @@ schedulers_params = {
     repr(reduce_plateau_scheduler): reduce_plateau_scheduler,
     repr(cosinerestart_scheduler): cosinerestart_scheduler,
     repr(linear_scheduler): linear_scheduler,
+    repr(poly_scheduler): poly_scheduler,
 }
 
 select_scheduler = Select([Select.Item(val, label) for val, label in schedulers])
@@ -372,6 +389,7 @@ schedulres_tab = Container(
         cosineannealing_scheduler.create_container(hide=True),
         cosinerestart_scheduler.create_container(hide=True),
         linear_scheduler.create_container(hide=True),
+        poly_scheduler.create_container(hide=True),
         enable_warmup_field,
         warmup.create_container(),
     ]

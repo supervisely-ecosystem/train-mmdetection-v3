@@ -41,7 +41,7 @@ step_scheduler.add_input(
     wraped_widget=step_field,
 )
 
-step_gamma_input = InputNumber(0.1, 0, step=1e-5, size="medium")
+step_gamma_input = InputNumber(0.1, 0, step=1e-5, size="small")
 step_gamma_field = Field(step_gamma_input, "Gamma")
 step_scheduler.add_input("gamma", step_gamma_input, step_gamma_field)
 schedulers.append((repr(step_scheduler), "Step LR"))
@@ -80,7 +80,7 @@ multi_steps_scheduler.add_input(
     custom_value_setter=set_multisteps,
 )
 
-multi_steps_gamma_input = InputNumber(0.1, 0, step=1e-5, size="medium")
+multi_steps_gamma_input = InputNumber(0.1, 0, step=1e-5, size="small")
 multi_steps_gamma_field = Field(multi_steps_gamma_input, "Gamma")
 multi_steps_scheduler.add_input("gamma", multi_steps_gamma_input, multi_steps_gamma_field)
 schedulers.append((repr(multi_steps_scheduler), "Multistep LR"))
@@ -95,7 +95,7 @@ exp_scheduler.add_input(
     set_switch_value,
 )
 
-exp_gamma_input = InputNumber(0.1, 0, step=1e-5, size="medium")
+exp_gamma_input = InputNumber(0.1, 0, step=1e-5, size="small")
 exp_gamma_field = Field(exp_gamma_input, "Gamma")
 exp_scheduler.add_input("gamma", exp_gamma_input, exp_gamma_field)
 schedulers.append((repr(exp_scheduler), "Exponential LR"))
@@ -111,7 +111,7 @@ reduce_plateau_scheduler.add_input(
     set_switch_value,
 )
 
-reduce_plateau_factor_input = InputNumber(0.1, 0, step=1e-5, size="medium")
+reduce_plateau_factor_input = InputNumber(0.1, 0, step=1e-5, size="small")
 reduce_plateau_factor_field = Field(
     reduce_plateau_factor_input,
     "Factor",
@@ -123,7 +123,7 @@ reduce_plateau_scheduler.add_input(
     reduce_plateau_factor_field,
 )
 
-reduce_plateau_patience_input = InputNumber(10, 2, step=1, size="medium")
+reduce_plateau_patience_input = InputNumber(10, 2, step=1, size="small")
 reduce_plateau_patience_field = Field(
     reduce_plateau_patience_input,
     "Patience",
@@ -138,7 +138,6 @@ reduce_plateau_scheduler.add_input(
 schedulers.append((repr(reduce_plateau_scheduler), "ReduceOnPlateau LR"))
 
 # CosineAnnealingLR
-
 cosineannealing_scheduler = OrderedWidgetWrapper("CosineAnnealingLR")
 cosineannealing_scheduler.add_input(
     "by_epoch",
@@ -149,7 +148,7 @@ cosineannealing_scheduler.add_input(
 )
 
 # TODO: нужен ли Tmax и если да, то какое дефолтное значение
-cosineannealing_tmax_input = InputNumber(1, 1, step=1, size="medium")
+cosineannealing_tmax_input = InputNumber(1, 1, step=1, size="small")
 cosineannealing_tmax_field = Field(
     cosineannealing_tmax_input,
     "T max",
@@ -161,50 +160,116 @@ cosineannealing_scheduler.add_input(
     cosineannealing_tmax_field,
 )
 
-cosineannealing_etamin_switch_input = Switch(True)
-cosineannealing_etamin_input = InputNumber(0, 0, step=1e-6, size="medium")
-cosineannealing_etamin_field = Field(
-    Container([cosineannealing_etamin_switch_input, cosineannealing_etamin_input]),
+etamin_switch_input = Switch(True)
+etamin_input = InputNumber(0, 0, step=1e-6, size="small")
+etamin_field = Field(
+    Container([etamin_switch_input, etamin_input]),
     "Min LR",
     "Minimum learning rate",
 )
 
-cosineannealing_etamin_ratio_input = InputNumber(0, 0, step=1e-6, size="medium")
-cosineannealing_etamin_ratio_field = Field(
-    cosineannealing_etamin_ratio_input,
+etamin_ratio_input = InputNumber(0, 0, step=1e-6, size="small")
+etamin_ratio_input.disable()
+etamin_ratio_field = Field(
+    etamin_ratio_input,
     "Min LR Ratio",
     "The ratio of the minimum parameter value to the base parameter value",
 )
 
 cosineannealing_scheduler.add_input(
     "eta_min",
-    cosineannealing_etamin_input,
-    cosineannealing_etamin_field,
+    etamin_input,
+    etamin_field,
     custom_value_getter=create_linked_getter(
-        cosineannealing_etamin_input,
-        cosineannealing_etamin_ratio_input,
-        cosineannealing_etamin_switch_input,
+        etamin_input,
+        etamin_ratio_input,
+        etamin_switch_input,
         True,
     ),
 )
 
 cosineannealing_scheduler.add_input(
     "eta_min_ratio",
-    cosineannealing_etamin_ratio_input,
-    cosineannealing_etamin_ratio_field,
+    etamin_ratio_input,
+    etamin_ratio_field,
     custom_value_getter=create_linked_getter(
-        cosineannealing_etamin_input,
-        cosineannealing_etamin_ratio_input,
-        cosineannealing_etamin_switch_input,
+        etamin_input,
+        etamin_ratio_input,
+        etamin_switch_input,
         False,
     ),
 )
 schedulers.append((repr(cosineannealing_scheduler), "Cosine Annealing LR"))
 
+
+# CosineRestartLR
+cosinerestart_scheduler = OrderedWidgetWrapper("CosineRestartLR")
+cosinerestart_scheduler.add_input(
+    "by_epoch",
+    by_epoch_input,
+    by_epoch_field,
+    get_switch_value,
+    set_switch_value,
+)
+
+cosinerestart_preiods_input = Input("1")
+cosinerestart_preiods_field = Field(
+    cosinerestart_preiods_input,
+    "Periods",
+    "Periods for each cosine anneling cycle. Many int step values splitted by comma",
+)
+cosinerestart_scheduler.add_input(
+    "periods",
+    cosinerestart_preiods_input,
+    wraped_widget=cosinerestart_preiods_field,
+    custom_value_getter=get_multisteps,
+    custom_value_setter=set_multisteps,
+)
+
+cosinerestart_restart_weights_input = Input("1")
+cosinerestart_restart_weights_field = Field(
+    cosinerestart_preiods_input,
+    "Restart weights",
+    "Periods for each cosine anneling cycle. Many int step values splitted by comma",
+)
+
+cosinerestart_scheduler.add_input(
+    "restart_weights",
+    cosinerestart_restart_weights_input,
+    wraped_widget=cosinerestart_restart_weights_field,
+    custom_value_getter=get_multisteps,
+    custom_value_setter=set_multisteps,
+)
+
+cosinerestart_scheduler.add_input(
+    "eta_min",
+    etamin_input,
+    etamin_field,
+    custom_value_getter=create_linked_getter(
+        etamin_input,
+        etamin_ratio_input,
+        etamin_switch_input,
+        True,
+    ),
+)
+
+cosinerestart_scheduler.add_input(
+    "eta_min_ratio",
+    etamin_ratio_input,
+    etamin_ratio_field,
+    custom_value_getter=create_linked_getter(
+        etamin_input,
+        etamin_ratio_input,
+        etamin_switch_input,
+        False,
+    ),
+)
+schedulers.append((repr(cosinerestart_scheduler), "Cosine Restart LR"))
+
 # LinearLR
 # PolyLR
 # OneCycleLR
-# CosineRestartLR
+
 
 # warmup
 enable_warmup_input = Switch(True)
@@ -245,6 +310,7 @@ schedulers_params = {
     repr(exp_scheduler): exp_scheduler,
     repr(cosineannealing_scheduler): cosineannealing_scheduler,
     repr(reduce_plateau_scheduler): reduce_plateau_scheduler,
+    repr(cosinerestart_scheduler): cosinerestart_scheduler,
 }
 
 select_scheduler = Select([Select.Item(val, label) for val, label in schedulers])
@@ -261,6 +327,7 @@ schedulres_tab = Container(
         exp_scheduler.create_container(hide=True),
         reduce_plateau_scheduler.create_container(hide=True),
         cosineannealing_scheduler.create_container(hide=True),
+        cosinerestart_scheduler.create_container(hide=True),
         enable_warmup_field,
         warmup.create_container(),
     ]

@@ -94,4 +94,4 @@ def download_project(progress_widget):
 
 
 def get_images_count():
-    return g.api.project.get_info_by_id(g.PROJECT_ID).items_count
+    return g.IMAGES_COUNT

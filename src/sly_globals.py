@@ -27,3 +27,5 @@ project_meta: sly.ProjectMeta = sly.ProjectMeta.from_json(api.project.get_meta(P
 
 COCO_MTERIC_KEYS = ["mAP", "mAP_50", "mAP_75"]
 MAX_CLASSES_TO_SHOW_CLASSWISE_METRIC = 10
+
+IMAGES_COUNT = api.project.get_info_by_id(PROJECT_ID).items_count

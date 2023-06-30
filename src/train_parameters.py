@@ -24,7 +24,7 @@ class TrainParameters:
         self.num_workers = min(4, multiprocessing.cpu_count())
         self.load_from: bool = True  # load weights to continue training (path or url in config)
         self.log_interval = 50  # for text logger
-        self.chart_update_interval = 5
+        self.chart_update_interval = 1
         self.filter_images_without_gt = True
         self.experiment_name = None
         self.add_classwise_metric = True
@@ -210,7 +210,11 @@ class TrainParameters:
         cfg.param_scheduler = []
         if self.warmup_steps:
             warmup = dict(
-                type="LinearLR", start_factor=0.001, by_epoch=False, begin=0, end=self.warmup_steps
+                type="LinearLR",
+                start_factor=self.warmup_ratio,
+                by_epoch=False,
+                begin=0,
+                end=self.warmup_steps,
             )
             cfg.param_scheduler.append(warmup)
         if self.scheduler:

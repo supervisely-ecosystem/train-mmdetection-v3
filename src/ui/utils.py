@@ -2,7 +2,7 @@ import torch
 from collections import OrderedDict
 from typing import Callable, Dict, Any, List, Optional
 from supervisely.app import DataJson
-from supervisely.app.widgets import Button, Widget, Container, Switch, Card
+from supervisely.app.widgets import Button, Widget, Container, Switch, Card, InputNumber
 
 
 select_params = {"icon": None, "plain": False, "text": "Select"}
@@ -186,3 +186,39 @@ def get_devices():
     device_names = cuda_names + ["cpu"]
     torch_devices = cuda_devices + ["cpu"]
     return device_names, torch_devices
+
+
+def create_linked_getter(
+    widget1: InputNumber,
+    widget2: InputNumber,
+    switcher: Switch,
+    get_first: bool = True,
+) -> Callable[[Widget], Any]:
+    """Return getter for widgets depends on switcher value.
+
+    :param widget1: first input
+    :type widget1: InputNumber
+    :param widget2: second input
+    :type widget2: InputNumber
+    :param switcher: switcher widget
+    :type switcher: Switch
+    :param get_first: if True return getter for first widget, defaults to True
+    :type get_first: bool, optional
+    :return: getter function
+    :rtype: Callable[[InputNumber], Any]
+    """
+
+    def getter(any_widget: InputNumber):
+        widget1_val = widget1.value
+        widget2_val = widget2.value
+
+        if switcher.is_switched():
+            widget1_val = None
+        else:
+            widget2_val = None
+
+        if get_first:
+            return widget1_val
+        return widget2_val
+
+    return getter

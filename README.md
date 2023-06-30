@@ -33,7 +33,7 @@ Application key points:
 - Monitor Metric charts
 - Save training artifacts to Team Files
 
-**Supported MMDetection models [(model zoo)](https://github.com/open-mmlab/mmdetection/blob/master/docs/en/model_zoo.md):**
+**The app only supports the models in Object Detection and Instance Segmentation tasks [(origianl model zoo)](https://github.com/open-mmlab/mmdetection/blob/master/docs/en/model_zoo.md):**
 
 <div align="center">
   <b>Architectures</b>
@@ -46,12 +46,6 @@ Application key points:
       </td>
       <td>
         <b>Instance Segmentation</b>
-      </td>
-      <td>
-        <b>Panoptic Segmentation</b>
-      </td>
-      <td>
-        <b>Other</b>
       </td>
     </tr>
     <tr valign="top">
@@ -96,9 +90,11 @@ Application key points:
             <li><a href="configs/conditional_detr">Conditional DETR (ICCV'2021)</a></li>
             <li><a href="configs/dab_detr">DAB-DETR (ICLR'2022)</a></li>
             <li><a href="configs/dino">DINO (ICLR'2023)</a></li>
-            <li><a href="projects/DiffusionDet">DiffusionDet (ArXiv'2023)</a></li>
-            <li><a href="projects/EfficientDet">EfficientDet (CVPR'2020)</a></li>
-            <li><a href="projects/Detic">Detic (ECCV'2022)</a></li>
+      </ul>
+      <ul>
+          <b>Distillation</b>
+          <li><a href="configs/ld">Localization Distillation (CVPR'2022)</a></li>
+          <li><a href="configs/lad">Label Assignment Distillation (WACV'2022)</a></li>
       </ul>
       </td>
       <td>
@@ -121,39 +117,6 @@ Application key points:
           <li><a href="configs/rtmdet">RTMDet (ArXiv'2022)</a></li>
           <li><a href="configs/boxinst">BoxInst (CVPR'2021)</a></li>
         </ul>
-      </td>
-      <td>
-        <ul>
-          <li><a href="configs/panoptic_fpn">Panoptic FPN (CVPR'2019)</a></li>
-          <li><a href="configs/maskformer">MaskFormer (NeurIPS'2021)</a></li>
-          <li><a href="configs/mask2former">Mask2Former (ArXiv'2021)</a></li>
-        </ul>
-      </td>
-      <td>
-        </ul>
-          <li><b>Contrastive Learning</b></li>
-        <ul>
-        <ul>
-          <li><a href="configs/selfsup_pretrain">SwAV (NeurIPS'2020)</a></li>
-          <li><a href="configs/selfsup_pretrain">MoCo (CVPR'2020)</a></li>
-          <li><a href="configs/selfsup_pretrain">MoCov2 (ArXiv'2020)</a></li>
-        </ul>
-        </ul>
-        </ul>
-          <li><b>Distillation</b></li>
-        <ul>
-        <ul>
-          <li><a href="configs/ld">Localization Distillation (CVPR'2022)</a></li>
-          <li><a href="configs/lad">Label Assignment Distillation (WACV'2022)</a></li>
-        </ul>
-        </ul>
-          <li><b>Semi-Supervised Object Detection</b></li>
-        <ul>
-        <ul>
-          <li><a href="configs/soft_teacher">Soft Teacher (ICCV'2021)</a></li>
-        </ul>
-        </ul>
-      </ul>
       </td>
     </tr>
 </td>

@@ -20,7 +20,7 @@ class TrainParameters:
         self.val_interval = 1 if self.epoch_based_train else 1000
         self.batch_size_train = 2
         self.batch_size_val = 1
-        self.input_size = (1333, 800)
+        self.input_size = (1000, 600)
         self.num_workers = min(4, multiprocessing.cpu_count())
         self.load_from: bool = True  # load weights to continue training (path or url in config)
         self.log_interval = 50  # for text logger

@@ -12,6 +12,7 @@ TEAM_ID = sly.env.team_id()
 
 api: sly.Api = sly.Api.from_env()
 app_dir = sly.app.get_data_dir()
+app: sly.Application = None
 
 
 stop_training = False

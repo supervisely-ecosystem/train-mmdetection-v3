@@ -1,4 +1,4 @@
-import src.sly_globals
+import src.sly_globals as g
 import supervisely as sly
 from supervisely.app.widgets import Container, Button
 
@@ -27,5 +27,6 @@ widgets = [
 layout = Container(widgets=widgets)
 app = sly.Application(layout=layout)
 
+g.app = app
 
 # 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣ 7️⃣ 8️⃣ 9️⃣ 🔟

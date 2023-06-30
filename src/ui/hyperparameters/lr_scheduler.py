@@ -267,7 +267,49 @@ cosinerestart_scheduler.add_input(
 schedulers.append((repr(cosinerestart_scheduler), "Cosine Restart LR"))
 
 # LinearLR
+linear_scheduler = OrderedWidgetWrapper("LinearLR")
+linear_scheduler.add_input(
+    "by_epoch",
+    by_epoch_input,
+    by_epoch_field,
+    get_switch_value,
+    set_switch_value,
+)
+
+linear_start_factor_input = InputNumber(1./3., 1e-4, step=1e-4)
+linear_start_factor_field = Field(
+    linear_start_factor_input,
+    "Start factor",
+    description=("The number we multiply learning rate in the "
+            "first epoch. The multiplication factor changes towards end_factor "
+            "in the following epochs")
+)
+linear_scheduler.add_input("start_factor", linear_start_factor_input, linear_start_factor_field)
+
+
+linear_end_factor_input = InputNumber(1.0, 1e-4, step=1e-4)
+linear_end_factor_field = Field(
+    linear_end_factor_input,
+    "End factor",
+    description=("The number we multiply learning rate at the end "
+            "of linear changing process")
+)
+linear_scheduler.add_input("end_factor", linear_end_factor_input, linear_end_factor_field)
+schedulers.append((repr(linear_scheduler), "Linear LR"))
+
 # PolyLR
+
+poly_scheduler = OrderedWidgetWrapper("PolyLR")
+poly_scheduler.add_input(
+    "by_epoch",
+    by_epoch_input,
+    by_epoch_field,
+    get_switch_value,
+    set_switch_value,
+)
+
+
+
 # OneCycleLR
 
 
@@ -311,6 +353,7 @@ schedulers_params = {
     repr(cosineannealing_scheduler): cosineannealing_scheduler,
     repr(reduce_plateau_scheduler): reduce_plateau_scheduler,
     repr(cosinerestart_scheduler): cosinerestart_scheduler,
+    repr(linear_scheduler): linear_scheduler,
 }
 
 select_scheduler = Select([Select.Item(val, label) for val, label in schedulers])
@@ -328,6 +371,7 @@ schedulres_tab = Container(
         reduce_plateau_scheduler.create_container(hide=True),
         cosineannealing_scheduler.create_container(hide=True),
         cosinerestart_scheduler.create_container(hide=True),
+        linear_scheduler.create_container(hide=True),
         enable_warmup_field,
         warmup.create_container(),
     ]

@@ -1,4 +1,4 @@
-FROM supervisely/base-py-sdk:6.69.70
+FROM supervisely/base-py-sdk:6.72.52
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y build-essential
@@ -8,4 +8,7 @@ RUN pip3 install torch==2.0.1 torchvision==0.15.2
 RUN pip3 install openmim==0.3.7
 RUN mim install mmengine==0.7.4 mmcv==2.0.0
 
-RUN pip3 install supervisely==6.72.32
+# mmdet
+RUN mim install mmdet==3.0.0 "mmcls>=1.0.0rc0"
+
+RUN pip3 install -U supervisely==6.72.53

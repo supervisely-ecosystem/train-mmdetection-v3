@@ -29,6 +29,7 @@ class SuperviselyHook(Hook):
             self.task = "bbox"
 
     def before_train(self, runner: Runner) -> None:
+        train_ui.epoch_progress.show()
         self.epoch_progress = train_ui.epoch_progress(message="Epochs", total=runner.max_epochs)
         self.iter_progress = train_ui.iter_progress(
             message="Iterations", total=len(runner.train_dataloader)
@@ -63,6 +64,9 @@ class SuperviselyHook(Hook):
         )
 
     def after_val_epoch(self, runner: Runner, metrics: Dict[str, float] = None) -> None:
+        if not metrics:
+            return
+
         # Add mAP metrics
         metric_keys = [f"coco/{self.task}_{metric}" for metric in g.COCO_MTERIC_KEYS]
         for metric_key, metric_name in zip(metric_keys, g.COCO_MTERIC_KEYS):

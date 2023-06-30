@@ -1,5 +1,54 @@
 [
   {
+    "model_name" : "DINO",
+    "yml_file" : "dino/metafile.yml",
+    "paper_from": "ICLR",
+    "year": 2022
+  },
+  {
+    "model_name" : "DAB-DETR",
+    "yml_file" : "dab_detr/metafile.yml",
+    "paper_from": "ICLR",
+    "year": 2022
+  },
+  {
+    "model_name" : "RTMDet",
+    "yml_file" : "rtmdet/metafile.yml",
+    "paper_from": "ArXiv",
+    "year": 2022,
+    "exclude": "rtmdet-ins*"
+  },
+  {
+    "model_name" : "PVT: Pyramid Vision Transformer",
+    "yml_file" : "pvt/metafile.yml",
+    "paper_from": "ICCV",
+    "year": 2021
+  },
+  {
+    "model_name" : "DyHead",
+    "yml_file" : "dyhead/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2021
+  },
+  {
+    "model_name" : "LAD: Label Assignment Distillation",
+    "yml_file" : "lad/metafile.yml",
+    "paper_from": "WACV",
+    "year": 2021
+  },
+  {
+    "model_name" : "LD: Localization Distillation",
+    "yml_file" : "ld/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2021
+  },
+  {
+    "model_name" : "CrowdDet",
+    "yml_file" : "crowddet/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2021
+  },
+  {
     "model_name" : "TOOD",
     "yml_file" : "tood/metafile.yml",
     "paper_from": "ICCV",
@@ -58,7 +107,7 @@
     "yml_file" : "sabl/metafile.yml",
     "paper_from": "ECCV",
     "year": 2020,
-    "exclude": "sabl_cascade*"
+    "exclude": "sabl-cascade*"
   },
   {
     "model_name" : "AutoAssign",
@@ -137,7 +186,7 @@
     "yml_file" : "guided_anchoring/metafile.yml",
     "paper_from": "CVPR",
     "year": 2019,
-    "exclude": "ga_rpn*"
+    "exclude": "ga-rpn*"
   },
   {
     "model_name" : "Grid R-CNN",
@@ -162,7 +211,7 @@
     "yml_file" : "cascade_rcnn/metafile.yml",
     "paper_from": "CVPR",
     "year": 2018,
-    "exclude": "cascade_mask*"
+    "exclude": "cascade-mask*"
   },
   {
     "model_name" : "RetinaNet",

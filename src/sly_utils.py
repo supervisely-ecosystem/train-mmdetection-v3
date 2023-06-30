@@ -86,8 +86,12 @@ def download_project(progress_widget):
     if sly.fs.dir_exists(project_dir):
         sly.fs.remove_dir(project_dir)
 
-    n = g.api.project.get_info_by_id(g.PROJECT_ID).items_count
+    n = get_images_count()
     with progress_widget(message="Downloading project...", total=n) as pbar:
         sly.Project.download(g.api, g.PROJECT_ID, project_dir, progress_cb=pbar.update)
 
     return project_dir
+
+
+def get_images_count():
+    return g.api.project.get_info_by_id(g.PROJECT_ID).items_count

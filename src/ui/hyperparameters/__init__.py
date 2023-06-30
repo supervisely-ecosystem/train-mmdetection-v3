@@ -37,25 +37,11 @@ card = Card(
 card.lock()
 
 
-# def reset_widgets():
-#     card.lock("Select a model to unlock.")
-
-
 def update_widgets_with_params(params: TrainParameters):
     general.update_general_widgets_with_params(params)
     checkpoints.update_checkpoint_widgets_with_params(params)
     optimizers.update_optimizer_widgets_with_params(params)
     lr_scheduler.update_scheduler_widgets_with_params(params)
-
-    if params.load_from:
-        models.load_from.on()
-    else:
-        models.load_from.off()
-
-    if params.filter_images_without_gt:
-        classes.filter_images_without_gt_input.on()
-    else:
-        classes.filter_images_without_gt_input.off()
 
 
 def update_params_with_widgets(params: TrainParameters):
@@ -65,6 +51,3 @@ def update_params_with_widgets(params: TrainParameters):
     lr_scheduler.update_scheduler_params_with_widgets(params)
     params.load_from = models.load_from.is_switched()
     params.filter_images_without_gt = classes.filter_images_without_gt_input.is_switched()
-
-
-# reset_widgets()

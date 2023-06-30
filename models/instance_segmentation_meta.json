@@ -1,5 +1,37 @@
 [
   {
+    "model_name" : "ConvNeXt",
+    "yml_file" : "convnext/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2022
+  },
+  {
+    "model_name" : "RTMDet",
+    "yml_file" : "rtmdet/metafile.yml",
+    "paper_from": "ArXiv",
+    "year": 2022,
+    "exclude": "rtmdet_*"
+  },
+  {
+    "model_name" : "Swin Transformer",
+    "yml_file" : "swin/metafile.yml",
+    "paper_from": "ICCV",
+    "year": 2021
+  },
+  {
+    "model_name" : "Mask2Former",
+    "yml_file" : "mask2former/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2021,
+    "exclude": "*-panoptic"
+  },
+  {
+    "model_name" : "BoxInst",
+    "yml_file" : "boxinst/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2021
+  },
+  {
     "model_name" : "QueryInst",
     "yml_file" : "queryinst/metafile.yml",
     "paper_from": "ICCV",
@@ -61,7 +93,7 @@
     "yml_file" : "cascade_rcnn/metafile.yml",
     "paper_from": "CVPR",
     "year": 2018,
-    "exclude": "cascade_rcnn*"
+    "exclude": "cascade-rcnn*"
   },
   {
     "model_name" : "Mask R-CNN",

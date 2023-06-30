@@ -15,6 +15,7 @@ from src import sly_utils
 from src.ui.hyperparameters import update_params_with_widgets
 from src.ui.augmentations import get_selected_aug
 from src.ui.graphics import add_classwise_metric, monitoring
+from src.main import app
 
 # register modules (don't remove):
 from src import sly_dataset, sly_hook, sly_imgaugs
@@ -101,6 +102,7 @@ def train():
     dump_train_val_splits(project_dir)
 
     # prepare model files
+    iter_progress(message="Preparing the model...", total=1)
     config_path, weights_path_or_url = prepare_model()
 
     # create config
@@ -117,7 +119,12 @@ def train():
     # params.save_best = False
     # params.val_interval = 1
     # params.num_workers = 0
-    # params.input_size = (400, 300)
+    # params.input_size = (409, 640)
+    # from mmengine.visualization import Visualizer
+    # from mmdet.visualization import DetLocalVisualizer
+
+    # Visualizer._instance_dict.clear()
+    # DetLocalVisualizer._instance_dict.clear()
     ###
 
     # create config from params
@@ -147,6 +154,8 @@ def train():
     # TODO: debug
     # train_cfg.dump("debug_config.py")
 
+    iter_progress(message="Preparing the model...", total=1)
+
     # Its grace, the Runner!
     runner = RUNNERS.build(train_cfg)
     try:
@@ -168,7 +177,7 @@ def train():
     if sly.is_production():
         file_id = g.api.file.get_info_by_path(g.TEAM_ID, out_path + "/config.py").id
         g.api.task.set_output_directory(g.api.task_id, file_id, out_path)
-        g.api.task.stop(g.api.task_id)
+        app.stop()
 
 
 start_train_btn = Button("Train")
@@ -178,7 +187,7 @@ stop_train_btn.disable()
 epoch_progress = Progress("Epochs")
 epoch_progress.hide()
 
-iter_progress = Progress("Iterations")
+iter_progress = Progress("Iterations", hide_on_finish=False)
 iter_progress.hide()
 
 btn_container = Container(
@@ -209,9 +218,10 @@ card.lock()
 
 @start_train_btn.click
 def start_train():
+    g.stop_training = False
     monitoring.container.show()
     stop_train_btn.enable()
-    epoch_progress.show()
+    # epoch_progress.show()
     iter_progress.show()
     train()
 

@@ -267,7 +267,7 @@ Application key points:
 
 **Step 8.** Click `Train` button and observe the training progress, metrics charts and visualizations 
 
-<img src="https://github.com/supervisely-ecosystem/train-mmdetection-v3/assets/115161827/b6b890d4-ae85-4d15-9a02-7fd43f017abd" width="100%" style='padding-top: 10px'>  
+<img src="https://github.com/supervisely-ecosystem/train-mmdetection-v3/assets/115161827/6354d252-a1ee-4046-9d66-1881ad64c17f" width="100%" style='padding-top: 10px'>  
 
 # Acknowledgment
 

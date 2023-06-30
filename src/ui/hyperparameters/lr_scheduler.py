@@ -10,7 +10,12 @@ from supervisely.app.widgets import (
     Switch,
 )
 
-from src.ui.utils import OrderedWidgetWrapper, set_switch_value, get_switch_value
+from src.ui.utils import (
+    OrderedWidgetWrapper,
+    set_switch_value,
+    get_switch_value,
+    create_linked_getter,
+)
 from src.train_parameters import TrainParameters
 
 schedulers = [("empty", "Without scheduler")]
@@ -122,7 +127,7 @@ reduce_plateau_patience_input = InputNumber(10, 2, step=1, size="medium")
 reduce_plateau_patience_field = Field(
     reduce_plateau_patience_input,
     "Patience",
-    "Number of epochs with no improvement after which learning rate will be reduced.",
+    "Number of epochs with no improvement after which learning rate will be reduced",
 )
 reduce_plateau_scheduler.add_input(
     "patience",
@@ -132,6 +137,74 @@ reduce_plateau_scheduler.add_input(
 
 schedulers.append((repr(reduce_plateau_scheduler), "ReduceOnPlateau LR"))
 
+# CosineAnnealingLR
+
+cosineannealing_scheduler = OrderedWidgetWrapper("CosineAnnealingLR")
+cosineannealing_scheduler.add_input(
+    "by_epoch",
+    by_epoch_input,
+    by_epoch_field,
+    get_switch_value,
+    set_switch_value,
+)
+
+# TODO: нужен ли Tmax и если да, то какое дефолтное значение
+cosineannealing_tmax_input = InputNumber(1, 1, step=1, size="medium")
+cosineannealing_tmax_field = Field(
+    cosineannealing_tmax_input,
+    "T max",
+    "Maximum number of iterations",
+)
+cosineannealing_scheduler.add_input(
+    "T_max",
+    cosineannealing_tmax_input,
+    cosineannealing_tmax_field,
+)
+
+cosineannealing_etamin_switch_input = Switch(True)
+cosineannealing_etamin_input = InputNumber(0, 0, step=1e-6, size="medium")
+cosineannealing_etamin_field = Field(
+    Container([cosineannealing_etamin_switch_input, cosineannealing_etamin_input]),
+    "Min LR",
+    "Minimum learning rate",
+)
+
+cosineannealing_etamin_ratio_input = InputNumber(0, 0, step=1e-6, size="medium")
+cosineannealing_etamin_ratio_field = Field(
+    cosineannealing_etamin_ratio_input,
+    "Min LR Ratio",
+    "The ratio of the minimum parameter value to the base parameter value",
+)
+
+cosineannealing_scheduler.add_input(
+    "eta_min",
+    cosineannealing_etamin_input,
+    cosineannealing_etamin_field,
+    custom_value_getter=create_linked_getter(
+        cosineannealing_etamin_input,
+        cosineannealing_etamin_ratio_input,
+        cosineannealing_etamin_switch_input,
+        True,
+    ),
+)
+
+cosineannealing_scheduler.add_input(
+    "eta_min_ratio",
+    cosineannealing_etamin_ratio_input,
+    cosineannealing_etamin_ratio_field,
+    custom_value_getter=create_linked_getter(
+        cosineannealing_etamin_input,
+        cosineannealing_etamin_ratio_input,
+        cosineannealing_etamin_switch_input,
+        False,
+    ),
+)
+schedulers.append((repr(cosineannealing_scheduler), "Cosine Annealing LR"))
+
+# LinearLR
+# PolyLR
+# OneCycleLR
+# CosineRestartLR
 
 # warmup
 enable_warmup_input = Switch(True)
@@ -170,6 +243,8 @@ schedulers_params = {
     repr(step_scheduler): step_scheduler,
     repr(multi_steps_scheduler): multi_steps_scheduler,
     repr(exp_scheduler): exp_scheduler,
+    repr(cosineannealing_scheduler): cosineannealing_scheduler,
+    repr(reduce_plateau_scheduler): reduce_plateau_scheduler,
 }
 
 select_scheduler = Select([Select.Item(val, label) for val, label in schedulers])
@@ -185,6 +260,7 @@ schedulres_tab = Container(
         multi_steps_scheduler.create_container(hide=True),
         exp_scheduler.create_container(hide=True),
         reduce_plateau_scheduler.create_container(hide=True),
+        cosineannealing_scheduler.create_container(hide=True),
         enable_warmup_field,
         warmup.create_container(),
     ]

@@ -31,10 +31,9 @@ from src.ui.hyperparameters.lr_scheduler import (
     get_scheduler_params,
     enable_warmup_input,
     warmup,
-    cosineannealing_etamin_switch_input,
-    cosineannealing_etamin_input,
-    cosineannealing_etamin_ratio_input,
-    cosineannealing_scheduler,
+    etamin_switch_input,
+    etamin_input,
+    etamin_ratio_input,
 )
 
 
@@ -119,11 +118,11 @@ def on_checkpoint_save_limit_switch(is_switched):
         checkpoint_save_count_input.hide()
 
 
-@cosineannealing_etamin_switch_input.value_changed
+@etamin_switch_input.value_changed
 def etamin_or_ratio_switch(new_value):
     if new_value:
-        cosineannealing_etamin_input.enable()
-        cosineannealing_etamin_ratio_input.disable()
+        etamin_input.enable()
+        etamin_ratio_input.disable()
     else:
-        cosineannealing_etamin_input.disable()
-        cosineannealing_etamin_ratio_input.enable()
+        etamin_input.disable()
+        etamin_ratio_input.enable()

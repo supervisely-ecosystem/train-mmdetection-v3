@@ -1,3 +1,4 @@
+import numpy as np
 from typing import List
 from supervisely.app.widgets import Widget
 
@@ -34,7 +35,15 @@ from src.ui.hyperparameters.lr_scheduler import (
     etamin_switch_input,
     etamin_input,
     etamin_ratio_input,
+    preview_btn,
+    preview_chart,
+    clear_btn,
 )
+
+from src.train_parameters import TrainParameters
+from src import visualize_scheduler
+from src.sly_utils import get_images_count
+from src.ui.hyperparameters import update_params_with_widgets
 
 
 def show_hide_fields(fields: List[Widget], hide: bool = True):
@@ -126,3 +135,25 @@ def etamin_or_ratio_switch(new_value):
     else:
         etamin_input.disable()
         etamin_ratio_input.enable()
+
+
+@preview_btn.click
+def on_preivew_scheduler():
+    test_params = TrainParameters()
+    update_params_with_widgets(test_params)
+    param_scheduler = visualize_scheduler.get_param_scheduler(test_params)
+
+    total_epochs = test_params.total_epochs
+    batch_size = test_params.batch_size_train
+    start_lr = test_params.optimizer["lr"]
+
+    x, lrs = visualize_scheduler.test_schedulers(
+        param_scheduler, start_lr, int(np.ceil(get_images_count() / batch_size)), total_epochs
+    )
+    preview_chart.add_series(f"scheduler {len(preview_chart._series)}", x, lrs)
+    preview_chart.show()
+
+
+@clear_btn.click
+def on_clear_preview():
+    preview_chart.set_series([])

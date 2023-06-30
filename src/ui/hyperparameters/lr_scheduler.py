@@ -8,6 +8,8 @@ from supervisely.app.widgets import (
     Empty,
     SelectString,
     Switch,
+    LineChart,
+    Button,
 )
 
 from src.ui.utils import (
@@ -379,6 +381,13 @@ select_scheduler_field = Field(
     title="Select scheduler",
 )
 
+preview_chart = LineChart(
+    "Scheduler preview", stroke_curve="straight", height=400, decimalsInFloat=6, markers_size=0
+)
+preview_chart.hide()
+preview_btn = Button("Preview", button_size="small")
+clear_btn = Button("Clear", button_size="small", plain=True)
+
 schedulres_tab = Container(
     [
         select_scheduler_field,
@@ -392,6 +401,8 @@ schedulres_tab = Container(
         poly_scheduler.create_container(hide=True),
         enable_warmup_field,
         warmup.create_container(),
+        preview_chart,
+        Container([preview_btn, clear_btn, Empty()], "horizontal", 0, fractions=[1, 1, 10]),
     ]
 )
 

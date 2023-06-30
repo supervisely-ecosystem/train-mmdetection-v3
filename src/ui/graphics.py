@@ -99,7 +99,7 @@ class Monitoring(object):
 
 train_stage = StageMonitoring("train", "Train")
 train_stage.create_metric("Loss", ["loss"])
-train_stage.create_metric("Learning Rate", ["lr"], decimals_in_float=5)
+train_stage.create_metric("Learning Rate", ["lr"], decimals_in_float=6)
 
 val_stage = StageMonitoring("val", "Validation")
 val_stage.create_metric("Metrics", g.COCO_MTERIC_KEYS)

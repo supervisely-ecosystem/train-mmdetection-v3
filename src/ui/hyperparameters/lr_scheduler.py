@@ -130,7 +130,7 @@ reduce_plateau_scheduler.add_input(
     reduce_plateau_patience_field,
 )
 
-reduce_plateau_scheduler.append((repr(reduce_plateau_scheduler), "Reduce On Plateau LR"))
+schedulers.append((repr(reduce_plateau_scheduler), "ReduceOnPlateau LR"))
 
 
 # warmup
@@ -184,6 +184,7 @@ schedulres_tab = Container(
         step_scheduler.create_container(hide=True),
         multi_steps_scheduler.create_container(hide=True),
         exp_scheduler.create_container(hide=True),
+        reduce_plateau_scheduler.create_container(hide=True),
         enable_warmup_field,
         warmup.create_container(),
     ]

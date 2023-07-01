@@ -391,19 +391,24 @@ clear_btn = Button("Clear", button_size="small", plain=True)
 schedulres_tab = Container(
     [
         select_scheduler_field,
-        step_scheduler.create_container(hide=True),
-        multi_steps_scheduler.create_container(hide=True),
-        exp_scheduler.create_container(hide=True),
-        reduce_plateau_scheduler.create_container(hide=True),
-        cosineannealing_scheduler.create_container(hide=True),
-        cosinerestart_scheduler.create_container(hide=True),
-        linear_scheduler.create_container(hide=True),
-        poly_scheduler.create_container(hide=True),
+        Container(
+            [
+                step_scheduler.create_container(hide=True),
+                multi_steps_scheduler.create_container(hide=True),
+                exp_scheduler.create_container(hide=True),
+                reduce_plateau_scheduler.create_container(hide=True),
+                cosineannealing_scheduler.create_container(hide=True),
+                cosinerestart_scheduler.create_container(hide=True),
+                linear_scheduler.create_container(hide=True),
+                poly_scheduler.create_container(hide=True),
+            ],
+            gap=0,
+        ),
         enable_warmup_field,
         warmup.create_container(),
         preview_chart,
         Container([preview_btn, clear_btn, Empty()], "horizontal", 0, fractions=[1, 1, 10]),
-    ]
+    ],
 )
 
 

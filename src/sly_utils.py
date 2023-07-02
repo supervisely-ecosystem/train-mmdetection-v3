@@ -99,3 +99,8 @@ def get_images_count():
 
 def save_augs_config(augs_config_path: str, work_dir: str):
     sly.fs.copy_file(augs_config_path, work_dir + "/augmentations.json")
+
+
+def save_open_app_lnk(work_dir: str):
+    with open(work_dir + "/open_app.lnk", "w") as f:
+        f.write(f"{g.api.server_address}/apps/sessions/{g.api.task_id}")

@@ -167,6 +167,8 @@ def train():
     # uploading checkpoints and data
     # TODO: params.experiment_name
     sly_utils.save_augs_config(params.augs_config_path, params.work_dir)
+    if g.api.task_id is not None:
+        sly_utils.save_open_app_lnk(params.work_dir)
     out_path = sly_utils.upload_artifacts(
         params.work_dir,
         params.experiment_name,

@@ -95,3 +95,7 @@ def download_project(progress_widget):
 
 def get_images_count():
     return g.IMAGES_COUNT
+
+
+def save_augs_config(augs_config_path: str, work_dir: str):
+    sly.fs.copy_file(augs_config_path, work_dir + "/augmentations.json")

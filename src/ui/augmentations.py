@@ -5,6 +5,7 @@ import supervisely as sly
 
 from src.ui.task import task_selector
 import src.sly_globals as g
+from src import sly_utils
 
 
 def format_task_name(task: str):
@@ -23,7 +24,7 @@ def name_from_path(aug_path):
 
 template_dir = "aug_templates"
 template_paths = list(map(str, Path(template_dir).glob("*.json")))
-template_paths = sorted(template_paths)[::-1]
+template_paths = sorted(template_paths, key=lambda x: x.replace(".", "_"))[::-1]
 
 templates = [{"label": name_from_path(path), "value": path} for path in template_paths]
 

@@ -12,11 +12,13 @@ import src.ui.hyperparameters as hyperparameters
 import src.ui.handlers
 import src.ui.train as train
 import src.ui.augmentations as augmentations
+import src.ui.model_leaderboard as model_leaderboard
 
 
 widgets = [
     input_project.card,
     task.card,
+    model_leaderboard.card,
     models.card,
     classes.card,
     train_val_split.card,

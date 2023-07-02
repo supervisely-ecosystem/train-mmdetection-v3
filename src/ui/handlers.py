@@ -14,6 +14,7 @@ from src.ui import augmentations
 import src.ui.train as train
 import src.ui.classes as classes_ui
 import src.ui.train_val_split as splits_ui
+from src.ui import model_leaderboard
 
 
 def model_select_button_state_change(without_click: bool = False):
@@ -40,6 +41,7 @@ def model_select_button_state_change(without_click: bool = False):
 def on_task_changed(selected_task):
     models.update_architecture(selected_task)
     augmentations.update_task(selected_task)
+    model_leaderboard.update_table(models.models_meta, selected_task)
 
 
 @select_btn.click
@@ -50,7 +52,11 @@ def select_task():
         lock_cards=[models.card],
     )
     model_select_button_state_change(True)
-    on_task_changed(task_selector.get_value())
+    if not select_btn._click_handled:
+        on_task_changed(task_selector.get_value())
+    else:
+        model_leaderboard.table.read_json(None)
+        model_leaderboard.table.sort(0)
 
 
 # MODELS

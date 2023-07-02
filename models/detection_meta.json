@@ -31,6 +31,12 @@
     "year": 2021
   },
   {
+    "model_name" : "DDOD",
+    "yml_file" : "ddod/metafile.yml",
+    "paper_from": "ArXiv",
+    "year": 2021
+  },
+  {
     "model_name" : "LAD: Label Assignment Distillation",
     "yml_file" : "lad/metafile.yml",
     "paper_from": "WACV",
@@ -95,6 +101,13 @@
     "yml_file" : "detr/metafile.yml",
     "paper_from": "ECCV",
     "year": 2020
+  },
+  {
+    "model_name" : "DetectoRS",
+    "yml_file" : "detectors/metafile.yml",
+    "paper_from": "CVPR",
+    "year": 2020,
+    "exclude": ["htc*", "detectors_htc*"]
   },
   {
     "model_name" : "Dynamic R-CNN",

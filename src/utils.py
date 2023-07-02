@@ -3,6 +3,29 @@ import yaml
 TASK_NAMES = ["Object Detection", "Instance Segmentation"]
 
 
+def is_exclude(name: str, exclude):
+    if isinstance(exclude, str):
+        if is_exclude_pattern(name, exclude):
+            return True
+    elif isinstance(exclude, list):
+        for e in exclude:
+            if is_exclude_pattern(name, e):
+                return True
+    return False
+
+
+def is_exclude_pattern(name: str, exclude: str):
+    if exclude.endswith("*"):
+        if name.startswith(exclude[:-1]):
+            return True
+    elif exclude.startswith("*"):
+        if name.endswith(exclude[1:]):
+            return True
+    else:
+        raise NotImplementedError(f"can't parse the exculde pattern: {exclude}")
+    return False
+
+
 def parse_yaml_metafile(yaml_file, exclude: str = None):
     with open(yaml_file, "r") as file:
         yaml_content = yaml.safe_load(file)
@@ -29,16 +52,9 @@ def parse_yaml_metafile(yaml_file, exclude: str = None):
     models = []
     for model in yaml_models:
         # skip by exclude regexp
-        if exclude:
-            name: str = model["Name"]
-            if exclude.endswith("*"):
-                if name.startswith(exclude[:-1]):
-                    continue
-            elif exclude.startswith("*"):
-                if name.endswith(exclude[1:]):
-                    continue
-            else:
-                raise NotImplementedError(f"can't parse the exculde pattern: {exclude}")
+        name: str = model["Name"]
+        if is_exclude(name, exclude):
+            continue
 
         tasks = [r["Task"] for r in model["Results"]]
         # skip if task not in TASK_NAMES

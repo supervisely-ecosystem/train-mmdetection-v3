@@ -38,6 +38,12 @@
     "year": 2021
   },
   {
+    "model_name" : "CondInst",
+    "yml_file" : "condinst/metafile.yml",
+    "paper_from": "ECCV",
+    "year": 2020
+  },
+  {
     "model_name" : "SCNet",
     "yml_file" : "scnet/metafile.yml",
     "paper_from": "AAAI",
@@ -47,9 +53,9 @@
   {
     "model_name" : "DetectoRS",
     "yml_file" : "detectors/metafile.yml",
-    "paper_from": "ArXiv",
+    "paper_from": "CVPR",
     "year": 2020,
-    "semantic": "*htc*"
+    "exclude": ["cascade*", "detectors_cascade*"]
   },
   {
     "model_name" : "PointRend",

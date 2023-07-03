@@ -103,8 +103,8 @@ def on_model_selected():
         ), "Missing some parameters in config. Please, check if your custom model was trained in mmdetection v3.0."
 
     params = TrainParameters.from_config(cfg)
-    if params.warmup_steps:
-        params.warmup_steps = sly_utils.get_images_count() // 2
+    if params.warmup_iters:
+        params.warmup_iters = sly_utils.get_images_count() // 2
     hyperparameters.update_widgets_with_params(params)
 
     # unlock cards

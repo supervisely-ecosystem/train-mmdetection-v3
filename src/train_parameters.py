@@ -43,8 +43,8 @@ class TrainParameters:
         self.clip_grad_norm = None
 
         # scheduler
-        self.warmup_strategy = "linear"
-        self.warmup_steps = 100  # by default it will be changed to 1 epoch
+        self.warmup = "linear"
+        self.warmup_iters = 100  # by default it will be changed to 1 epoch
         self.warmup_ratio = 0.001
         self.scheduler = None
 
@@ -208,18 +208,18 @@ class TrainParameters:
         # scheduler
         # from mmengine.optim.scheduler import ConstantLR, LinearLR
         cfg.param_scheduler = []
-        if self.warmup_steps:
+        if self.warmup_iters:
             warmup = dict(
                 type="LinearLR",
                 start_factor=self.warmup_ratio,
                 by_epoch=False,
                 begin=0,
-                end=self.warmup_steps,
+                end=self.warmup_iters,
             )
             cfg.param_scheduler.append(warmup)
         if self.scheduler:
             if self.scheduler["by_epoch"] is False:
-                self.scheduler["begin"] = self.warmup_steps
+                self.scheduler["begin"] = self.warmup_iters
             cfg.param_scheduler.append(self.scheduler)
 
         # TODO: loss. can we correctly change losses?

@@ -437,7 +437,7 @@ warmup = OrderedWidgetWrapper("warmup")
 warmup_selector = SelectString(warmup_strategy, warmup_strategy)
 warmup_strategy_field = Field(warmup_selector, "Warmup strategy")
 warmup.add_input(
-    "warmup_strategy",
+    "warmup",
     warmup_selector,
     warmup_strategy_field,
     custom_value_getter=lambda w: w.get_value(),
@@ -448,7 +448,7 @@ warmup_iterations = InputNumber(400, 0)
 warmup_iterations_field = Field(
     warmup_iterations, "Warmup iterations", "The number of iterations that warmup lasts"
 )
-warmup.add_input("warmup_steps", warmup_iterations, warmup_iterations_field)
+warmup.add_input("warmup_iters", warmup_iterations, warmup_iterations_field)
 
 warmup_ratio = InputNumber(0.001, step=1e-4)
 warmup_ratio_field = Field(
@@ -529,21 +529,21 @@ def update_scheduler_widgets_with_params(params: TrainParameters):
                 schedulers_params[name].set(param, value)
 
     # warmup
-    if params.warmup_steps:
+    if params.warmup_iters:
         enable_warmup_input.on()
     else:
         enable_warmup_input.off()
-    warmup.set("warmup_strategy", params.warmup_strategy)
-    warmup.set("warmup_steps", params.warmup_steps)
+    warmup.set("warmup", params.warmup)
+    warmup.set("warmup_iters", params.warmup_iters)
     warmup.set("warmup_ratio", params.warmup_ratio)
 
 
 def update_scheduler_params_with_widgets(params: TrainParameters) -> TrainParameters:
-    params.warmup_strategy = warmup.warmup_strategy
+    params.warmup = warmup.warmup
     if enable_warmup_input.is_switched():
-        params.warmup_steps = warmup.warmup_steps
+        params.warmup_iters = warmup.warmup_iters
     else:
-        params.warmup_steps = 0
+        params.warmup_iters = 0
     params.warmup_ratio = warmup.warmup_ratio
 
     name = select_scheduler.get_value()

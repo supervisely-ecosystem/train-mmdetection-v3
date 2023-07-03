@@ -57,17 +57,17 @@ def test_schedulers(schedulers_cfg: list, start_lr, dataloader_len, total_epochs
 
 def get_param_scheduler(params: TrainParameters):
     param_scheduler = []
-    if params.warmup_steps:
+    if params.warmup_iters:
         warmup = dict(
             type="LinearLR",
             start_factor=params.warmup_ratio,
             by_epoch=False,
             begin=0,
-            end=params.warmup_steps,
+            end=params.warmup_iters,
         )
         param_scheduler.append(warmup)
     if params.scheduler:
         if params.scheduler["by_epoch"] is False:
-            params.scheduler["begin"] = params.warmup_steps
+            params.scheduler["begin"] = params.warmup_iters
         param_scheduler.append(params.scheduler)
     return param_scheduler

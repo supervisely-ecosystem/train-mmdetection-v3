@@ -2,7 +2,7 @@ from random import randint
 import numpy as np
 from typing import Dict, Optional, List, Tuple, Union
 from collections import OrderedDict
-from supervisely.app.widgets import GridPlot, Button, Card, Container, Field, Slider, LinePlot
+from supervisely.app.widgets import GridPlot, Container, Field, Empty
 from supervisely.app.content import StateJson, DataJson
 
 import src.sly_globals as g
@@ -44,10 +44,19 @@ class StageMonitoring(object):
         new_series = [{"name": ser, "data": []} for ser in series]
         self._metrics[metric]["series"].extend(new_series)
 
-    def compile_grid_field(self) -> Tuple[Field, GridPlot]:
+    def compile_grid_field(
+        self, make_right_indent=True
+    ) -> Tuple[Union[Field, Container], GridPlot]:
         data = list(self._metrics.values())
         grid = GridPlot(data, columns=len(data))
         field = Field(grid, self._title, self._description)
+        if make_right_indent is True:
+            container = Container(
+                [field, Empty()],
+                direction="horizontal",
+                fractions=[len(data), 1],
+            )
+            return container, grid
         return field, grid
 
     @property
@@ -60,8 +69,8 @@ class Monitoring(object):
         self._stages = {}
         self.container = None
 
-    def add_stage(self, stage: StageMonitoring):
-        field, grid = stage.compile_grid_field()
+    def add_stage(self, stage: StageMonitoring, make_right_indent=True):
+        field, grid = stage.compile_grid_field(make_right_indent)
         self._stages[stage.name] = {}
         self._stages[stage.name]["compiled"] = field
         self._stages[stage.name]["raw"] = grid
@@ -112,8 +121,8 @@ def add_classwise_metric(selected_classes):
 
 
 monitoring = Monitoring()
-monitoring.add_stage(train_stage)
-monitoring.add_stage(val_stage)
+monitoring.add_stage(train_stage, True)
+monitoring.add_stage(val_stage, False)
 
 
 # add_btn = Button("add")

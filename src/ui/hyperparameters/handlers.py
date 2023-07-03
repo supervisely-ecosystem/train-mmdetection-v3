@@ -150,8 +150,18 @@ def on_preivew_scheduler():
     x, lrs = visualize_scheduler.test_schedulers(
         param_scheduler, start_lr, int(np.ceil(get_images_count() / batch_size)), total_epochs
     )
-    preview_chart.add_series(f"scheduler {len(preview_chart._series)}", x, lrs)
+    name = get_preview_name(param_scheduler)
+    preview_chart.add_series(f"{name}", x, lrs)
     preview_chart.show()
+
+
+def get_preview_name(param_scheduler: list):
+    name = ""
+    if len(param_scheduler) == 2:
+        # with warmup
+        name += "warmup + "
+    name += param_scheduler[-1]["type"]
+    return name
 
 
 @clear_btn.click

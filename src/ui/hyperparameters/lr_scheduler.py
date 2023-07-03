@@ -329,103 +329,103 @@ poly_scheduler.add_input(
 schedulers.append((repr(poly_scheduler), "Polynomial LR"))
 
 # OneCycleLR
-onecycle_scheduler = OrderedWidgetWrapper("OneCycleLR")
-onecycle_scheduler.add_input(
-    "by_epoch",
-    by_epoch_input,
-    by_epoch_field,
-    get_switch_value,
-    set_switch_value,
-)
+# onecycle_scheduler = OrderedWidgetWrapper("OneCycleLR")
+# onecycle_scheduler.add_input(
+#     "by_epoch",
+#     by_epoch_input,
+#     by_epoch_field,
+#     get_switch_value,
+#     set_switch_value,
+# )
 
-# TODO: теоретически этот параметр может быть списком. Надо ли?
-onecycle_eta_input = InputNumber(1, 0, step=1e-6, size="small")
-onecycle_eta_field = Field(
-    onecycle_eta_input, "Max LR", "Upper parameter value boundaries in the cycle"
-)
-onecycle_scheduler.add_input(
-    "eta_max",
-    onecycle_eta_input,
-    onecycle_eta_field,
-)
+# # TODO: теоретически этот параметр может быть списком. Надо ли?
+# onecycle_eta_input = InputNumber(1, 0, step=1e-6, size="small")
+# onecycle_eta_field = Field(
+#     onecycle_eta_input, "Max LR", "Upper parameter value boundaries in the cycle"
+# )
+# onecycle_scheduler.add_input(
+#     "eta_max",
+#     onecycle_eta_input,
+#     onecycle_eta_field,
+# )
 
-# TODO: определяется по формуле total_steps = epochs * steps_per_epoch или ручками;
-# может по умолчанию предпосчитать epochs * steps_per_epoch?
-onecycle_total_steps_input = InputNumber(100, 1, step=1, size="small")
-onecycle_total_steps_field = Field(
-    onecycle_total_steps_input, "Total steps", "The total number of steps in the cycle"
-)
-onecycle_scheduler.add_input(
-    "total_steps",
-    onecycle_total_steps_input,
-    onecycle_total_steps_field,
-)
+# # TODO: определяется по формуле total_steps = epochs * steps_per_epoch или ручками;
+# # может по умолчанию предпосчитать epochs * steps_per_epoch?
+# onecycle_total_steps_input = InputNumber(100, 1, step=1, size="small")
+# onecycle_total_steps_field = Field(
+#     onecycle_total_steps_input, "Total steps", "The total number of steps in the cycle"
+# )
+# onecycle_scheduler.add_input(
+#     "total_steps",
+#     onecycle_total_steps_input,
+#     onecycle_total_steps_field,
+# )
 
-onecycle_pct_start_input = InputNumber(0.3, 0, step=1e-4)
-onecycle_pct_start_field = Field(
-    onecycle_pct_start_input,
-    "Start percentage",
-    "The percentage of the cycle (in number of steps) spent increasing the learning rate.",
-)
-onecycle_scheduler.add_input(
-    "pct_start",
-    onecycle_pct_start_input,
-    onecycle_pct_start_field,
-)
+# onecycle_pct_start_input = InputNumber(0.3, 0, step=1e-4)
+# onecycle_pct_start_field = Field(
+#     onecycle_pct_start_input,
+#     "Start percentage",
+#     "The percentage of the cycle (in number of steps) spent increasing the learning rate.",
+# )
+# onecycle_scheduler.add_input(
+#     "pct_start",
+#     onecycle_pct_start_input,
+#     onecycle_pct_start_field,
+# )
 
-onecycle_anneal_strategy_input = SelectString(["cos", "linear"])
-onecycle_anneal_strategy_field = Field(onecycle_anneal_strategy_input, "Anneal strategy")
-onecycle_scheduler.add_input(
-    "anneal_strategy",
-    onecycle_anneal_strategy_input,
-    onecycle_anneal_strategy_field,
-    custom_value_getter=lambda w: w.get_value(),
-    custom_value_setter=lambda w, v: w.set_value(v),
-)
+# onecycle_anneal_strategy_input = SelectString(["cos", "linear"])
+# onecycle_anneal_strategy_field = Field(onecycle_anneal_strategy_input, "Anneal strategy")
+# onecycle_scheduler.add_input(
+#     "anneal_strategy",
+#     onecycle_anneal_strategy_input,
+#     onecycle_anneal_strategy_field,
+#     custom_value_getter=lambda w: w.get_value(),
+#     custom_value_setter=lambda w, v: w.set_value(v),
+# )
 
-onecycle_div_factor_input = InputNumber(25, 1e-4, step=1e-3)
-onecycle_div_factor_field = Field(
-    onecycle_div_factor_input,
-    "Div factor",
-    "Determines the initial learning rate via initial_param = max_lr/div_factor",
-)
-onecycle_scheduler.add_input(
-    "div_factor",
-    onecycle_div_factor_input,
-    onecycle_div_factor_field,
-)
+# onecycle_div_factor_input = InputNumber(25, 1e-4, step=1e-3)
+# onecycle_div_factor_field = Field(
+#     onecycle_div_factor_input,
+#     "Div factor",
+#     "Determines the initial learning rate via initial_param = max_lr/div_factor",
+# )
+# onecycle_scheduler.add_input(
+#     "div_factor",
+#     onecycle_div_factor_input,
+#     onecycle_div_factor_field,
+# )
 
-onecycle_findiv_factor_input = InputNumber(1e-4, 1e-6, step=1e-6)
-onecycle_findiv_factor_field = Field(
-    onecycle_findiv_factor_input,
-    "Final div factor",
-    "Determines the minimum learning rate via min_lr = initial_param/final_div_factor",
-)
-onecycle_scheduler.add_input(
-    "final_div_factor",
-    onecycle_findiv_factor_input,
-    onecycle_findiv_factor_field,
-)
+# onecycle_findiv_factor_input = InputNumber(1e-4, 1e-6, step=1e-6)
+# onecycle_findiv_factor_field = Field(
+#     onecycle_findiv_factor_input,
+#     "Final div factor",
+#     "Determines the minimum learning rate via min_lr = initial_param/final_div_factor",
+# )
+# onecycle_scheduler.add_input(
+#     "final_div_factor",
+#     onecycle_findiv_factor_input,
+#     onecycle_findiv_factor_field,
+# )
 
 
-onecycle_three_phase_input = Switch(True)
-onecycle_three_phase_field = Field(
-    onecycle_three_phase_input,
-    "Use three phase",
-    (
-        "If `True`, use a third phase of the schedule to"
-        "annihilate the learning rate according to `final_div_factor`"
-        "instead of modifying the second phase"
-    ),
-)
-onecycle_scheduler.add_input(
-    "three_phase",
-    onecycle_three_phase_input,
-    onecycle_three_phase_field,
-    get_switch_value,
-    set_switch_value,
-)
-schedulers.append((repr(onecycle_scheduler), "One Cycle LR"))
+# onecycle_three_phase_input = Switch(True)
+# onecycle_three_phase_field = Field(
+#     onecycle_three_phase_input,
+#     "Use three phase",
+#     (
+#         "If `True`, use a third phase of the schedule to"
+#         "annihilate the learning rate according to `final_div_factor`"
+#         "instead of modifying the second phase"
+#     ),
+# )
+# onecycle_scheduler.add_input(
+#     "three_phase",
+#     onecycle_three_phase_input,
+#     onecycle_three_phase_field,
+#     get_switch_value,
+#     set_switch_value,
+# )
+# schedulers.append((repr(onecycle_scheduler), "One Cycle LR"))
 
 
 # warmup
@@ -470,7 +470,7 @@ schedulers_params = {
     repr(cosinerestart_scheduler): cosinerestart_scheduler,
     repr(linear_scheduler): linear_scheduler,
     repr(poly_scheduler): poly_scheduler,
-    repr(onecycle_scheduler): onecycle_scheduler,
+    # repr(onecycle_scheduler): onecycle_scheduler,
 }
 
 select_scheduler = Select([Select.Item(val, label) for val, label in schedulers])
@@ -499,7 +499,7 @@ schedulres_tab = Container(
                 cosinerestart_scheduler.create_container(hide=True),
                 linear_scheduler.create_container(hide=True),
                 poly_scheduler.create_container(hide=True),
-                onecycle_scheduler.create_container(hide=True),
+                # onecycle_scheduler.create_container(hide=True),
             ],
             gap=0,
         ),

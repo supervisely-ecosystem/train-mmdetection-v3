@@ -55,7 +55,7 @@ class SuperviselyDatasetSplit(BaseDataset):
         self.data_list = self.load_data_list()
         assert len(self.data_list), (
             f"The dataset become empty after filtering samples without annotations with selected classes. "
-            "selected_classes={self.selected_classes}."
+            f"selected_classes={self.selected_classes}."
         )
         # Save coco ann_file if needed
         if isinstance(self.save_coco_ann_file, str):

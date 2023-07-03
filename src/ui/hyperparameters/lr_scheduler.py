@@ -432,19 +432,19 @@ schedulers.append((repr(poly_scheduler), "Polynomial LR"))
 enable_warmup_input = Switch(True)
 enable_warmup_field = Field(enable_warmup_input, "Enable warmup")
 
-warmup_strategy = ["linear", "constant", "exp"]
+# warmup_strategy = ["linear", "constant", "exp"]
 warmup = OrderedWidgetWrapper("warmup")
-warmup_selector = SelectString(warmup_strategy, warmup_strategy)
-warmup_strategy_field = Field(warmup_selector, "Warmup strategy")
-warmup.add_input(
-    "warmup",
-    warmup_selector,
-    warmup_strategy_field,
-    custom_value_getter=lambda w: w.get_value(),
-    custom_value_setter=lambda w, v: w.set_value(v),
-)
+# warmup_selector = SelectString(warmup_strategy, warmup_strategy)
+# warmup_strategy_field = Field(warmup_selector, "Warmup strategy")
+# warmup.add_input(
+#     "warmup",
+#     warmup_selector,
+#     warmup_strategy_field,
+#     custom_value_getter=lambda w: w.get_value(),
+#     custom_value_setter=lambda w, v: w.set_value(v),
+# )
 
-warmup_iterations = InputNumber(400, 0)
+warmup_iterations = InputNumber(25, 0)
 warmup_iterations_field = Field(
     warmup_iterations, "Warmup iterations", "The number of iterations that warmup lasts"
 )
@@ -533,13 +533,13 @@ def update_scheduler_widgets_with_params(params: TrainParameters):
         enable_warmup_input.on()
     else:
         enable_warmup_input.off()
-    warmup.set("warmup", params.warmup)
+    # warmup.set("warmup", params.warmup)
     warmup.set("warmup_iters", params.warmup_iters)
     warmup.set("warmup_ratio", params.warmup_ratio)
 
 
 def update_scheduler_params_with_widgets(params: TrainParameters) -> TrainParameters:
-    params.warmup = warmup.warmup
+    params.warmup = "linear"  # warmup.warmup
     if enable_warmup_input.is_switched():
         params.warmup_iters = warmup.warmup_iters
     else:

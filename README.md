@@ -23,15 +23,17 @@
 Train MMDetection 3.0 models in Supervisely.
 
 Application key points:
-- Supports Object Detection and Instance Segmentation
-- All Object Detection and Instance Segmentation models from MM Toolbox
-- Use pretrained MMDetection models
+- The app supports Object Detection and Instance Segmentation tasks
+- There are almost all Object Detection and Instance Segmentation models from MMDetection 3.0
+- You can compare all the models performance and metrics in the Model Leaderboard table
+- Fine-tune pretrained models or train it from scratch
 - Define Train / Validation splits
 - Select classes for training
 - Define augmentations
 - Tune hyperparameters
-- Monitor Metric charts
-- Save training artifacts to Team Files
+- Preview LR schedulers before start the training
+- Watch the training progress, losses, metrics in charts
+- Save training checkpoints to Team Files
 
 **The app only supports the models in Object Detection and Instance Segmentation tasks [(origianl model zoo)](https://github.com/open-mmlab/mmdetection/blob/master/docs/en/model_zoo.md):**
 

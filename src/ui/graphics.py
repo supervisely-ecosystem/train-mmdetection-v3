@@ -123,7 +123,7 @@ def add_classwise_metric(selected_classes):
 
 monitoring = Monitoring()
 monitoring.add_stage(train_stage, True)
-monitoring.add_stage(val_stage, False)
+monitoring.add_stage(val_stage, True)
 
 
 # add_btn = Button("add")

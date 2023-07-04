@@ -55,8 +55,8 @@ size_input = Container(
 size_field = Field(
     size_input,
     title="Input size",
-    description="Images will be scaled approximately to the given sizes keeping aspect ratio. "
-    "Those sizes are passed as 'scale' parameter to the 'Resize' class in mmcv.",
+    description="Images will be scaled approximately to the specified sizes while keeping the aspect ratio "
+    "(internally, the sizes are passed as 'scale' parameter of the 'Resize' transform in mmcv).",
 )
 
 

@@ -45,18 +45,19 @@ class StageMonitoring(object):
         self._metrics[metric]["series"].extend(new_series)
 
     def compile_grid_field(
-        self, make_right_indent=True
+        self,
+        make_right_indent=True,
     ) -> Tuple[Union[Field, Container], GridPlot]:
+        if make_right_indent is True:
+            self.create_metric("right_indent_empty_plot", ["right_indent_empty_plot"])
+
         data = list(self._metrics.values())
         grid = GridPlot(data, columns=len(data))
-        field = Field(grid, self._title, self._description)
+
         if make_right_indent is True:
-            container = Container(
-                [field, Empty()],
-                direction="horizontal",
-                fractions=[len(data), 1],
-            )
-            return container, grid
+            grid._widgets["right_indent_empty_plot"].hide()
+
+        field = Field(grid, self._title, self._description)
         return field, grid
 
     @property

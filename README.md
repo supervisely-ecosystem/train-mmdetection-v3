@@ -7,6 +7,7 @@
 <p align="center">
   <a href="#Overview">Overview</a> •
   <a href="#How-To-Run">How To Run</a> •
+  <a href="#Obtain-generated-Weights">Obtain generated Weights</a> •
   <a href="#How-To-Use-Custom-Model-Outside-The-Platform">How To Use Custom Model Outside The Platform</a> •
   <a href="#Acknowledgment">Acknowledgment</a>
 </p>
@@ -235,11 +236,19 @@ Application key points:
 
 <img src="https://github.com/supervisely-ecosystem/train-mmdetection-v3/assets/115161827/6354d252-a1ee-4046-9d66-1881ad64c17f" width="100%" style='padding-top: 10px'>  
 
+# Obtain generated Weights
+
+All of the weights, that are generated through the process of training models are stored in [Team Files](https://app.supervise.ly/files/).
+
+To navigate to team files, go to the `Start` menu and press the `Team files` button
+
+![screenshot-dev-supervise-ly-workspaces-1689091116341 copy](https://github.com/supervisely-ecosystem/train-mmdetection-v3/assets/115161827/f57ac1ea-8d05-4a35-a924-5c9e75d9617f)
+
 
 # How To Use Custom Model Outside The Platform
 
 We have a [Jupyter Notebook](https://github.com/supervisely-ecosystem/serve-mmdetection-v3/blob/master/inference_outside_sly.ipynb) as an example of how you can use your custom trained model outside Supervisely.
-First, you need to download `config.py` file and model weights (`.pth`) from Superviesly Team Files. Then, run the [notebook](https://github.com/supervisely-ecosystem/serve-mmdetection-v3/blob/master/inference_outside_sly.ipynb) and follow its instructions.
+First, download the `config.py` file and model weights (`.pth`) from Superviesly Team Files. Then, run the [notebook](https://github.com/supervisely-ecosystem/serve-mmdetection-v3/blob/master/inference_outside_sly.ipynb) and follow its instructions.
 
 A base code example is here:
 ```python

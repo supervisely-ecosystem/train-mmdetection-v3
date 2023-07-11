@@ -3,7 +3,15 @@ from mmengine import Config, ConfigDict
 from mmdet.registry import RUNNERS
 
 import supervisely as sly
-from supervisely.app.widgets import Card, Button, Container, Progress, Empty, FolderThumbnail
+from supervisely.app.widgets import (
+    Card,
+    Button,
+    Container,
+    Progress,
+    Empty,
+    FolderThumbnail,
+    DoneLabel,
+)
 
 import src.sly_globals as g
 from src.train_parameters import TrainParameters
@@ -183,9 +191,12 @@ def train():
         folder_thumb.set(info=file_info)
         folder_thumb.show()
 
+        # show success message
+        success_msg.show()
+
         # disable buttons after training
-        start_train_btn.disable()
-        stop_train_btn.disable()
+        start_train_btn.hide()
+        stop_train_btn.hide()
 
         # set link to artifacts in ws tasks
         g.api.task.set_output_directory(g.api.task_id, file_info.id, out_path)
@@ -202,6 +213,9 @@ epoch_progress.hide()
 iter_progress = Progress("Iterations", hide_on_finish=False)
 iter_progress.hide()
 
+success_msg = DoneLabel("Training completed. Training artifacts were uploaded to Team Files.")
+success_msg.hide()
+
 folder_thumb = FolderThumbnail()
 folder_thumb.hide()
 
@@ -215,6 +229,7 @@ btn_container = Container(
 
 container = Container(
     [
+        success_msg,
         folder_thumb,
         btn_container,
         epoch_progress,

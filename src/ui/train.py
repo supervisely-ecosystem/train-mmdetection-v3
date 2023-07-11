@@ -1,6 +1,8 @@
 import os
 from mmengine import Config, ConfigDict
 from mmdet.registry import RUNNERS
+from mmengine.visualization import Visualizer
+from mmdet.visualization import DetLocalVisualizer
 
 import supervisely as sly
 from supervisely.app.widgets import Card, Button, Container, Progress, Empty
@@ -111,7 +113,7 @@ def train():
     # set device
     # set_device_env(params.device_name)
     # doesn't work :(
-    # may because of torch has been imported earlier and it already read CUDA_VISIBLE_DEVICES
+    # maybe because of torch has been imported earlier and it already read CUDA_VISIBLE_DEVICES
 
     ### TODO: debug
     # params.checkpoint_interval = 5
@@ -119,12 +121,11 @@ def train():
     # params.val_interval = 1
     # params.num_workers = 0
     # params.input_size = (409, 640)
-    # from mmengine.visualization import Visualizer
-    # from mmdet.visualization import DetLocalVisualizer
-
-    # Visualizer._instance_dict.clear()
-    # DetLocalVisualizer._instance_dict.clear()
     ###
+
+    # If we won't do this, restarting the training will throw a error
+    Visualizer._instance_dict.clear()
+    DetLocalVisualizer._instance_dict.clear()
 
     # create config from params
     train_cfg = params.update_config(cfg)

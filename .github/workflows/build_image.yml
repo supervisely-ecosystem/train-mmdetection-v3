@@ -26,4 +26,4 @@ jobs:
         with:
           push: true
           file: supervisely/docker/mmdet-3.0.Dockerfile
-          tags: supervisely/mmdet30:${{ github.event.inputs.tag_version }}
+          tags: supervisely/mmdet-3.0:${{ github.event.inputs.tag_version }}

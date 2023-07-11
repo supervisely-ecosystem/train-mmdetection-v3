@@ -189,7 +189,10 @@ def train():
 
         # set link to artifacts in ws tasks
         g.api.task.set_output_directory(g.api.task_id, file_info.id, out_path)
-        # g.app.stop()
+        from time import sleep
+
+        sleep(1)
+        g.app.stop()
 
 
 start_train_btn = Button("Train")

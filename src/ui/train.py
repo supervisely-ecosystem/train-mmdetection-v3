@@ -178,8 +178,16 @@ def train():
     # set task results
     if sly.is_production():
         file_info = g.api.file.get_info_by_path(g.TEAM_ID, out_path + "/config.py")
+
+        # add link to artifacts
         folder_thumb.set(info=file_info)
         folder_thumb.show()
+
+        # disable buttons after training
+        start_train_btn.disable()
+        stop_train_btn.disable()
+
+        # set link to artifacts in ws tasks
         g.api.task.set_output_directory(g.api.task_id, file_info.id, out_path)
         g.app.stop()
 

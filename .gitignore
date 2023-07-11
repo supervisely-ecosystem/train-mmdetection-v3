@@ -15,6 +15,6 @@ __pycache__
 /val_split.json
 todo.txt
 debug_config.py
-# local.env
+local.env
 vis
 tmp

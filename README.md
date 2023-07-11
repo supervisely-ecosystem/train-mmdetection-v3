@@ -7,7 +7,7 @@
 <p align="center">
   <a href="#Overview">Overview</a> •
   <a href="#How-To-Run">How To Run</a> •
-  <a href="#Obtain-generated-Weights">Obtain generated Weights</a> •
+  <a href="#Obtain-saved-checkpoints">Obtain saved checkpoints</a> •
   <a href="#How-To-Use-Custom-Model-Outside-The-Platform">How To Use Custom Model Outside The Platform</a> •
   <a href="#Acknowledgment">Acknowledgment</a>
 </p>
@@ -236,9 +236,9 @@ Application key points:
 
 <img src="https://github.com/supervisely-ecosystem/train-mmdetection-v3/assets/115161827/6354d252-a1ee-4046-9d66-1881ad64c17f" width="100%" style='padding-top: 10px'>  
 
-# Obtain generated Weights
+# Obtain saved checkpoints
 
-All of the weights, that are generated through the process of training models are stored in [Team Files](https://app.supervise.ly/files/).
+All the trained checkpoints, that are generated through the process of training models are stored in [Team Files](https://app.supervise.ly/files/) in the folder **mmdetection-3**.
 
 To navigate to team files, go to the `Start` menu and press the `Team files` button
 

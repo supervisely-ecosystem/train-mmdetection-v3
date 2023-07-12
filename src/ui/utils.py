@@ -164,17 +164,17 @@ def button_selected(
     global button_clicked
     bid = select_btn.widget_id
 
-    if bid not in button_clicked:
-        button_clicked[bid] = True
-    else:
-        button_clicked[bid] = not button_clicked[bid]
-
     if lock_without_click:
         disable_enable(disable_widgets, disable=False)
         unlock_lock(lock_cards, unlock=False)
         update_custom_button_params(select_btn, select_params)
-        button_clicked[bid] = True
+        button_clicked[bid] = False
         return
+
+    if bid not in button_clicked:
+        button_clicked[bid] = True
+    else:
+        button_clicked[bid] = not button_clicked[bid]
 
     disable_enable(disable_widgets, disable=button_clicked[bid])
     unlock_lock(lock_cards, unlock=button_clicked[bid])

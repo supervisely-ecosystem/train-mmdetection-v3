@@ -4,7 +4,7 @@ from mmengine import Config
 import src.ui.hyperparameters.handlers as handlers
 
 import src.ui.models as models
-from src.ui.utils import button_selected
+from src.ui.utils import button_selected, button_clicked
 from src.ui.task import select_btn, task_selector
 from src.utils import parse_yaml_metafile
 from src import sly_utils
@@ -52,7 +52,7 @@ def select_task():
         lock_cards=[models.card],
     )
     model_select_button_state_change(True)
-    if not select_btn._click_handled:
+    if button_clicked[select_btn.widget_id]:
         on_task_changed(task_selector.get_value())
     else:
         model_leaderboard.table.read_json(None)

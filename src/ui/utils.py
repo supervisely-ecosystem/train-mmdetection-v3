@@ -5,6 +5,7 @@ from supervisely.app import DataJson
 from supervisely.app.widgets import Button, Widget, Container, Switch, Card, InputNumber
 
 
+button_clicked = {}
 select_params = {"icon": None, "plain": False, "text": "Select"}
 reselect_params = {"icon": "zmdi zmdi-refresh", "plain": True, "text": "Reselect"}
 
@@ -160,22 +161,28 @@ def button_selected(
     lock_cards: List[Card],
     lock_without_click: bool = False,
 ):
+    global button_clicked
+    bid = select_btn.widget_id
+
+    if bid not in button_clicked:
+        button_clicked[bid] = True
+    else:
+        button_clicked[bid] = not button_clicked[bid]
+
     if lock_without_click:
         disable_enable(disable_widgets, disable=False)
         unlock_lock(lock_cards, unlock=False)
         update_custom_button_params(select_btn, select_params)
-        select_btn._click_handled = True
+        button_clicked[bid] = True
         return
 
-    disable_enable(disable_widgets, select_btn._click_handled)
-    unlock_lock(lock_cards, select_btn._click_handled)
+    disable_enable(disable_widgets, disable=button_clicked[bid])
+    unlock_lock(lock_cards, unlock=button_clicked[bid])
 
-    if select_btn._click_handled:
+    if button_clicked[bid] is True:
         update_custom_button_params(select_btn, reselect_params)
-        select_btn._click_handled = False
     else:
         update_custom_button_params(select_btn, select_params)
-        select_btn._click_handled = True
 
 
 def get_devices():

@@ -1,11 +1,20 @@
-from pathlib import Path
 import os
-from supervisely.app.widgets import AugmentationsWithTabs, Card, Container, Switch
+import traceback
 import supervisely as sly
+from pathlib import Path
+from supervisely.app.widgets import AugmentationsWithTabs, Card, Container, Switch
 
-from src.ui.task import task_selector
 import src.sly_globals as g
+from src.ui.task import task_selector
 from src import sly_utils
+
+
+class DebugCard(Card):
+    def lock(self, message: str = None):
+        sly.logger.debug(f"Card {self} was locked")
+        for line in traceback.format_stack():
+            sly.logger.debug(line.strip())
+        return super().lock(message)
 
 
 def format_task_name(task: str):
@@ -37,7 +46,7 @@ augments = AugmentationsWithTabs(
 
 container = Container([swithcer, augments])
 
-card = Card(
+card = DebugCard(
     title="5️⃣ Training augmentations",
     description="Choose one of the prepared templates or provide custom pipeline",
     content=container,

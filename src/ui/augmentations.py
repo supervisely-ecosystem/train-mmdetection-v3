@@ -43,7 +43,6 @@ card = Card(
     content=container,
     lock_message="Select a model to unlock.",
 )
-sly.logger.debug("Lock Augs card")
 card.lock()
 
 

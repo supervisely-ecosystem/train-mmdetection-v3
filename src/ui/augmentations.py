@@ -16,6 +16,12 @@ class DebugCard(Card):
             sly.logger.debug(line.strip())
         return super().lock(message)
 
+    def unlock(self):
+        sly.logger.debug(f"Card {self} was unlocked")
+        for line in traceback.format_stack():
+            sly.logger.debug(line.strip())
+        return super().unlock()
+
 
 def format_task_name(task: str):
     if "segmentation" in task.lower():

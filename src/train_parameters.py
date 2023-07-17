@@ -92,8 +92,8 @@ class TrainParameters:
         if cfg.model.type == "Mask2Former":
             cfg.model.panoptic_head.loss_cls["class_weight"] = [1.0] * num_classes + [0.1]
 
-        # RTMDet fix:
-        if cfg.model.type == "RTMDet":
+        # RTMDet and YOLOX fix:
+        if cfg.model.type in ["RTMDet", "YOLOX"]:
             cfg.model.data_preprocessor.pad_mask = True
             cfg.model.data_preprocessor.pad_size_divisor = 32
 

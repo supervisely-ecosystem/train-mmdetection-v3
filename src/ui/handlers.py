@@ -109,3 +109,4 @@ def on_model_selected():
 
     # unlock cards
     model_select_button_state_change(False)
+    classes_ui.card.unlock()

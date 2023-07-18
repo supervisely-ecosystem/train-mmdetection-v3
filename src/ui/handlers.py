@@ -111,4 +111,5 @@ def on_model_selected():
 
     # unlock cards
     model_select_button_state_change(False)
-    sly.logger.debug(StateJson())
+    sly.logger.debug(f"{StateJson()[classes_ui.card.widget_id]}")
+    sly.logger.debug(f"{StateJson()[splits_ui.card.widget_id]}")

@@ -1,5 +1,7 @@
 import os
+import supervisely as sly
 from mmengine import Config
+from supervisely.app import StateJson
 
 import src.ui.hyperparameters.handlers as handlers
 
@@ -109,4 +111,4 @@ def on_model_selected():
 
     # unlock cards
     model_select_button_state_change(False)
-    classes_ui.card.unlock()
+    sly.logger.debug(StateJson())

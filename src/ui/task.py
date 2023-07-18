@@ -22,11 +22,9 @@ task_selector = RadioGroup(
 select_field = Field(title="Select the task you are going to solve:", content=task_selector)
 select_btn = Button(text="Select task")
 
-debug_btn = Button(text="Print Debug MSG")
-
 card = Card(
     title="1️⃣ MMDetection task",
     description="Select task from list below",
-    content=Container(widgets=[info, select_field, select_btn, debug_btn], direction="vertical"),
+    content=Container(widgets=[info, select_field, select_btn], direction="vertical"),
     lock_message="Please, select project and load data.",
 )

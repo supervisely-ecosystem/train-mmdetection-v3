@@ -7,7 +7,7 @@ import src.ui.hyperparameters.handlers as handlers
 
 import src.ui.models as models
 from src.ui.utils import button_selected, button_clicked
-from src.ui.task import select_btn, task_selector
+from src.ui.task import select_btn, task_selector, debug_btn
 from src.utils import parse_yaml_metafile
 from src import sly_utils
 from src.train_parameters import TrainParameters
@@ -111,5 +111,11 @@ def on_model_selected():
 
     # unlock cards
     model_select_button_state_change(False)
+    sly.logger.debug(f"{StateJson()[classes_ui.card.widget_id]}")
+    sly.logger.debug(f"{StateJson()[splits_ui.card.widget_id]}")
+
+
+@debug_btn.click
+def print_msg():
     sly.logger.debug(f"{StateJson()[classes_ui.card.widget_id]}")
     sly.logger.debug(f"{StateJson()[splits_ui.card.widget_id]}")

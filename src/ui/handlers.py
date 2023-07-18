@@ -6,7 +6,9 @@ from supervisely.app import StateJson
 import src.ui.hyperparameters.handlers as handlers
 
 import src.ui.models as models
-from src.ui.utils import button_selected, button_clicked
+
+# from src.ui.utils import button_selected, button_clicked
+from src.ui.utils import wrap_button_click, button_clicked
 from src.ui.task import select_btn, task_selector
 from src.utils import parse_yaml_metafile
 from src import sly_utils
@@ -19,24 +21,42 @@ import src.ui.train_val_split as splits_ui
 from src.ui import model_leaderboard
 
 
-def model_select_button_state_change(without_click: bool = False):
-    button_selected(
-        models.select_btn,
-        disable_widgets=[
-            models.radio_tabs,
-            models.arch_select,
-            models.path_field,
-            models.table,
-        ],
-        lock_cards=[
-            classes_ui.card,
-            splits_ui.card,
-            augmentations.card,
-            hyperparameters.card,
-            train.card,
-        ],
-        lock_without_click=without_click,
-    )
+# def model_select_button_state_change(without_click: bool = False):
+#     button_selected(
+#         models.select_btn,
+#         disable_widgets=[
+#             models.radio_tabs,
+#             models.arch_select,
+#             models.path_field,
+#             models.table,
+#         ],
+#         lock_cards=[
+#             classes_ui.card,
+#             splits_ui.card,
+#             augmentations.card,
+#             hyperparameters.card,
+#             train.card,
+#         ],
+#         lock_without_click=without_click,
+#     )
+
+models_select_callback = wrap_button_click(
+    models.select_btn,
+    classes_ui.card,
+    widgets_to_disable=[
+        models.radio_tabs,
+        models.arch_select,
+        models.path_field,
+        models.table,
+    ],
+)
+
+task_select_callback = wrap_button_click(
+    select_btn,
+    models.card,
+    [task_selector],
+    models_select_callback,
+)
 
 
 # TASK
@@ -48,12 +68,13 @@ def on_task_changed(selected_task):
 
 @select_btn.click
 def select_task():
-    button_selected(
-        select_btn,
-        [task_selector],
-        lock_cards=[models.card],
-    )
-    model_select_button_state_change(True)
+    # button_selected(
+    #     select_btn,
+    #     [task_selector],
+    #     lock_cards=[models.card],
+    # )
+    # model_select_button_state_change(True)
+    task_select_callback()
     if button_clicked[select_btn.widget_id]:
         on_task_changed(task_selector.get_value())
     else:
@@ -110,4 +131,5 @@ def on_model_selected():
     hyperparameters.update_widgets_with_params(params)
 
     # unlock cards
-    model_select_button_state_change(False)
+    # model_select_button_state_change(False)
+    models_select_callback()

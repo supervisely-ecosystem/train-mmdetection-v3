@@ -6,8 +6,8 @@ from supervisely.app.widgets import Button, Widget, Container, Switch, Card, Inp
 
 
 button_clicked = {}
-select_params = {"icon": None, "plain": False, "text": "Select"}
-reselect_params = {"icon": "zmdi zmdi-refresh", "plain": True, "text": "Reselect"}
+# select_params = {"icon": None, "plain": False, "text": "Select"}
+# reselect_params = {"icon": "zmdi zmdi-refresh", "plain": True, "text": "Reselect"}
 
 
 def update_custom_params(
@@ -155,37 +155,34 @@ def unlock_lock(cards: List[Card], unlock: bool = True):
             w.lock()
 
 
-def button_selected(
-    select_btn: Button,
-    disable_widgets: List[Widget],
-    lock_cards: List[Card],
-    lock_without_click: bool = False,
-):
-    global button_clicked
-    bid = select_btn.widget_id
+# def button_selected(
+#     select_btn: Button,
+#     disable_widgets: List[Widget],
+#     lock_cards: List[Card],
+#     lock_without_click: bool = False,
+# ):
+#     global button_clicked
+#     bid = select_btn.widget_id
 
-    if lock_without_click:
-        disable_enable(disable_widgets, disable=False)
-        unlock_lock(lock_cards, unlock=False)
-        select_btn.text = "Select"
-        # update_custom_button_params(select_btn, select_params)
-        button_clicked[bid] = False
-        return
+#     if lock_without_click:
+#         disable_enable(disable_widgets, disable=False)
+#         unlock_lock(lock_cards, unlock=False)
+#         update_custom_button_params(select_btn, select_params)
+#         button_clicked[bid] = False
+#         return
 
-    if bid not in button_clicked:
-        button_clicked[bid] = True
-    else:
-        button_clicked[bid] = not button_clicked[bid]
+#     if bid not in button_clicked:
+#         button_clicked[bid] = True
+#     else:
+#         button_clicked[bid] = not button_clicked[bid]
 
-    disable_enable(disable_widgets, disable=button_clicked[bid])
-    unlock_lock(lock_cards, unlock=button_clicked[bid])
+#     disable_enable(disable_widgets, disable=button_clicked[bid])
+#     unlock_lock(lock_cards, unlock=button_clicked[bid])
 
-    if button_clicked[bid] is True:
-        select_btn.text = "Reselect"
-        # update_custom_button_params(select_btn, reselect_params)
-    else:
-        select_btn.text = "Select"
-        # update_custom_button_params(select_btn, select_params)
+#     if button_clicked[bid] is True:
+#         update_custom_button_params(select_btn, reselect_params)
+#     else:
+#         update_custom_button_params(select_btn, select_params)
 
 
 def get_devices():
@@ -232,3 +229,41 @@ def create_linked_getter(
         return widget2_val
 
     return getter
+
+
+def wrap_button_click(
+    btn: Button,
+    card_to_unlock: Card,
+    widgets_to_disable: List[Widget],
+    callback: Optional[Callable] = None,
+) -> Callable[[Optional[bool]], None]:
+    global button_clicked
+
+    select_params = {"icon": None, "plain": False, "text": "Select"}
+    reselect_params = {"icon": "zmdi zmdi-refresh", "plain": True, "text": "Reselect"}
+    bid = btn.widget_id
+    button_clicked[bid] = False
+
+    def button_click(btn_clicked_value: Optional[bool] = None):
+        if btn_clicked_value is not None:
+            button_clicked[bid] = btn_clicked_value
+        else:
+            button_clicked[bid] = not button_clicked[bid]
+
+        if button_clicked[bid]:
+            update_custom_button_params(btn, reselect_params)
+        else:
+            update_custom_button_params(btn, select_params)
+
+        unlock_lock(
+            [card_to_unlock],
+            unlock=button_clicked[bid],
+        )
+        disable_enable(
+            widgets_to_disable,
+            disable=button_clicked[bid],
+        )
+        if callback is not None and not button_clicked[bid]:
+            callback(False)
+
+    return button_click

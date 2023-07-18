@@ -167,7 +167,8 @@ def button_selected(
     if lock_without_click:
         disable_enable(disable_widgets, disable=False)
         unlock_lock(lock_cards, unlock=False)
-        update_custom_button_params(select_btn, select_params)
+        select_btn.text = "Select"
+        # update_custom_button_params(select_btn, select_params)
         button_clicked[bid] = False
         return
 
@@ -180,9 +181,11 @@ def button_selected(
     unlock_lock(lock_cards, unlock=button_clicked[bid])
 
     if button_clicked[bid] is True:
-        update_custom_button_params(select_btn, reselect_params)
+        select_btn.text = "Reselect"
+        # update_custom_button_params(select_btn, reselect_params)
     else:
-        update_custom_button_params(select_btn, select_params)
+        select_btn.text = "Select"
+        # update_custom_button_params(select_btn, select_params)
 
 
 def get_devices():

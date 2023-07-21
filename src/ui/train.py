@@ -240,15 +240,13 @@ container = Container(
 )
 
 card = Card(
-    "7️⃣ Training progress",
+    "Training progress",
     "Task progress, detailed logs, metrics charts, and other visualizations",
     content=container,
-    lock_message="Select a model to unlock.",
 )
-card.lock("Select a model to unlock.")
+card.lock("Select hyperparameters.")
 
 
-@start_train_btn.click
 def start_train():
     g.stop_training = False
     monitoring.container.show()
@@ -258,7 +256,6 @@ def start_train():
     train()
 
 
-@stop_train_btn.click
 def stop_train():
     g.stop_training = True
     stop_train_btn.disable()

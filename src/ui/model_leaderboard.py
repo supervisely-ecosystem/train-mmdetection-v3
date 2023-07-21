@@ -85,6 +85,7 @@ card = Card(
     collapsable=True,
 )
 
+card.lock("Select task to update the table.")
 card.collapse()
 
 

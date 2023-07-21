@@ -2,7 +2,7 @@ import torch
 from collections import OrderedDict
 from typing import Callable, Dict, Any, List, Optional, Iterable
 from supervisely.app import DataJson
-from supervisely.app.widgets import Button, Widget, Container, Switch, Card, InputNumber
+from supervisely.app.widgets import Button, Widget, Container, Switch, Card, InputNumber, Stepper
 
 
 button_clicked = {}
@@ -264,3 +264,11 @@ def wrap_button_click(
             callback(False)
 
     return button_click
+
+
+def set_stepper_step(stepper: Stepper, button: Button, next_pos: int):
+    bid = button.widget_id
+    if button_clicked[bid] is True:
+        stepper.set_active_step(next_pos)
+    else:
+        stepper.set_active_step(next_pos - 1)

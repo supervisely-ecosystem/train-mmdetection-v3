@@ -19,7 +19,7 @@ from src.train_parameters import TrainParameters
 from src.ui import hyperparameters
 from src.ui import augmentations
 from src.ui import model_leaderboard
-from src.ui.utils import wrap_button_click, button_clicked
+from src.ui.utils import wrap_button_click, button_clicked, set_stepper_step
 
 
 all_widgets = [
@@ -123,7 +123,11 @@ def on_task_changed(selected_task):
 @task_ui.select_btn.click
 def select_task():
     task_select_callback()
-    stepper.set_active_step(3)
+    set_stepper_step(
+        stepper,
+        task_ui.select_btn,
+        next_pos=3,
+    )
 
     if button_clicked[task_ui.select_btn.widget_id]:
         on_task_changed(task_ui.task_selector.get_value())
@@ -150,7 +154,11 @@ def update_selected_model(selected_row):
 def on_model_selected():
     # unlock cards
     models_select_callback()
-    stepper.set_active_step(4)
+    set_stepper_step(
+        stepper,
+        models.select_btn,
+        next_pos=4,
+    )
 
     # update default hyperparameters in UI
     is_pretrained_model = models.is_pretrained_model_selected()
@@ -199,25 +207,42 @@ def change_selected_classes(selected):
 @classes_ui.select_btn.click
 def select_classes():
     classes_select_callback()
-    stepper.set_active_step(5)
+    set_stepper_step(
+        stepper,
+        classes_ui.select_btn,
+        next_pos=5,
+    )
 
 
 @splits_ui.select_btn.click
 def select_splits():
     splits_select_callback()
-    stepper.set_active_step(6)
+    set_stepper_step(
+        stepper,
+        splits_ui.select_btn,
+        next_pos=6,
+    )
 
 
 @augmentations.select_btn.click
 def select_augs():
     augmentations_select_callback()
     stepper.set_active_step(7)
+    set_stepper_step(
+        stepper,
+        augmentations.select_btn,
+        next_pos=7,
+    )
 
 
 @hyperparameters.select_btn.click
 def select_hyperparameters():
     hyperparameters_select_callback()
-    stepper.set_active_step(8)
+    set_stepper_step(
+        stepper,
+        hyperparameters.select_btn,
+        next_pos=8,
+    )
 
 
 @train.start_train_btn.click

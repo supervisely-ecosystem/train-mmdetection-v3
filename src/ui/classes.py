@@ -1,7 +1,23 @@
 from supervisely.app.widgets import ClassesTable, Card, Container, Button, Switch, Field
 from supervisely.app.content import StateJson
+import supervisely as sly
+import traceback
 
 from src.sly_globals import PROJECT_ID
+
+
+class DebugCard(Card):
+    def lock(self, message: str = None):
+        sly.logger.debug(f"Card {self} was locked")
+        for line in traceback.format_stack():
+            sly.logger.debug(line.strip())
+        return super().lock(message)
+
+    def unlock(self):
+        sly.logger.debug(f"Card {self} was unlocked")
+        for line in traceback.format_stack():
+            sly.logger.debug(line.strip())
+        return super().unlock()
 
 
 def select_all(cls_tbl: ClassesTable):
@@ -22,7 +38,7 @@ filter_images_without_gt_field = Field(
     description="After selecting classes, some images may not have any annotations. Whether to remove them?",
 )
 
-card = Card(
+card = DebugCard(
     title="3️⃣ Training classes",
     description=(
         "Select classes that will be used for training. "

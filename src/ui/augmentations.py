@@ -9,20 +9,6 @@ from src.ui.task import task_selector
 from src import sly_utils
 
 
-class DebugCard(Card):
-    def lock(self, message: str = None):
-        sly.logger.debug(f"Card {self} was locked")
-        for line in traceback.format_stack():
-            sly.logger.debug(line.strip())
-        return super().lock(message)
-
-    def unlock(self):
-        sly.logger.debug(f"Card {self} was unlocked")
-        for line in traceback.format_stack():
-            sly.logger.debug(line.strip())
-        return super().unlock()
-
-
 def format_task_name(task: str):
     if "segmentation" in task.lower():
         task = "segmentation"
@@ -52,7 +38,7 @@ augments = AugmentationsWithTabs(
 
 container = Container([swithcer, augments])
 
-card = DebugCard(
+card = Card(
     title="5️⃣ Training augmentations",
     description="Choose one of the prepared templates or provide custom pipeline",
     content=container,

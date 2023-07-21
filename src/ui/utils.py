@@ -147,12 +147,12 @@ def disable_enable(widgets: List[Widget], disable: bool = True):
             w.enable()
 
 
-def unlock_lock(cards: List[Card], unlock: bool = True):
+def unlock_lock(cards: List[Card], unlock: bool = True, message: str = None):
     for w in cards:
         if unlock:
             w.unlock()
         else:
-            w.lock()
+            w.lock(message)
 
 
 # def button_selected(
@@ -236,6 +236,7 @@ def wrap_button_click(
     card_to_unlock: Card,
     widgets_to_disable: List[Widget],
     callback: Optional[Callable] = None,
+    lock_msg: str = None,
 ) -> Callable[[Optional[bool]], None]:
     global button_clicked
 
@@ -255,10 +256,15 @@ def wrap_button_click(
         else:
             update_custom_button_params(btn, select_params)
 
-        unlock_lock(
-            [card_to_unlock],
-            unlock=button_clicked[bid],
-        )
+        if button_clicked[bid]:
+            card_to_unlock.unlock()
+        else:
+            card_to_unlock.lock(lock_msg)
+
+        # unlock_lock(
+        #     [card_to_unlock],
+        #     unlock=button_clicked[bid],
+        # )
         disable_enable(
             widgets_to_disable,
             disable=button_clicked[bid],

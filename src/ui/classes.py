@@ -47,7 +47,7 @@ card = DebugCard(
     content=Container([classes, filter_images_without_gt_field]),
 )
 
-card.lock()
+# card.lock()
 
 # @classes.value_changed
 # def confirmation_message(selected_classes):

@@ -1,3 +1,7 @@
+import threading
+from supervisely.app import StateJson
+from time import sleep
+
 import src.sly_globals as g
 import supervisely as sly
 from supervisely.app.widgets import Container, Button
@@ -14,6 +18,15 @@ import src.ui.train as train
 import src.ui.augmentations as augmentations
 import src.ui.model_leaderboard as model_leaderboard
 
+
+def whatcher(cid):
+    while True:
+        sly.logger.debug(f"State of {cid}: {StateJson()[cid]}")
+        sleep(5)
+
+
+whatcher_thr = threading.Thread(target=whatcher, args=(classes.card.widget_id,))
+whatcher_thr.start()
 
 widgets = [
     input_project.card,

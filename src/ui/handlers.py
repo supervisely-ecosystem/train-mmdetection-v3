@@ -102,7 +102,7 @@ def update_selected_model(selected_row):
 @models.select_btn.click
 def on_model_selected():
     # update default hyperparameters in UI
-
+    models_select_callback()
     is_pretrained_model = models.is_pretrained_model_selected()
 
     if is_pretrained_model:
@@ -135,5 +135,4 @@ def on_model_selected():
 
     # unlock cards
     # model_select_button_state_change(False)
-    models_select_callback()
     sly.logger.debug(f"State {classes_ui.card.widget_id}: {StateJson()[classes_ui.card.widget_id]}")

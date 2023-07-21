@@ -171,10 +171,10 @@ radio_tabs = RadioTabs(
 select_btn = Button(text="Select model")
 
 card = Card(
-    title=f"2️⃣ {cur_task} models",
+    title=f"{cur_task} models",
     description="Choose model architecture and how weights should be initialized",
     content=Container([radio_tabs, select_btn]),
-    lock_message="Select a task to unlock.",
+    lock_message="Select task to unlock.",
 )
 card.lock()
 
@@ -185,7 +185,7 @@ def update_architecture(selected_task):
     models_meta = _load_models_meta(selected_task)
     arch_names, labels, right_texts, links = _get_architecture_list(models_meta)
     arch_select.set(arch_names, labels, right_texts, links)
-    update_custom_params(card, {"title": f"2️⃣ {selected_task} models"})
+    update_custom_params(card, {"title": f"{selected_task} models"})
     update_models(arch_select.get_value())
 
 

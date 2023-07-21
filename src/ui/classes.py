@@ -22,16 +22,16 @@ filter_images_without_gt_field = Field(
     description="After selecting classes, some images may not have any annotations. Whether to remove them?",
 )
 
+select_btn = Button("Select")
 card = Card(
-    title="3️⃣ Training classes",
+    title="Training classes",
     description=(
         "Select classes that will be used for training. "
         "Supported shapes are Bitmap, Polygon, Rectangle."
     ),
-    content=Container([classes, filter_images_without_gt_field]),
+    content=Container([classes, filter_images_without_gt_field, select_btn]),
 )
-
-card.lock()
+card.lock("Select model to unlock.")
 
 # @classes.value_changed
 # def confirmation_message(selected_classes):

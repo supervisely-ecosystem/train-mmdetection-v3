@@ -1,12 +1,11 @@
 import torch
 from collections import OrderedDict
-from typing import Callable, Dict, Any, List, Optional
+from typing import Callable, Dict, Any, List, Optional, Iterable
 from supervisely.app import DataJson
-from supervisely.app.widgets import Button, Widget, Container, Switch, Card, InputNumber
+from supervisely.app.widgets import Button, Widget, Container, Switch, Card, InputNumber, Stepper
 
 
-select_params = {"icon": None, "plain": False, "text": "Select"}
-reselect_params = {"icon": "zmdi zmdi-refresh", "plain": True, "text": "Reselect"}
+button_clicked = {}
 
 
 def update_custom_params(
@@ -75,6 +74,30 @@ class InputContainer(object):
             raise AttributeError(
                 f"Widget with name {name} does not exists, only {self._widgets.keys()}"
             )
+
+    def disable(self) -> None:
+        for w in self._widgets.values():
+            if isinstance(w, Iterable):
+                for wi in w:
+                    self._disable_w(wi)
+            else:
+                self._disable_w(w)
+
+    def enable(self) -> None:
+        for w in self._widgets.values():
+            if isinstance(w, Iterable):
+                for wi in w:
+                    self._enable_w(wi)
+            else:
+                self._enable_w(w)
+
+    def _enable_w(self, wg: Any) -> None:
+        if isinstance(wg, Widget):
+            wg.enable()
+
+    def _disable_w(self, wg: Any) -> None:
+        if isinstance(wg, Widget):
+            wg.disable()
 
     def _get_value(self, name: str):
         if name in self._custom_get_value:
@@ -146,36 +169,14 @@ def disable_enable(widgets: List[Widget], disable: bool = True):
             w.enable()
 
 
-def unlock_lock(cards: List[Card], unlock: bool = True):
+def unlock_lock(cards: List[Card], unlock: bool = True, message: str = None):
     for w in cards:
         if unlock:
             w.unlock()
+            # w.uncollapse()
         else:
-            w.lock()
-
-
-def button_selected(
-    select_btn: Button,
-    disable_widgets: List[Widget],
-    lock_cards: List[Card],
-    lock_without_click: bool = False,
-):
-    if lock_without_click:
-        disable_enable(disable_widgets, disable=False)
-        unlock_lock(lock_cards, unlock=False)
-        update_custom_button_params(select_btn, select_params)
-        select_btn._click_handled = True
-        return
-
-    disable_enable(disable_widgets, select_btn._click_handled)
-    unlock_lock(lock_cards, select_btn._click_handled)
-
-    if select_btn._click_handled:
-        update_custom_button_params(select_btn, reselect_params)
-        select_btn._click_handled = False
-    else:
-        update_custom_button_params(select_btn, select_params)
-        select_btn._click_handled = True
+            w.lock(message)
+            # w.collapse()
 
 
 def get_devices():
@@ -222,3 +223,52 @@ def create_linked_getter(
         return widget2_val
 
     return getter
+
+
+def wrap_button_click(
+    btn: Button,
+    cards_to_unlock: List[Card],
+    widgets_to_disable: List[Widget],
+    callback: Optional[Callable] = None,
+    lock_msg: str = None,
+    upd_params: bool = True,
+) -> Callable[[Optional[bool]], None]:
+    global button_clicked
+
+    select_params = {"icon": None, "plain": False, "text": "Select"}
+    reselect_params = {"icon": "zmdi zmdi-refresh", "plain": True, "text": "Reselect"}
+    bid = btn.widget_id
+    button_clicked[bid] = False
+
+    def button_click(btn_clicked_value: Optional[bool] = None):
+        if btn_clicked_value is not None:
+            button_clicked[bid] = btn_clicked_value
+        else:
+            button_clicked[bid] = not button_clicked[bid]
+
+        if button_clicked[bid] and upd_params:
+            update_custom_button_params(btn, reselect_params)
+        else:
+            update_custom_button_params(btn, select_params)
+
+        unlock_lock(
+            cards_to_unlock,
+            unlock=button_clicked[bid],
+            message=lock_msg,
+        )
+        disable_enable(
+            widgets_to_disable,
+            disable=button_clicked[bid],
+        )
+        if callback is not None and not button_clicked[bid]:
+            callback(False)
+
+    return button_click
+
+
+def set_stepper_step(stepper: Stepper, button: Button, next_pos: int):
+    bid = button.widget_id
+    if button_clicked[bid] is True:
+        stepper.set_active_step(next_pos)
+    else:
+        stepper.set_active_step(next_pos - 1)

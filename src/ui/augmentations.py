@@ -1,10 +1,10 @@
-from pathlib import Path
 import os
-from supervisely.app.widgets import AugmentationsWithTabs, Card, Container, Switch
 import supervisely as sly
+from pathlib import Path
+from supervisely.app.widgets import AugmentationsWithTabs, Card, Container, Switch, Button
 
-from src.ui.task import task_selector
 import src.sly_globals as g
+from src.ui.task import task_selector
 from src import sly_utils
 
 
@@ -34,16 +34,15 @@ augments = AugmentationsWithTabs(
     g, task_type=format_task_name(task_selector.get_value()), templates=templates
 )
 
-
-container = Container([swithcer, augments])
+select_btn = Button("Select")
+container = Container([swithcer, augments, select_btn])
 
 card = Card(
-    title="5️⃣ Training augmentations",
+    title="Training augmentations",
     description="Choose one of the prepared templates or provide custom pipeline",
     content=container,
-    lock_message="Select a model to unlock.",
 )
-card.lock()
+card.lock("Confirm splits.")
 
 
 def update_task(task_name):

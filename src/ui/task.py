@@ -23,7 +23,7 @@ select_field = Field(title="Select the task you are going to solve:", content=ta
 select_btn = Button(text="Select task")
 
 card = Card(
-    title="1️⃣ MMDetection task",
+    title="MMDetection task",
     description="Select task from list below",
     content=Container(widgets=[info, select_field, select_btn], direction="vertical"),
     lock_message="Please, select project and load data.",

@@ -1,7 +1,4 @@
-from supervisely.app.widgets import (
-    Card,
-    ProjectThumbnail,
-)
+from supervisely.app.widgets import Card, ProjectThumbnail
 
 from src.sly_globals import api, PROJECT_ID
 

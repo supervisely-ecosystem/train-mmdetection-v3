@@ -1,15 +1,17 @@
 import supervisely as sly
-from supervisely.app.widgets import TrainValSplits, Card
+from supervisely.app.widgets import TrainValSplits, Card, Container, Button
 import src.sly_globals as g
 
+select_btn = Button("Select")
 splits = TrainValSplits(project_id=g.PROJECT_ID)
+content = Container(widgets=[splits, select_btn])
 
 card = Card(
-    title="4️⃣ Train / Validation splits",
+    title="Train / Validation splits",
     description="Define how to split your data to train/val subsets.",
-    content=splits,
+    content=content,
 )
-card.lock()
+card.lock("Confirm selected classes.")
 
 
 def dump_train_val_splits(project_dir):

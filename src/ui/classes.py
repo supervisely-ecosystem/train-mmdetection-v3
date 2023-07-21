@@ -1,25 +1,7 @@
 from supervisely.app.widgets import ClassesTable, Card, Container, Button, Switch, Field
 from supervisely.app.content import StateJson
-import supervisely as sly
-import traceback
 
 from src.sly_globals import PROJECT_ID
-
-
-class DebugCard(Card):
-    def lock(self, message: str = None):
-        sly.logger.debug(f"Card {self} was locked")
-        for line in traceback.format_stack():
-            sly.logger.debug(line.strip())
-        to_return = super().lock(message)
-        sly.logger.debug(f"New state {self.widget_id}: {StateJson()[self.widget_id]}")
-        return to_return
-
-    def unlock(self):
-        sly.logger.debug(f"Card {self} was unlocked")
-        for line in traceback.format_stack():
-            sly.logger.debug(line.strip())
-        return super().unlock()
 
 
 def select_all(cls_tbl: ClassesTable):
@@ -40,15 +22,16 @@ filter_images_without_gt_field = Field(
     description="After selecting classes, some images may not have any annotations. Whether to remove them?",
 )
 
-card = DebugCard(
-    title="3️⃣ Training classes",
+select_btn = Button("Select")
+card = Card(
+    title="Training classes",
     description=(
         "Select classes that will be used for training. "
         "Supported shapes are Bitmap, Polygon, Rectangle."
     ),
-    content=Container([classes, filter_images_without_gt_field]),
+    content=Container([classes, filter_images_without_gt_field, select_btn]),
 )
-card.lock("Select a model to unlock.")
+card.lock("Select model to unlock.")
 
 # @classes.value_changed
 # def confirmation_message(selected_classes):

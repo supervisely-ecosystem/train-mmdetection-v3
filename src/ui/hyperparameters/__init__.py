@@ -1,12 +1,21 @@
-from supervisely.app.widgets import Tabs, Card
+from supervisely.app.widgets import Tabs, Card, Button, Container
 
 from src.ui.hyperparameters.checkpoints import checkpoints_tab, checkpoint_params
 from src.ui.hyperparameters.general import general_tab, general_params
-from src.ui.hyperparameters.optimizers import optimizers_tab, optimizers_params
+from src.ui.hyperparameters.optimizers import (
+    optimizers_tab,
+    optimizers_params,
+    apply_clip_input,
+    clip_input,
+    select_optim,
+)
 from src.ui.hyperparameters.lr_scheduler import (
     schedulres_tab,
     schedulers_params,
     get_scheduler_params,
+    warmup,
+    enable_warmup_input,
+    select_scheduler,
 )
 from src.train_parameters import TrainParameters
 
@@ -18,7 +27,7 @@ from src.ui import classes
 from src.ui import models
 
 
-content = Tabs(
+tabs = Tabs(
     labels=[
         "General",
         "Checkpoints",
@@ -28,13 +37,15 @@ content = Tabs(
     contents=[general_tab, checkpoints_tab, optimizers_tab, schedulres_tab],
 )
 
+select_btn = Button(text="Select")
+content = Container(widgets=[tabs, select_btn])
+
 card = Card(
-    title="6️⃣ Training hyperparameters",
+    title="Training hyperparameters",
     description="Configure the training process.",
-    lock_message="Select a model to unlock.",
     content=content,
 )
-card.lock("Select a model to unlock.")
+card.lock("Select augmentations.")
 
 
 def update_widgets_with_params(params: TrainParameters):

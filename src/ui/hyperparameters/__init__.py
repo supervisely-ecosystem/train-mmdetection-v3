@@ -34,7 +34,7 @@ card = Card(
     lock_message="Select a model to unlock.",
     content=content,
 )
-card.lock()
+card.lock("Select a model to unlock.")
 
 
 def update_widgets_with_params(params: TrainParameters):

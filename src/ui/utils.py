@@ -233,7 +233,7 @@ def create_linked_getter(
 
 def wrap_button_click(
     btn: Button,
-    card_to_unlock: Card,
+    cards_to_unlock: List[Card],
     widgets_to_disable: List[Widget],
     callback: Optional[Callable] = None,
     lock_msg: str = None,
@@ -256,15 +256,11 @@ def wrap_button_click(
         else:
             update_custom_button_params(btn, select_params)
 
-        if button_clicked[bid]:
-            card_to_unlock.unlock()
-        else:
-            card_to_unlock.lock(lock_msg)
-
-        # unlock_lock(
-        #     [card_to_unlock],
-        #     unlock=button_clicked[bid],
-        # )
+        unlock_lock(
+            cards_to_unlock,
+            unlock=button_clicked[bid],
+            message=lock_msg,
+        )
         disable_enable(
             widgets_to_disable,
             disable=button_clicked[bid],

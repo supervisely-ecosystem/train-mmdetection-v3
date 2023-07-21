@@ -245,7 +245,7 @@ card = Card(
     content=container,
     lock_message="Select a model to unlock.",
 )
-card.lock()
+card.lock("Select a model to unlock.")
 
 
 @start_train_btn.click

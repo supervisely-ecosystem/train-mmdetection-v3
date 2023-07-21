@@ -44,7 +44,7 @@ card = Card(
     content=container,
     lock_message="Select a model to unlock.",
 )
-card.lock()
+card.lock("Select a model to unlock.")
 
 
 def update_task(task_name):

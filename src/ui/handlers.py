@@ -42,7 +42,13 @@ from src.ui import model_leaderboard
 
 models_select_callback = wrap_button_click(
     models.select_btn,
-    classes_ui.card,
+    cards_to_unlock=[
+        classes_ui.card,
+        splits_ui.card,
+        augmentations.card,
+        hyperparameters.card,
+        train.card,
+    ],
     widgets_to_disable=[
         models.radio_tabs,
         models.arch_select,
@@ -71,12 +77,6 @@ def on_task_changed(selected_task):
 
 @select_btn.click
 def select_task():
-    # button_selected(
-    #     select_btn,
-    #     [task_selector],
-    #     lock_cards=[models.card],
-    # )
-    # model_select_button_state_change(True)
     task_select_callback()
     if button_clicked[select_btn.widget_id]:
         on_task_changed(task_selector.get_value())
@@ -101,8 +101,10 @@ def update_selected_model(selected_row):
 
 @models.select_btn.click
 def on_model_selected():
-    # update default hyperparameters in UI
+    # unlock cards
     models_select_callback()
+
+    # update default hyperparameters in UI
     is_pretrained_model = models.is_pretrained_model_selected()
 
     if is_pretrained_model:
@@ -134,5 +136,4 @@ def on_model_selected():
     hyperparameters.update_widgets_with_params(params)
 
     # unlock cards
-    # model_select_button_state_change(False)
     sly.logger.debug(f"State {classes_ui.card.widget_id}: {StateJson()[classes_ui.card.widget_id]}")

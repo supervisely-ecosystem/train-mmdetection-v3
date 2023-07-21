@@ -11,7 +11,9 @@ class DebugCard(Card):
         sly.logger.debug(f"Card {self} was locked")
         for line in traceback.format_stack():
             sly.logger.debug(line.strip())
-        return super().lock(message)
+        to_return = super().lock(message)
+        sly.logger.debug(f"New state {self.widget_id}: {StateJson()[self.widget_id]}")
+        return to_return
 
     def unlock(self):
         sly.logger.debug(f"Card {self} was unlocked")
@@ -46,8 +48,7 @@ card = DebugCard(
     ),
     content=Container([classes, filter_images_without_gt_field]),
 )
-
-# card.lock()
+card.lock("Select model to unlock.")
 
 # @classes.value_changed
 # def confirmation_message(selected_classes):

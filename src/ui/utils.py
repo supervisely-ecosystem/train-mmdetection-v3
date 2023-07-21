@@ -1,7 +1,7 @@
 import torch
 from collections import OrderedDict
 from typing import Callable, Dict, Any, List, Optional
-from supervisely.app import DataJson
+from supervisely.app import DataJson, StateJson
 from supervisely.app.widgets import Button, Widget, Container, Switch, Card, InputNumber
 
 

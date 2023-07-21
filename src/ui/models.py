@@ -174,7 +174,7 @@ card = Card(
     title=f"2️⃣ {cur_task} models",
     description="Choose model architecture and how weights should be initialized",
     content=Container([radio_tabs, select_btn]),
-    lock_message="Select a task to unlock.",
+    lock_message="Select task to unlock.",
 )
 card.lock()
 

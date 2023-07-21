@@ -21,25 +21,6 @@ import src.ui.train_val_split as splits_ui
 from src.ui import model_leaderboard
 
 
-# def model_select_button_state_change(without_click: bool = False):
-#     button_selected(
-#         models.select_btn,
-#         disable_widgets=[
-#             models.radio_tabs,
-#             models.arch_select,
-#             models.path_field,
-#             models.table,
-#         ],
-#         lock_cards=[
-#             classes_ui.card,
-#             splits_ui.card,
-#             augmentations.card,
-#             hyperparameters.card,
-#             train.card,
-#         ],
-#         lock_without_click=without_click,
-#     )
-
 models_select_callback = wrap_button_click(
     models.select_btn,
     cards_to_unlock=[
@@ -61,7 +42,7 @@ models_select_callback = wrap_button_click(
 
 task_select_callback = wrap_button_click(
     select_btn,
-    models.card,
+    [models.card],
     [task_selector],
     models_select_callback,
     lock_msg="Select a task to unlock.",

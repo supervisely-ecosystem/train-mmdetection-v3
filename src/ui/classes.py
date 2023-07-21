@@ -48,7 +48,7 @@ card = DebugCard(
     ),
     content=Container([classes, filter_images_without_gt_field]),
 )
-card.lock("Select model to unlock.")
+card.lock("Select a model to unlock.")
 
 # @classes.value_changed
 # def confirmation_message(selected_classes):

@@ -50,7 +50,7 @@ models_select_callback = wrap_button_click(
         models.table,
         models.load_from,
     ],
-    lock_msg="Select model to unlock.",
+    lock_msg="Select a model to unlock.",
 )
 
 task_select_callback = wrap_button_click(
@@ -58,7 +58,7 @@ task_select_callback = wrap_button_click(
     models.card,
     [task_selector],
     models_select_callback,
-    lock_msg="Select task to unlock.",
+    lock_msg="Select a task to unlock.",
 )
 
 

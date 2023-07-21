@@ -1,13 +1,11 @@
 import torch
 from collections import OrderedDict
-from typing import Callable, Dict, Any, List, Optional
-from supervisely.app import DataJson, StateJson
+from typing import Callable, Dict, Any, List, Optional, Iterable
+from supervisely.app import DataJson
 from supervisely.app.widgets import Button, Widget, Container, Switch, Card, InputNumber
 
 
 button_clicked = {}
-# select_params = {"icon": None, "plain": False, "text": "Select"}
-# reselect_params = {"icon": "zmdi zmdi-refresh", "plain": True, "text": "Reselect"}
 
 
 def update_custom_params(
@@ -76,6 +74,30 @@ class InputContainer(object):
             raise AttributeError(
                 f"Widget with name {name} does not exists, only {self._widgets.keys()}"
             )
+
+    def disable(self) -> None:
+        for w in self._widgets.values():
+            if isinstance(w, Iterable):
+                for wi in w:
+                    self._disable_w(wi)
+            else:
+                self._disable_w(w)
+
+    def enable(self) -> None:
+        for w in self._widgets.values():
+            if isinstance(w, Iterable):
+                for wi in w:
+                    self._enable_w(wi)
+            else:
+                self._enable_w(w)
+
+    def _enable_w(self, wg: Any) -> None:
+        if isinstance(wg, Widget):
+            wg.enable()
+
+    def _disable_w(self, wg: Any) -> None:
+        if isinstance(wg, Widget):
+            wg.disable()
 
     def _get_value(self, name: str):
         if name in self._custom_get_value:
@@ -151,38 +173,10 @@ def unlock_lock(cards: List[Card], unlock: bool = True, message: str = None):
     for w in cards:
         if unlock:
             w.unlock()
+            # w.uncollapse()
         else:
             w.lock(message)
-
-
-# def button_selected(
-#     select_btn: Button,
-#     disable_widgets: List[Widget],
-#     lock_cards: List[Card],
-#     lock_without_click: bool = False,
-# ):
-#     global button_clicked
-#     bid = select_btn.widget_id
-
-#     if lock_without_click:
-#         disable_enable(disable_widgets, disable=False)
-#         unlock_lock(lock_cards, unlock=False)
-#         update_custom_button_params(select_btn, select_params)
-#         button_clicked[bid] = False
-#         return
-
-#     if bid not in button_clicked:
-#         button_clicked[bid] = True
-#     else:
-#         button_clicked[bid] = not button_clicked[bid]
-
-#     disable_enable(disable_widgets, disable=button_clicked[bid])
-#     unlock_lock(lock_cards, unlock=button_clicked[bid])
-
-#     if button_clicked[bid] is True:
-#         update_custom_button_params(select_btn, reselect_params)
-#     else:
-#         update_custom_button_params(select_btn, select_params)
+            # w.collapse()
 
 
 def get_devices():
@@ -237,6 +231,7 @@ def wrap_button_click(
     widgets_to_disable: List[Widget],
     callback: Optional[Callable] = None,
     lock_msg: str = None,
+    upd_params: bool = True,
 ) -> Callable[[Optional[bool]], None]:
     global button_clicked
 
@@ -251,7 +246,7 @@ def wrap_button_click(
         else:
             button_clicked[bid] = not button_clicked[bid]
 
-        if button_clicked[bid]:
+        if button_clicked[bid] and upd_params:
             update_custom_button_params(btn, reselect_params)
         else:
             update_custom_button_params(btn, select_params)

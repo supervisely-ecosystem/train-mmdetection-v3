@@ -247,8 +247,7 @@ To navigate to team files, go to the `Start` menu and press the `Team files` but
 
 # How To Use Custom Model Outside The Platform
 
-We have a [Jupyter Notebook](https://github.com/supervisely-ecosystem/serve-mmdetection-v3/blob/master/inference_outside_sly.ipynb) as an example of how you can use your custom trained model outside Supervisely.
-First, download the `config.py` file and model weights (`.pth`) from Superviesly Team Files. Then, run the [notebook](https://github.com/supervisely-ecosystem/serve-mmdetection-v3/blob/master/inference_outside_sly.ipynb) and follow its instructions.
+You can use your trained models outside Supervisely platform without any dependencies on Supervisely SDK. You just need to download config file and model weights (.pth) from Team Files, and then you can build and use the model as a normal model in mmdetection 3.0. See this [Jupyter Notebook](https://github.com/supervisely-ecosystem/train-mmdetection-v3/blob/master/inference_outside_supervisely.ipynb) for details.
 
 A base code example is here:
 ```python

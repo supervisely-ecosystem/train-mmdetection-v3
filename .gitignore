@@ -5,6 +5,7 @@ app_data
 /*.jpg
 /*.png
 /mmdetection
+/my_model
 /sly_project*
 *.pth
 /model

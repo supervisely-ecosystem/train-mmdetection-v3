@@ -166,10 +166,12 @@ def train():
 
     # Its grace, the Runner!
     runner = RUNNERS.build(train_cfg)
-    try:
-        runner.train()
-    except StopIteration as exc:
-        sly.logger.info("The training is stopped.")
+
+    with g.app.run_with_stop_app_error_suppression():
+        try:
+            runner.train()
+        except StopIteration as exc:
+            sly.logger.info("The training is stopped.")
 
     epoch_progress.hide()
 

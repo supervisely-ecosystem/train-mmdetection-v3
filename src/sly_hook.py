@@ -53,11 +53,8 @@ class SuperviselyHook(Hook):
             monitoring.add_scalar("train", "Learning Rate", "lr", i, tag["lr"])
 
         # Stop training
-        if g.stop_training:
-            raise StopIteration()
-
-        # Stop app
-        if g.app.app_is_stopped():
+        if g.app.app_is_stopped() or g.stop_training:
+            sly.logger.info("The training is stopped.")
             raise g.app.StopAppError("This error is expected")
 
     def after_val_iter(

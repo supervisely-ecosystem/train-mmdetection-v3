@@ -167,7 +167,7 @@ def train():
     # Its grace, the Runner!
     runner = RUNNERS.build(train_cfg)
 
-    with g.app.run_with_stop_app_error_suppression():
+    with g.app.run_with_stop_app_suppression():
         runner.train()
 
     if g.stop_training is True:

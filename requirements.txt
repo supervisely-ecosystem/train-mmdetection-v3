@@ -1,2 +1,2 @@
-supervisely==6.72.78
-# git+https://github.com/supervisely/supervisely.git@master
+supervisely==6.72.182
+# git+https://github.com/supervisely/supervisely.git@v2-stop

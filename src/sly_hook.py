@@ -53,9 +53,9 @@ class SuperviselyHook(Hook):
             monitoring.add_scalar("train", "Learning Rate", "lr", i, tag["lr"])
 
         # Stop training
-        if g.app.app_is_stopped() or g.stop_training:
+        if g.app.is_stopped() or g.stop_training:
             sly.logger.info("The training is stopped.")
-            raise g.app.StopApp("This error is expected")
+            raise g.app.StopException("This error is expected")
 
     def after_val_iter(
         self,
@@ -64,8 +64,8 @@ class SuperviselyHook(Hook):
         data_batch: DATA_BATCH = None,
         outputs: Optional[Sequence] = None,
     ) -> None:
-        if g.app.app_is_stopped():
-            raise g.app.StopApp("This error is expected")
+        if g.app.is_stopped():
+            raise g.app.StopException("This error is expected")
         return super().after_val_iter(runner, batch_idx, data_batch, outputs)
 
     def after_train_epoch(self, runner: Runner) -> None:

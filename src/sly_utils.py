@@ -62,7 +62,9 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, progress_widget
         pbar = progress_widget(
             message="Uploading to Team Files...",
             total=int(nbytes / 1024 / 1024),
-            unit="MB",
+            unit="b",
+            unit_divisor=1024,
+            unit_scale=True,
         )
 
         def cb(monitor: MultipartEncoderMonitor):

@@ -67,7 +67,8 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, progress_widget
         )
 
         def cb(monitor: MultipartEncoderMonitor):
-            pbar.update(int(monitor.bytes_read - pbar.n))
+            # pbar.update(int(monitor.bytes_read - pbar.n))
+            pbar.update()
 
     else:
         cb = None

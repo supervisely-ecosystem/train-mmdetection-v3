@@ -61,14 +61,13 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, progress_widget
         pbar = progress_widget(
             message="Uploading to Team Files...",
             total=size_bytes,
-            unit="b",
+            unit="iB",
             unit_divisor=1024,
             unit_scale=True,
         )
 
         def cb(monitor: MultipartEncoderMonitor):
-            # pbar.update(int(monitor.bytes_read - pbar.n))
-            pbar.update()
+            pbar.update(int(monitor.bytes_read - pbar.n))
 
     else:
         cb = None
@@ -79,6 +78,7 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, progress_widget
         f"/mmdetection-3/{task_id}_{experiment_name}",
         progress_size_cb=cb,
     )
+    progress_widget.hide()
     return out_path
 
 

@@ -88,7 +88,9 @@ def download_project(progress_widget):
 
     n = get_images_count()
     with progress_widget(message="Downloading project...", total=n) as pbar:
-        sly.Project.download(g.api, g.PROJECT_ID, project_dir, progress_cb=pbar.update)
+        sly.Project.download(
+            g.api, g.PROJECT_ID, project_dir, batch_size=50, progress_cb=pbar.update
+        )
 
     return project_dir
 

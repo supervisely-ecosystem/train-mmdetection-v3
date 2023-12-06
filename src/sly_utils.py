@@ -57,16 +57,17 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, progress_widget
 
     if progress_widget:
         progress_widget.show()
-        work_dir_p = Path(work_dir)
-        nbytes = sum(f.stat().st_size for f in work_dir_p.glob("**/*") if f.is_file())
+        size_bytes = sly.fs.get_directory_size(work_dir)
         pbar = progress_widget(
             message="Uploading to Team Files...",
-            total=int(nbytes / 1024 / 1024),
-            unit="MB",
+            total=size_bytes,
+            unit="b",
+            unit_divisor=1024,
+            unit_scale=True,
         )
 
         def cb(monitor: MultipartEncoderMonitor):
-            pbar.update(int(monitor.bytes_read / 1024 / 1024 - pbar.n))
+            pbar.update(int(monitor.bytes_read - pbar.n))
 
     else:
         cb = None
@@ -77,6 +78,7 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, progress_widget
         f"/mmdetection-3/{task_id}_{experiment_name}",
         progress_size_cb=cb,
     )
+    progress_widget.hide()
     return out_path
 
 

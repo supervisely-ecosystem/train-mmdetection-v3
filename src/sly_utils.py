@@ -61,7 +61,7 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, progress_widget
         pbar = progress_widget(
             message="Uploading to Team Files...",
             total=size_bytes,
-            unit="iB",
+            unit="b",
             unit_divisor=1024,
             unit_scale=True,
         )

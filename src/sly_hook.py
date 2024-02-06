@@ -41,6 +41,7 @@ class SuperviselyHook(Hook):
         # Check nans
         if not torch.isfinite(outputs["loss"]):
             sly.logger.warn("The loss is NaN.")
+            outputs["loss"] = torch.tensor(0.0, device=outputs["loss"].device)
 
         # Update progress bars
         self.iter_progress.update(1)

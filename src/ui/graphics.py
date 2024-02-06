@@ -1,9 +1,12 @@
 from random import randint
 import numpy as np
+import math
 from typing import Dict, Optional, List, Tuple, Union
 from collections import OrderedDict
 from supervisely.app.widgets import GridPlot, Container, Field, Empty
 from supervisely.app.content import StateJson, DataJson
+
+import supervisely as sly
 
 import src.sly_globals as g
 
@@ -84,6 +87,12 @@ class Monitoring(object):
         x: NumT,
         y: NumT,
     ):
+        if not math.isfinite(y):
+            sly.logger.warn(
+                f"{stage_id}:{x} - {metric_name} has unserializable value (NaN or inf)!"
+            )
+            y = 0
+
         self._stages[stage_id]["raw"].add_scalar(f"{metric_name}/{serise_name}", y, x)
 
     def add_scalars(

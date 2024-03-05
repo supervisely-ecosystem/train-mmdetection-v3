@@ -1,2 +1,2 @@
-supervisely==6.73.22
+supervisely==6.73.41
 # git+https://github.com/supervisely/supervisely.git@v2-stop-rename

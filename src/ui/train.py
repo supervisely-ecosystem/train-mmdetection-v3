@@ -25,6 +25,7 @@ from src import sly_utils
 from src.ui.hyperparameters import update_params_with_widgets
 from src.ui.augmentations import get_selected_aug
 from src.ui.graphics import add_classwise_metric, monitoring
+from src.project_cached import download_project
 
 # register modules (don't remove):
 from src import sly_dataset, sly_hook, sly_imgaugs
@@ -105,7 +106,14 @@ def add_metadata(cfg: Config):
 
 def train():
     # download dataset
-    project_dir = sly_utils.download_project(iter_progress)
+    project_dir = f"{g.app_dir}/sly_project"
+    download_project(
+        api=g.api,
+        project_id=g.PROJECT_ID,
+        project_dir=project_dir,
+        use_cache=g.USE_CACHE,
+        progress=iter_progress,
+    )
 
     # prepare split files
     dump_train_val_splits(project_dir)

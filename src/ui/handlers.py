@@ -20,6 +20,7 @@ from src.ui import hyperparameters
 from src.ui import augmentations
 from src.ui import model_leaderboard
 from src.ui.utils import wrap_button_click, button_clicked, set_stepper_step
+import src.sly_globals as g
 
 
 all_widgets = [
@@ -248,6 +249,7 @@ def select_hyperparameters():
 @train.start_train_btn.click
 def start_train():
     train_start_callback()
+    g.USE_CACHE = input_project.use_cache_checkbox.is_checked()
     train.start_train()
 
 

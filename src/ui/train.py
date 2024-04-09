@@ -105,18 +105,32 @@ def add_metadata(cfg: Config):
 
 
 def train():
+    use_cache = g.USE_CACHE
     # download dataset
     project_dir = f"{g.app_dir}/sly_project"
     download_project(
         api=g.api,
         project_id=g.PROJECT_ID,
         project_dir=project_dir,
-        use_cache=g.USE_CACHE,
+        use_cache=use_cache,
         progress=iter_progress,
     )
 
     # prepare split files
-    dump_train_val_splits(project_dir)
+    try:
+        dump_train_val_splits(project_dir)
+    except Exception:
+        if not use_cache:
+            raise
+        sly.logger.warn("Failed to dump train/val splits. Trying to re-download project.", exc_info=True)
+        download_project(
+            api=g.api,
+            project_id=g.PROJECT_ID,
+            project_dir=project_dir,
+            use_cache=False,
+            progress=iter_progress,
+        )
+        dump_train_val_splits(project_dir)
 
     # prepare model files
     iter_progress(message="Preparing the model...", total=1)

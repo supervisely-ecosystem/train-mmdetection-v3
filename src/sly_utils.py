@@ -3,6 +3,7 @@ from pathlib import Path
 import shutil
 from requests_toolbelt import MultipartEncoderMonitor
 from supervisely.app.widgets import Progress
+from supervisely.nn.checkpoints import MMDetection3Checkpoint
 
 from tqdm import tqdm
 import src.sly_globals as g
@@ -40,7 +41,7 @@ def download_custom_model(remote_weights_path: str):
     return weights_path, config_path
 
 
-def upload_artifacts(work_dir: str, experiment_name: str = None, progress_widget: Progress = None):
+def upload_artifacts(work_dir: str, experiment_name: str = None, task_type: str = None, progress_widget: Progress = None):
     task_id = g.api.task_id or ""
     paths = [path for path in os.listdir(work_dir) if path.endswith(".py")]
     assert len(paths) > 0, "Can't find config file saved during training."
@@ -72,13 +73,32 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, progress_widget
     else:
         cb = None
 
+    checkpoint = MMDetection3Checkpoint(g.TEAM_ID)
+    model_dir = checkpoint.get_model_dir()
+    remote_artifacts_dir = f"/{model_dir}/{task_id}_{experiment_name}"
+    remote_weights_dir = remote_artifacts_dir
+    remote_config_dir = os.path.join(remote_artifacts_dir, checkpoint.config_file)
+    
     out_path = g.api.file.upload_directory(
         g.TEAM_ID,
         work_dir,
-        f"/mmdetection-3/{task_id}_{experiment_name}",
+        remote_artifacts_dir,
         progress_size_cb=cb,
     )
     progress_widget.hide()
+    
+    # generate metadata
+    checkpoint.generate_sly_metadata(
+        app_name=checkpoint._app_name,
+        session_id=task_id,
+        session_path=remote_artifacts_dir,
+        weights_path=remote_weights_dir,
+        weights_ext=checkpoint.weights_ext,
+        training_project_name=g.api.project.get_info_by_id(g.PROJECT_ID).name,
+        task_type=task_type,
+        config_path=remote_config_dir,
+    )
+    
     return out_path
 
 

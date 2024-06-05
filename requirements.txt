@@ -1,2 +1,1 @@
-supervisely==6.73.63
-# git+https://github.com/supervisely/supervisely.git@v2-stop-rename
+git+https://github.com/supervisely/supervisely.git@optimize-checkpoint

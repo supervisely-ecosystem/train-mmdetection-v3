@@ -206,6 +206,7 @@ def train():
     out_path = sly_utils.upload_artifacts(
         params.work_dir,
         params.experiment_name,
+        get_task(),
         iter_progress,
     )
 

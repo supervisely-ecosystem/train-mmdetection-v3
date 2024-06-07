@@ -73,11 +73,10 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, task_type: str 
     else:
         cb = None
 
-    checkpoint = MMDetection3Checkpoint(g.TEAM_ID)
-    model_dir = checkpoint.get_model_dir()
-    remote_artifacts_dir = f"/{model_dir}/{task_id}_{experiment_name}"
+    framework_folder = g.sly_mmdet3.framework_folder
+    remote_artifacts_dir = f"/{framework_folder}/{task_id}_{experiment_name}"
     remote_weights_dir = remote_artifacts_dir
-    remote_config_dir = os.path.join(remote_artifacts_dir, checkpoint.config_file)
+    remote_config_dir = os.path.join(remote_artifacts_dir, g.sly_mmdet3.config_file)
     
     out_path = g.api.file.upload_directory(
         g.TEAM_ID,
@@ -88,14 +87,14 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, task_type: str 
     progress_widget.hide()
     
     # generate metadata
-    checkpoint.generate_sly_metadata(
-        app_name=checkpoint._app_name,
-        session_id=task_id,
-        session_path=remote_artifacts_dir,
-        weights_path=remote_weights_dir,
-        weights_ext=checkpoint.weights_ext,
-        training_project_name=g.api.project.get_info_by_id(g.PROJECT_ID).name,
-        task_type=task_type,
+    g.sly_mmdet3.generate_metadata(
+        app_name=g.sly_mmdet3.app_name,
+        task_id=task_id,
+        artifacts_folder=remote_artifacts_dir,
+        weights_folder=remote_weights_dir,
+        weights_ext=g.sly_mmdet3.weights_ext,
+        project_name=g.api.project.get_info_by_id(g.PROJECT_ID).name,
+        cv_task=task_type,
         config_path=remote_config_dir,
     )
     

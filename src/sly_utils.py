@@ -3,7 +3,6 @@ from pathlib import Path
 import shutil
 from requests_toolbelt import MultipartEncoderMonitor
 from supervisely.app.widgets import Progress
-from supervisely.nn.checkpoints import MMDetection3Checkpoint
 
 from tqdm import tqdm
 import src.sly_globals as g

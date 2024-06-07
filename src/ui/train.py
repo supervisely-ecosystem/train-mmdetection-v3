@@ -212,7 +212,8 @@ def train():
 
     # set task results
     if sly.is_production():
-        file_info = g.api.file.get_info_by_path(g.TEAM_ID, out_path + "/config.py")
+        remote_file_path = g.sly_mmdet3.get_config_path(out_path)
+        file_info = g.api.file.get_info_by_path(g.TEAM_ID, remote_file_path)
 
         # add link to artifacts
         folder_thumb.set(info=file_info)

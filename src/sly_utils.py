@@ -73,7 +73,7 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, task_type: str 
         cb = None
 
     framework_folder = g.sly_mmdet3.framework_folder
-    remote_artifacts_dir = f"/{framework_folder}/{task_id}_{experiment_name}"
+    remote_artifacts_dir = f"{framework_folder}/{task_id}_{experiment_name}"
     remote_weights_dir = g.sly_mmdet3.get_weights_path(remote_artifacts_dir)
     remote_config_dir = g.sly_mmdet3.get_config_path(remote_artifacts_dir)
     

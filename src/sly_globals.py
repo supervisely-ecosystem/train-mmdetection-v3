@@ -1,6 +1,7 @@
 import os
 import supervisely as sly
 from dotenv import load_dotenv
+from supervisely.nn.artifacts.mmdetection import MMDetection3
 
 from src.train_parameters import TrainParameters
 
@@ -24,6 +25,8 @@ data_dir = app_dir
 team = api.team.get_info_by_id(TEAM_ID)
 project_meta: sly.ProjectMeta = sly.ProjectMeta.from_json(api.project.get_meta(PROJECT_ID))
 # project_fs: sly.Project = None
+
+sly_mmdet3 = MMDetection3(TEAM_ID)
 
 COCO_MTERIC_KEYS = ["mAP", "mAP_50", "mAP_75"]
 MAX_CLASSES_TO_SHOW_CLASSWISE_METRIC = 10

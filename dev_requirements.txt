@@ -1,11 +1,3 @@
-# see docker/mmdet-3.0.Dockerfile
+# see docker/Dockerfile
 
-# torch==2.0.1 
-# torchvision==0.15.2
-# openmim==0.3.7
-# mmengine==0.7.4
-# mmcv==2.0.0
-# mmdet==3.0.0 
-# mmcls==1.0.0
-# supervisely==6.72.68
-# imgaug==0.4.0
+supervisely==6.73.100

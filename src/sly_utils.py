@@ -40,7 +40,7 @@ def download_custom_model(remote_weights_path: str):
     return weights_path, config_path
 
 
-def upload_artifacts(work_dir: str, experiment_name: str = None, progress_widget: Progress = None):
+def upload_artifacts(work_dir: str, experiment_name: str = None, task_type: str = None, progress_widget: Progress = None):
     task_id = g.api.task_id or ""
     paths = [path for path in os.listdir(work_dir) if path.endswith(".py")]
     assert len(paths) > 0, "Can't find config file saved during training."
@@ -72,13 +72,31 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, progress_widget
     else:
         cb = None
 
+    framework_folder = g.sly_mmdet3.framework_folder
+    remote_artifacts_dir = f"{framework_folder}/{task_id}_{experiment_name}"
+    remote_weights_dir = g.sly_mmdet3.get_weights_path(remote_artifacts_dir)
+    remote_config_dir = g.sly_mmdet3.get_config_path(remote_artifacts_dir)
+    
     out_path = g.api.file.upload_directory(
         g.TEAM_ID,
         work_dir,
-        f"/mmdetection-3/{task_id}_{experiment_name}",
+        remote_artifacts_dir,
         progress_size_cb=cb,
     )
     progress_widget.hide()
+    
+    # generate metadata
+    g.sly_mmdet3.generate_metadata(
+        app_name=g.sly_mmdet3.app_name,
+        task_id=task_id,
+        artifacts_folder=remote_artifacts_dir,
+        weights_folder=remote_weights_dir,
+        weights_ext=g.sly_mmdet3.weights_ext,
+        project_name=g.api.project.get_info_by_id(g.PROJECT_ID).name,
+        task_type=task_type,
+        config_path=remote_config_dir,
+    )
+    
     return out_path
 
 

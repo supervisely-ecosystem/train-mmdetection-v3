@@ -111,7 +111,7 @@ def upload_artifacts(
 def convert_and_resize_images(work_dir: str):
     import cv2
 
-    MAX_DIM = 2048
+    MAX_DIM = 500 # TODO: 2048
 
     for root, _, files in os.walk(work_dir):
         for file in files:

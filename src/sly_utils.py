@@ -131,6 +131,7 @@ def convert_and_resize_images(work_dir: str):
                         sly.logger.info(f"Resizing {file} to {out_size}")
                         img = sly.image.resize(img, out_size)
                     sly.logger.info(f"New image shape: {img.shape[:2]}")
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                     sly.image.write(jpg_img_path.as_posix(), img)
                     sly.fs.silent_remove(png_img_path.as_posix())
                     img = None

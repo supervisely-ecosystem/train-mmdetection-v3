@@ -120,7 +120,7 @@ def convert_and_resize_images(work_dir: str):
                 png_img_path = Path(root) / file
                 sly.logger.info(f"Image path: {png_img_path}")
                 parent_dir = png_img_path.parent
-                if parent_dir.as_posix() == "vis_image":
+                if parent_dir.name == "vis_image":
                     sly.logger.info(f"Converting {file} to jpg")
                     jpg_img_path = png_img_path.with_suffix(".jpg")
                     img = cv2.imread(png_img_path)

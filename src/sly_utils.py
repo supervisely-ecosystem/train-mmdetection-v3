@@ -60,8 +60,8 @@ def upload_artifacts(
         experiment_name = f"{g.config_name.split('.py')[0]}"
     sly.logger.debug("Uploading checkpoints to Team Files...")
 
-    if sly.is_community():
-        convert_and_resize_images(work_dir)
+    # if sly.is_community(): # TODO: uncomment
+    convert_and_resize_images(work_dir)
 
     if progress_widget:
         progress_widget.show()

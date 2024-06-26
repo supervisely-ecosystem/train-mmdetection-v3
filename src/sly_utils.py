@@ -123,7 +123,7 @@ def convert_and_resize_images(work_dir: str):
                 if parent_dir.name == "vis_image":
                     sly.logger.info(f"Converting {file} to jpg")
                     jpg_img_path = png_img_path.with_suffix(".jpg")
-                    img = cv2.imread(png_img_path)
+                    img = cv2.imread(png_img_path.as_posix())
                     h, w = img.shape[:2]
                     sly.logger.info(f"Image shape: {h}x{w}")
                     if h > MAX_DIM or w > MAX_DIM:
@@ -132,7 +132,7 @@ def convert_and_resize_images(work_dir: str):
                         img = sly.image.resize(img, out_size)
                     sly.logger.info(f"New image shape: {img.shape[:2]}")
                     sly.image.write(jpg_img_path.as_posix(), img)
-                    sly.fs.silent_remove(png_img_path)
+                    sly.fs.silent_remove(png_img_path.as_posix())
                     img = None
 
 

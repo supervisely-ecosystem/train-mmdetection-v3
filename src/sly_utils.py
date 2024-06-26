@@ -40,7 +40,12 @@ def download_custom_model(remote_weights_path: str):
     return weights_path, config_path
 
 
-def upload_artifacts(work_dir: str, experiment_name: str = None, task_type: str = None, progress_widget: Progress = None):
+def upload_artifacts(
+    work_dir: str,
+    experiment_name: str = None,
+    task_type: str = None,
+    progress_widget: Progress = None,
+):
     task_id = g.api.task_id or ""
     paths = [path for path in os.listdir(work_dir) if path.endswith(".py")]
     assert len(paths) > 0, "Can't find config file saved during training."
@@ -54,6 +59,9 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, task_type: str 
     if not experiment_name:
         experiment_name = f"{g.config_name.split('.py')[0]}"
     sly.logger.debug("Uploading checkpoints to Team Files...")
+
+    if sly.is_community():
+        convert_and_resize_images(work_dir)
 
     if progress_widget:
         progress_widget.show()
@@ -76,7 +84,7 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, task_type: str 
     remote_artifacts_dir = f"{framework_folder}/{task_id}_{experiment_name}"
     remote_weights_dir = g.sly_mmdet3.get_weights_path(remote_artifacts_dir)
     remote_config_dir = g.sly_mmdet3.get_config_path(remote_artifacts_dir)
-    
+
     out_path = g.api.file.upload_directory(
         g.TEAM_ID,
         work_dir,
@@ -84,7 +92,7 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, task_type: str 
         progress_size_cb=cb,
     )
     progress_widget.hide()
-    
+
     # generate metadata
     g.sly_mmdet3.generate_metadata(
         app_name=g.sly_mmdet3.app_name,
@@ -96,8 +104,30 @@ def upload_artifacts(work_dir: str, experiment_name: str = None, task_type: str 
         task_type=task_type,
         config_path=remote_config_dir,
     )
-    
+
     return out_path
+
+
+def convert_and_resize_images(work_dir: str):
+    import cv2
+
+    MAX_DIM = 2048
+
+    for root, _, files in os.walk(work_dir):
+        for file in files:
+            if file.endswith(".png"):
+                png_img_path = Path(root) / file
+                parent_dir = jpg_img_path.parent
+                if parent_dir.as_posix() == "vis_image":
+                    jpg_img_path = png_img_path.with_suffix(".jpg")
+                    img = cv2.imread(png_img_path)
+                    h, w = img.shape[:2]
+                    if h > MAX_DIM or w > MAX_DIM:
+                        out_size = (MAX_DIM, -1) if h > MAX_DIM else (-1, MAX_DIM)
+                        img = sly.image.resize(img, out_size)
+                    sly.image.write(jpg_img_path.as_posix(), img)
+                    sly.fs.silent_remove(png_img_path)
+                    img = None
 
 
 def download_project(progress_widget):

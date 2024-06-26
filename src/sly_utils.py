@@ -116,15 +116,21 @@ def convert_and_resize_images(work_dir: str):
     for root, _, files in os.walk(work_dir):
         for file in files:
             if file.endswith(".png"):
+                sly.logger.info(f"Fount {file}")
                 png_img_path = Path(root) / file
+                sly.logger.info(f"Image path: {png_img_path}")
                 parent_dir = png_img_path.parent
                 if parent_dir.as_posix() == "vis_image":
+                    sly.logger.info(f"Converting {file} to jpg")
                     jpg_img_path = png_img_path.with_suffix(".jpg")
                     img = cv2.imread(png_img_path)
                     h, w = img.shape[:2]
+                    sly.logger.info(f"Image shape: {h}x{w}")
                     if h > MAX_DIM or w > MAX_DIM:
                         out_size = (MAX_DIM, -1) if h > MAX_DIM else (-1, MAX_DIM)
+                        sly.logger.info(f"Resizing {file} to {out_size}")
                         img = sly.image.resize(img, out_size)
+                    sly.logger.info(f"New image shape: {img.shape[:2]}")
                     sly.image.write(jpg_img_path.as_posix(), img)
                     sly.fs.silent_remove(png_img_path)
                     img = None

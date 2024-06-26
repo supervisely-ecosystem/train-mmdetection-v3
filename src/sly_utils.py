@@ -117,7 +117,7 @@ def convert_and_resize_images(work_dir: str):
         for file in files:
             if file.endswith(".png"):
                 png_img_path = Path(root) / file
-                parent_dir = jpg_img_path.parent
+                parent_dir = png_img_path.parent
                 if parent_dir.as_posix() == "vis_image":
                     jpg_img_path = png_img_path.with_suffix(".jpg")
                     img = cv2.imread(png_img_path)

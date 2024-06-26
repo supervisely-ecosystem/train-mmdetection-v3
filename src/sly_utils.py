@@ -60,8 +60,8 @@ def upload_artifacts(
         experiment_name = f"{g.config_name.split('.py')[0]}"
     sly.logger.debug("Uploading checkpoints to Team Files...")
 
-    # if sly.is_community(): # TODO: uncomment
-    convert_and_resize_images(work_dir)
+    if sly.is_community():
+        convert_and_resize_images(work_dir)
 
     if progress_widget:
         progress_widget.show()
@@ -111,7 +111,7 @@ def upload_artifacts(
 def convert_and_resize_images(work_dir: str):
     import cv2
 
-    MAX_DIM = 500 # TODO: 2048
+    MAX_DIM = 2048
 
     for root, _, files in os.walk(work_dir):
         for file in files:

@@ -99,6 +99,12 @@ class TrainParameters:
             cfg.model.data_preprocessor.pad_mask = True
             cfg.model.data_preprocessor.pad_size_divisor = 32
 
+        try:
+            print("Printing frozen stages")
+            print(cfg.model.backbone.frozen_stages)
+        except Exception as e:
+            print(f"Error while printing frozen stages: {e}")
+
         # pipelines
         train_pipeline, test_pipeline = get_default_pipelines(
             with_mask=self.task == "instance_segmentation"

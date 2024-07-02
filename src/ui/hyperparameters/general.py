@@ -102,6 +102,14 @@ chart_update_field = Field(
 )
 general_params.add_input("chart_update_interval", chart_update_input)
 
+frozen_stages_input = InputNumber(-1, min=-1)
+frozen_stages_field = Field(
+    frozen_stages_input,
+    "Frozen stages",
+    description=("The first k stages will be frozen. Set to -1 to disable freezing."),
+)
+general_params.add_input("frozen_stages", frozen_stages_input)
+
 general_tab = Container(
     [
         # device_field,
@@ -135,4 +143,5 @@ def update_general_params_with_widgets(params: TrainParameters):
     params.batch_size_val = general_params.batch_size_val
     params.input_size = (general_params.bigger_size, general_params.smaller_size)
     params.chart_update_interval = general_params.chart_update_interval
+    params.frozen_stages = general_params.frozen_stages
     # params.device_name = general_params.device

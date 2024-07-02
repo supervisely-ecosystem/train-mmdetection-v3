@@ -122,7 +122,9 @@ def train():
     except Exception:
         if not use_cache:
             raise
-        sly.logger.warn("Failed to dump train/val splits. Trying to re-download project.", exc_info=True)
+        sly.logger.warn(
+            "Failed to dump train/val splits. Trying to re-download project.", exc_info=True
+        )
         download_project(
             api=g.api,
             project_id=g.PROJECT_ID,
@@ -139,6 +141,7 @@ def train():
     # create config
     cfg = Config.fromfile(config_path)
     params = get_train_params(cfg)
+    sly.logger.debug(f"Train parameters: {params}")
 
     # set device
     # set_device_env(params.device_name)

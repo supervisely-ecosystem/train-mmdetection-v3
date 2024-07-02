@@ -48,6 +48,8 @@ class TrainParameters:
         self.warmup_ratio = 0.001
         self.scheduler = None
 
+        self.frozen_stages = -1
+
         # self.losses = None
 
     @classmethod

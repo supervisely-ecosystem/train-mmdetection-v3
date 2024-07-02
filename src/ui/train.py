@@ -55,13 +55,19 @@ def get_train_params(cfg) -> TrainParameters:
     params = TrainParameters.from_config(cfg)
     params.init(task, selected_classes, augs_config_path, g.app_dir)
     try:
-        print("Printinf frozen_stages")
+        print("Print frozen_stages before update with widgets")
         print(params.frozen_stages)
     except Exception as e:
         print(e)
 
     # update params with UI
     update_params_with_widgets(params)
+    try:
+        print("Print frozen_stages after update with widgets")
+        print(params.frozen_stages)
+    except Exception as e:
+        print(e)
+
     params.add_classwise_metric = len(selected_classes) <= g.MAX_CLASSES_TO_SHOW_CLASSWISE_METRIC
     return params
 

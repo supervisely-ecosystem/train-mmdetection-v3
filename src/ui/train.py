@@ -141,7 +141,7 @@ def train():
     # create config
     cfg = Config.fromfile(config_path)
     params = get_train_params(cfg)
-    sly.logger.debug(f"Train parameters: {params}")
+    print("Dir of params:", dir(params))  # ! debug
 
     # set device
     # set_device_env(params.device_name)

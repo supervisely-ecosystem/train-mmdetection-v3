@@ -116,7 +116,7 @@ def frozen_stages_switch_changed(is_on: bool):
 frozen_stages_input = InputNumber(-1, min=-1)
 frozen_stages_input.hide()
 frozen_stages_field = Field(
-    Container[frozen_stages_switch, frozen_stages_input],
+    Container([frozen_stages_switch, frozen_stages_input]),
     "Frozen stages",
     description=("The first k stages will be frozen. Set to -1 to disable freezing."),
 )

@@ -57,7 +57,6 @@ def get_train_params(cfg) -> TrainParameters:
 
     # update params with UI
     update_params_with_widgets(params)
-
     params.add_classwise_metric = len(selected_classes) <= g.MAX_CLASSES_TO_SHOW_CLASSWISE_METRIC
     return params
 

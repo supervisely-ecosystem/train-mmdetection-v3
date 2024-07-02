@@ -105,8 +105,10 @@ frozen_stages_input = InputNumber(-1, min=-1)
 frozen_stages_input.hide()
 frozen_stages_field = Field(
     Container([frozen_stages_switch, frozen_stages_input]),
-    "Frozen stages",
-    description=("The first k stages will be frozen. Set to -1 to disable freezing."),
+    "Override frozen stages parameter",
+    description=(
+        "The first k stages for the backbone will be frozen. Set to -1 to disable freezing."
+    ),
 )
 
 

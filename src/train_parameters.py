@@ -49,8 +49,6 @@ class TrainParameters:
         self.warmup_ratio = 0.001
         self.scheduler = None
 
-        self.frozen_stages = -1
-
         # self.losses = None
 
     @classmethod
@@ -100,11 +98,9 @@ class TrainParameters:
             cfg.model.data_preprocessor.pad_mask = True
             cfg.model.data_preprocessor.pad_size_divisor = 32
 
-        try:
+        if hasattr(self, "frozen_stages") and self.frozen_stages is not None:
             cfg.model.backbone.frozen_stages = self.frozen_stages
-            sly.logger.info(f"Set frozen_stages to: {self.frozen_stages}")
-        except Exception as e:
-            sly.logger.warning(f"Can't set frozen_stages: {e}")
+            sly.logger.debug(f"Frozen stages set to: {self.frozen_stages}")
 
         # pipelines
         train_pipeline, test_pipeline = get_default_pipelines(

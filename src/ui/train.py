@@ -122,7 +122,9 @@ def train():
     except Exception:
         if not use_cache:
             raise
-        sly.logger.warn("Failed to dump train/val splits. Trying to re-download project.", exc_info=True)
+        sly.logger.warn(
+            "Failed to dump train/val splits. Trying to re-download project.", exc_info=True
+        )
         download_project(
             api=g.api,
             project_id=g.PROJECT_ID,
@@ -187,7 +189,14 @@ def train():
     iter_progress(message="Preparing the model...", total=1)
 
     # Its grace, the Runner!
-    runner = RUNNERS.build(train_cfg)
+    try:
+        runner = RUNNERS.build(train_cfg)
+    except AttributeError:
+        sly.logger.error(
+            "Failed to build runner, it may be related to the incorrect "
+            "frozen_stages parameter in the config or other parameters."
+        )
+        raise
 
     with g.app.handle_stop():
         runner.train()

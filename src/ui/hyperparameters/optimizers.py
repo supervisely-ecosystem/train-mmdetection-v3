@@ -90,9 +90,31 @@ clip_field = Field(
     description="Select the highest gradient norm value.",
 )
 
+frozen_stages_switch = Switch(False)
+
+
+@frozen_stages_switch.value_changed
+def frozen_stages_switch_changed(is_on: bool):
+    if is_on:
+        frozen_stages_input.show()
+    else:
+        frozen_stages_input.hide()
+
+
+frozen_stages_input = InputNumber(-1, min=-1)
+frozen_stages_input.hide()
+frozen_stages_field = Field(
+    Container([frozen_stages_switch, frozen_stages_input]),
+    "Override frozen stages parameter",
+    description=(
+        "The first k stages for the backbone will be frozen. Set to -1 to disable freezing."
+    ),
+)
+
 
 optimizers_tab = Container(
     [
+        frozen_stages_field,
         select_optim_field,
         adam.create_container(),
         adamw.create_container(True),
@@ -134,4 +156,6 @@ def update_optimizer_params_with_widgets(params: TrainParameters) -> TrainParame
     new_params["type"] = name
     params.optimizer = new_params
     params.clip_grad_norm = get_clip()
+    if frozen_stages_switch.is_on():
+        params.frozen_stages = frozen_stages_input.get_value()
     return params

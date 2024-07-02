@@ -1,6 +1,7 @@
 from mmengine import Config, ConfigDict
 import multiprocessing
 from copy import deepcopy
+import supervisely as sly
 
 
 class TrainParameters:
@@ -96,6 +97,10 @@ class TrainParameters:
         if cfg.model.type in ["RTMDet", "YOLOX"]:
             cfg.model.data_preprocessor.pad_mask = True
             cfg.model.data_preprocessor.pad_size_divisor = 32
+
+        if hasattr(self, "frozen_stages") and self.frozen_stages is not None:
+            cfg.model.backbone.frozen_stages = self.frozen_stages
+            sly.logger.debug(f"Frozen stages set to: {self.frozen_stages}")
 
         # pipelines
         train_pipeline, test_pipeline = get_default_pipelines(

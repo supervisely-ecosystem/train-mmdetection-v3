@@ -119,6 +119,7 @@ general_tab = Container(
         bs_val_field,
         validation_field,
         chart_update_field,
+        frozen_stages_field,
     ]
 )
 

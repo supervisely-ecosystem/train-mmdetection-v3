@@ -156,6 +156,7 @@ def update_general_params_with_widgets(params: TrainParameters):
     params.batch_size_val = general_params.batch_size_val
     params.input_size = (general_params.bigger_size, general_params.smaller_size)
     params.chart_update_interval = general_params.chart_update_interval
-    if frozen_stages_switch.is_on:
+    if frozen_stages_switch.is_on():
+        print("Frozen stages switch is on, adding frozen stages")
         params.frozen_stages = general_params.frozen_stages
     # params.device_name = general_params.device

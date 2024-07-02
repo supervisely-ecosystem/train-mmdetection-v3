@@ -189,7 +189,14 @@ def train():
     iter_progress(message="Preparing the model...", total=1)
 
     # Its grace, the Runner!
-    runner = RUNNERS.build(train_cfg)
+    try:
+        runner = RUNNERS.build(train_cfg)
+    except AttributeError:
+        sly.logger.error(
+            "Failed to build runner, it may be related to the incorrect "
+            "frozen_stages parameter in the config or other parameters."
+        )
+        raise
 
     with g.app.handle_stop():
         runner.train()

@@ -1,6 +1,7 @@
 from mmengine import Config, ConfigDict
 import multiprocessing
 from copy import deepcopy
+import supervisely as sly
 
 
 class TrainParameters:
@@ -100,10 +101,10 @@ class TrainParameters:
             cfg.model.data_preprocessor.pad_size_divisor = 32
 
         try:
-            print("Printing frozen stages")
-            print(cfg.model.backbone.frozen_stages)
+            cfg.model.backbone.frozen_stages = self.frozen_stages
+            sly.logger.info(f"Set frozen_stages to: {self.frozen_stages}")
         except Exception as e:
-            print(f"Error while printing frozen stages: {e}")
+            sly.logger.warning(f"Can't set frozen_stages: {e}")
 
         # pipelines
         train_pipeline, test_pipeline = get_default_pipelines(

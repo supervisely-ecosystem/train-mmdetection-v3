@@ -102,26 +102,6 @@ chart_update_field = Field(
 )
 general_params.add_input("chart_update_interval", chart_update_input)
 
-frozen_stages_switch = Switch(False)
-
-
-@frozen_stages_switch.value_changed
-def frozen_stages_switch_changed(is_on: bool):
-    if is_on:
-        frozen_stages_input.show()
-    else:
-        frozen_stages_input.hide()
-
-
-frozen_stages_input = InputNumber(-1, min=-1)
-frozen_stages_input.hide()
-frozen_stages_field = Field(
-    Container([frozen_stages_switch, frozen_stages_input]),
-    "Frozen stages",
-    description=("The first k stages will be frozen. Set to -1 to disable freezing."),
-)
-general_params.add_input("frozen_stages", frozen_stages_input)
-
 general_tab = Container(
     [
         # device_field,
@@ -131,7 +111,6 @@ general_tab = Container(
         bs_val_field,
         validation_field,
         chart_update_field,
-        frozen_stages_field,
     ]
 )
 
@@ -156,7 +135,4 @@ def update_general_params_with_widgets(params: TrainParameters):
     params.batch_size_val = general_params.batch_size_val
     params.input_size = (general_params.bigger_size, general_params.smaller_size)
     params.chart_update_interval = general_params.chart_update_interval
-    if frozen_stages_switch.is_on():
-        print("Frozen stages switch is on, adding frozen stages")
-        params.frozen_stages = general_params.frozen_stages
     # params.device_name = general_params.device

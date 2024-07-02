@@ -54,6 +54,11 @@ def get_train_params(cfg) -> TrainParameters:
     # create params from config
     params = TrainParameters.from_config(cfg)
     params.init(task, selected_classes, augs_config_path, g.app_dir)
+    try:
+        print("Printinf frozen_stages")
+        print(params.frozen_stages)
+    except Exception as e:
+        print(e)
 
     # update params with UI
     update_params_with_widgets(params)

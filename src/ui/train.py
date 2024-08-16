@@ -26,6 +26,7 @@ from src.ui.hyperparameters import update_params_with_widgets
 from src.ui.augmentations import get_selected_aug
 from src.ui.graphics import add_classwise_metric, monitoring
 from src.project_cached import download_project
+import src.workflow as w
 
 # register modules (don't remove):
 from src import sly_dataset, sly_hook, sly_imgaugs
@@ -137,6 +138,8 @@ def train():
     # prepare model files
     iter_progress(message="Preparing the model...", total=1)
     config_path, weights_path_or_url = prepare_model()
+    
+    w.workflow_input(g.api, g.PROJECT_ID)
 
     # create config
     cfg = Config.fromfile(config_path)
@@ -218,6 +221,8 @@ def train():
         get_task(),
         iter_progress,
     )
+    
+    w.workflow_output(g.api, g.mmdet_generated_metadata)
 
     # set task results
     if sly.is_production():

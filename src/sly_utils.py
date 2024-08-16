@@ -94,7 +94,7 @@ def upload_artifacts(
     progress_widget.hide()
 
     # generate metadata
-    g.sly_mmdet3.generate_metadata(
+    g.mmdet_generated_metadata = g.sly_mmdet3.generate_metadata(
         app_name=g.sly_mmdet3.app_name,
         task_id=task_id,
         artifacts_folder=remote_artifacts_dir,

@@ -5,8 +5,9 @@ import src.ui.models as models_ui
 from supervisely.api.file_api import FileInfo
 
 
-def workflow_input(api: sly.Api, project_info: sly.ProjectInfo, state: dict = None):
+def workflow_input(api: sly.Api, project_id: int):
     try:
+        project_info = api.project.get_info_by_id(project_id)
         if project_info.type != sly.ProjectType.IMAGES.__str__():
             sly.logger.info(
                 f"{project_info.type =} is not '{sly.ProjectType.IMAGES.__str__()}'. Project version will not be created."

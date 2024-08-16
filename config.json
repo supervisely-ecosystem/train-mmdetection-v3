@@ -1,35 +1,35 @@
 {
-	"type": "app",
-	"version": "2.0.0",
-	"name": "Train MMDetection 3.0",
-	"entrypoint": "python -m uvicorn src.main:app --host 0.0.0.0 --port 8000",
-	"port": 8000,
-	"categories": [
-		"neural network",
-		"images",
-		"videos",
-		"object detection",
-		"instance segmentation",
-		"detection & tracking",
-		"segmentation & tracking",
-		"train"
-	],
-	"description": "Training dashboard for mmdetection framework (v3.0.0 and above).",
-	"docker_image": "supervisely/mmdet-3.0:1.0.7",
-	"instance_version": "6.6.7",
-	"task_location": "workspace_tasks",
-	"context_menu": {
-		"target": ["images_project"],
-		"context_root": "Neural Networks",
-		"context_category": "MM Detection"
-	},
-	"icon": "https://github.com/supervisely-ecosystem/train-mmdetection-2/assets/115161827/a617b067-a939-4a98-be8d-cda0b09f3361",
-	"icon_cover": true,
-	"poster": "https://github.com/supervisely-ecosystem/train-mmdetection-2/assets/115161827/a2a022a9-b1b1-4231-9a8d-37e4d3898acf",
-	"need_gpu": true,
-	"gpu": "required",
-	"community_agent": false,
-	"license": {
-		"type": "Apache-2.0"
-	}
+  "type": "app",
+  "version": "2.0.0",
+  "name": "Train MMDetection 3.0",
+  "entrypoint": "python -m uvicorn src.main:app --host 0.0.0.0 --port 8000",
+  "port": 8000,
+  "categories": [
+    "neural network",
+    "images",
+    "videos",
+    "object detection",
+    "instance segmentation",
+    "detection & tracking",
+    "segmentation & tracking",
+    "train"
+  ],
+  "description": "Training dashboard for mmdetection framework (v3.0.0 and above).",
+  "docker_image": "supervisely/mmdet-3.0:1.0.10",
+  "instance_version": "6.10.0",
+  "task_location": "workspace_tasks",
+  "context_menu": {
+    "target": ["images_project"],
+    "context_root": "Neural Networks",
+    "context_category": "MM Detection"
+  },
+  "icon": "https://github.com/supervisely-ecosystem/train-mmdetection-2/assets/115161827/a617b067-a939-4a98-be8d-cda0b09f3361",
+  "icon_cover": true,
+  "poster": "https://github.com/supervisely-ecosystem/train-mmdetection-2/assets/115161827/a2a022a9-b1b1-4231-9a8d-37e4d3898acf",
+  "need_gpu": true,
+  "gpu": "required",
+  "community_agent": false,
+  "license": {
+    "type": "Apache-2.0"
+  }
 }

@@ -16,8 +16,8 @@ def workflow_input(api: sly.Api, project_id: int):
         else:
             project_version_id = api.project.version.create(
                 project_info,
-                "Train MMDetection",
-                f"This backup was created automatically by Supervisely before the Train MMDetection task with ID: {api.task_id}",
+                "Train MMDetection 3.0",
+                f"This backup was created automatically by Supervisely before the Train MMDetection 3.0 task with ID: {api.task_id}",
             )
     except Exception as e:
         sly.logger.warning(f"Failed to create a project version: {repr(e)}")

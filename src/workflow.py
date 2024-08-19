@@ -62,7 +62,7 @@ def workflow_output(api: sly.Api, mmdet_generated_metadata: dict):
             for info in new_infos:
                 best_checkpoints.append(info) if "best" in info.name else None
             if len(best_checkpoints) > 1:
-                best_filename_info = sorted(best_checkpoints, key=lambda x: x.name, reverse=True)
+                best_filename_info = sorted(best_checkpoints, key=lambda x: x.name, reverse=True)[0]
             else:
                 best_filename_info = best_checkpoints[0]
 

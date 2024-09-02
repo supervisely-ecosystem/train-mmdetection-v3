@@ -239,7 +239,6 @@ def train():
         model_benchmark_done = False
         task_type = get_task().replace("_", " ")
         if task_type in [sly.nn.TaskType.INSTANCE_SEGMENTATION, sly.nn.TaskType.OBJECT_DETECTION]:
-            sly.logger.info(f"Creating the report for the best model: {best_filename!r}")
             creating_report.show()
 
             best_filename = None
@@ -256,6 +255,7 @@ def train():
                 best_checkpoints = sorted(best_checkpoints, key=lambda x: x, reverse=True)
 
             best_filename = best_checkpoints[0]
+            sly.logger.info(f"Creating the report for the best model: {best_filename!r}")
 
             # 0. Serve trained model
             m = MMDetectionModel(

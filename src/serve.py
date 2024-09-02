@@ -181,33 +181,45 @@ class MMDetectionModel(sly.nn.inference.InstanceSegmentation):
             if hasattr(test_cfg, "rpn") and hasattr(test_cfg["rpn"], "nms"):
                 test_cfg["rpn"]["nms"]["iou_threshold"] = nms_tresh
 
-        # inference
-        result: DetDataSample = inference_detector(self.model, images_np)
-        preds = result.pred_instances.cpu().numpy()
-
-        # collect predictions
         predictions = []
-        for pred in preds:
-            pred: InstanceData
-            score = float(pred.scores[0])
-            if conf_tresh is not None and score < conf_tresh:
-                # filter by confidence
-                continue
-            class_name = self.class_names[pred.labels.astype(int)[0]]
-            if self.task_type == sly.nn.TaskType.OBJECT_DETECTION:
-                x1, y1, x2, y2 = pred.bboxes[0].astype(int).tolist()
-                tlbr = [y1, x1, y2, x2]
-                sly_pred = PredictionBBox(class_name=class_name, bbox_tlbr=tlbr, score=score)
-            else:
-                if pred.get("masks") is None:
-                    raise Exception(
-                        f'The model "{self.checkpoint_name}" can\'t predict masks. Please, try another model.'
-                    )
-                mask = pred.masks[0]
-                sly_pred = PredictionMask(class_name=class_name, mask=mask, score=score)
-            predictions.append(sly_pred)
+        preprocess = 0
+        inference = 0
+        postprocess = 0
+        for image_np in images_np:
+            curr_predictions = []
+            # inference
+            result: DetDataSample = inference_detector(self.model, image_np)
+            preds = result.pred_instances.cpu().numpy()
 
-        return predictions
+            # collect predictions
+            for pred in preds:
+                pred: InstanceData
+
+                score = float(pred.scores[0])
+                if conf_tresh is not None and score < conf_tresh:
+                    # filter by confidence
+                    continue
+                class_name = self.class_names[pred.labels.astype(int)[0]]
+                if self.task_type == sly.nn.TaskType.OBJECT_DETECTION:
+                    x1, y1, x2, y2 = pred.bboxes[0].astype(int).tolist()
+                    tlbr = [y1, x1, y2, x2]
+                    sly_pred = PredictionBBox(class_name=class_name, bbox_tlbr=tlbr, score=score)
+                else:
+                    if pred.get("masks") is None:
+                        raise Exception(
+                            f'The model "{self.checkpoint_name}" can\'t predict masks. Please, try another model.'
+                        )
+                    mask = pred.masks[0]
+                    sly_pred = PredictionMask(class_name=class_name, mask=mask, score=score)
+                curr_predictions.append(sly_pred)
+            predictions.append(curr_predictions)
+
+        benchmark = {
+            "preprocess": 0.1,  # TODO: set real values
+            "inference": 0.2,  # TODO: set real values
+            "postprocess": 0.1,  # TODO: set real values
+        }
+        return predictions, benchmark
 
 
 # custom_settings_path = os.path.join(app_source_path, "custom_settings.yml")

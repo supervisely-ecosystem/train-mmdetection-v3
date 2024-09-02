@@ -248,7 +248,6 @@ def train():
                 if file_name.endswith(".pth"):
                     if file_name.startswith("best_"):
                         best_checkpoints.append(file_name)
-                        break
 
             if len(best_checkpoints) == 0:
                 raise ValueError("Best model checkpoint not found")
@@ -406,7 +405,7 @@ def train():
         stop_train_btn.hide()
 
         # set link to artifacts in ws tasks
-        g.api.task.set_output_directory(g.api.task_id, file_info.id, out_path)
+        g.api.task.set_output_directory(sly.env.task_id(), file_info.id, out_path)
         g.app.stop()
 
 

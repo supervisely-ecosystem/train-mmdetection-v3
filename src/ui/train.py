@@ -42,6 +42,7 @@ from src.ui.task import task_selector
 from src.ui.train_val_split import dump_train_val_splits, splits
 
 root_source_path = str(Path(__file__).parents[1])
+app_data_dir = os.path.join(root_source_path, "tempfiles")
 
 
 def get_task():
@@ -281,7 +282,8 @@ def train():
             m._load_model(deploy_params)
             m.serve()
             session = SessionJSON(g.api, session_url="http://localhost:8000")
-            sly.fs.remove_dir(g.app_data_dir + "/benchmark")
+            if sly.fs.dir_exists(app_data_dir + "/benchmark"):
+                sly.fs.remove_dir(app_data_dir + "/benchmark")
 
             # 1. Init benchmark (todo: auto-detect task type)
             benchmark_dataset_ids = None
@@ -313,7 +315,7 @@ def train():
                 bm = ObjectDetectionBenchmark(
                     g.api,
                     g.project_info.id,
-                    output_dir=g.app_data_dir + "/benchmark",
+                    output_dir=app_data_dir + "/benchmark",
                     gt_dataset_ids=benchmark_dataset_ids,
                     gt_images_ids=benchmark_images_ids,
                     progress=model_benchmark_pbar,
@@ -323,7 +325,7 @@ def train():
                 bm = InstanceSegmentationBenchmark(
                     g.api,
                     g.project_info.id,
-                    output_dir=g.app_data_dir + "/benchmark",
+                    output_dir=app_data_dir + "/benchmark",
                     gt_dataset_ids=benchmark_dataset_ids,
                     gt_images_ids=benchmark_images_ids,
                     progress=model_benchmark_pbar,
@@ -345,7 +347,7 @@ def train():
 
             # 5. Upload evaluation results
             eval_res_dir = sly_utils.get_eval_results_dir_name(
-                g.api, g.app_session_id, g.project_info
+                g.api, sly.env.task_id(), g.project_info
             )
             bm.upload_eval_results(eval_res_dir)
 

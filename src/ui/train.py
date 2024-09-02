@@ -237,7 +237,8 @@ def train():
     # ------------------------------------- Model Benchmark ------------------------------------- #
     try:
         model_benchmark_done = False
-        if get_task() in [sly.nn.TaskType.INSTANCE_SEGMENTATION, sly.nn.TaskType.OBJECT_DETECTION]:
+        task_type = get_task().replace("_", " ")
+        if task_type in [sly.nn.TaskType.INSTANCE_SEGMENTATION, sly.nn.TaskType.OBJECT_DETECTION]:
             sly.logger.info(f"Creating the report for the best model: {best_filename!r}")
             creating_report.show()
 
@@ -272,7 +273,7 @@ def train():
             deploy_params = dict(
                 device=device,
                 model_source="Custom models",
-                task_type=get_task(),
+                task_type=task_type,
                 checkpoint_name=best_filename,
                 checkpoint_url=checkpoint_path,
             )
@@ -307,7 +308,7 @@ def train():
                     )
                 benchmark_images_ids = [img_info.id for img_info in image_infos]
 
-            if get_task() == sly.nn.TaskType.OBJECT_DETECTION:
+            if task_type == sly.nn.TaskType.OBJECT_DETECTION:
                 bm = ObjectDetectionBenchmark(
                     g.api,
                     g.project_info.id,
@@ -317,7 +318,7 @@ def train():
                     progress=model_benchmark_pbar,
                     classes_whitelist=classes.get_selected_classes(),
                 )
-            elif get_task() == sly.nn.TaskType.INSTANCE_SEGMENTATION:
+            elif task_type == sly.nn.TaskType.INSTANCE_SEGMENTATION:
                 bm = InstanceSegmentationBenchmark(
                     g.api,
                     g.project_info.id,
@@ -329,7 +330,7 @@ def train():
                 )
             else:
                 raise ValueError(
-                    f"Model benchmark for task type {get_task()} is not implemented (coming soon)"
+                    f"Model benchmark for task type {task_type} is not implemented (coming soon)"
                 )
 
             # 2. Run inference

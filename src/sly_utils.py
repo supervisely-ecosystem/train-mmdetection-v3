@@ -1,12 +1,13 @@
 import os
-from pathlib import Path
 import shutil
-from requests_toolbelt import MultipartEncoderMonitor
-from supervisely.app.widgets import Progress
+from pathlib import Path
 
+from requests_toolbelt import MultipartEncoderMonitor
 from tqdm import tqdm
+
 import src.sly_globals as g
 import supervisely as sly
+from supervisely.app.widgets import Progress
 
 
 def download_custom_config(remote_weights_path: str):
@@ -155,3 +156,11 @@ def save_augs_config(augs_config_path: str, work_dir: str):
 def save_open_app_lnk(work_dir: str):
     with open(work_dir + "/open_app.lnk", "w") as f:
         f.write(f"{g.api.server_address}/apps/sessions/{g.api.task_id}")
+
+
+def get_eval_results_dir_name(api, task_id, project_info):
+    task_info = api.task.get_info_by_id(task_id)
+    task_dir = f"{task_id}_{task_info['meta']['app']['name']}"
+    eval_res_dir = f"/model-benchmark/evaluation/{project_info.id}_{project_info.name}/{task_dir}/"
+    eval_res_dir = api.storage.get_free_dir_name(sly.env.team_id(), eval_res_dir)
+    return eval_res_dir

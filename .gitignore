@@ -19,3 +19,4 @@ debug_config.py
 local.env
 vis
 tmp
+supervisely

@@ -1,5 +1,6 @@
 # Description: This file contains versioning features and the Workflow class that is used to add input and output to the workflow.
 
+from typing import Optional
 import supervisely as sly
 import src.ui.models as models_ui
 from supervisely.api.file_api import FileInfo
@@ -50,7 +51,11 @@ def workflow_input(api: sly.Api, project_id: int):
         sly.logger.debug(f"Failed to add input to the workflow: {repr(e)}")
 
 
-def workflow_output(api: sly.Api, mmdet_generated_metadata: dict):
+def workflow_output(
+    api: sly.Api,
+    mmdet_generated_metadata: dict,
+    model_benchmark_report: Optional[sly.api.file_api.FileInfo] = None,
+):
     try:
         checkpoints_list = mmdet_generated_metadata.get("checkpoints", [])
         if len(checkpoints_list) == 0:
@@ -72,16 +77,16 @@ def workflow_output(api: sly.Api, mmdet_generated_metadata: dict):
             node_custom_title = "Train Custom Model"
         else:
             node_custom_title = None
+        node_settings = sly.WorkflowSettings(
+            title=node_custom_title,
+            url=(
+                f"/apps/{module_id}/sessions/{api.task_id}"
+                if module_id
+                else f"apps/sessions/{api.task_id}"
+            ),
+            url_title="Show Results",
+        )
         if best_filename_info:
-            node_settings = sly.WorkflowSettings(
-                title=node_custom_title,
-                url=(
-                    f"/apps/{module_id}/sessions/{api.task_id}"
-                    if module_id
-                    else f"apps/sessions/{api.task_id}"
-                ),
-                url_title="Show Results",
-            )
             relation_settings = sly.WorkflowSettings(
                 title="Checkpoints",
                 icon="folder",
@@ -99,6 +104,25 @@ def workflow_output(api: sly.Api, mmdet_generated_metadata: dict):
         else:
             sly.logger.debug(
                 f"File {best_filename_info} not found in Team Files. Cannot set workflow output."
+            )
+
+        if model_benchmark_report:
+            mb_relation_settings = sly.WorkflowSettings(
+                title="Model Benchmark",
+                icon="assignment",
+                icon_color="#674EA7",
+                icon_bg_color="#CCCCFF",
+                url=f"/model-benchmark?id={model_benchmark_report.id}",
+                url_title="Open Report",
+            )
+
+            meta = sly.WorkflowMeta(
+                relation_settings=mb_relation_settings, node_settings=node_settings
+            )
+            api.app.workflow.add_output_file(model_benchmark_report, meta=meta)
+        else:
+            sly.logger.debug(
+                f"File with model benchmark report not found in Team Files. Cannot set workflow output."
             )
     except Exception as e:
         sly.logger.debug(f"Failed to add output to the workflow: {repr(e)}")

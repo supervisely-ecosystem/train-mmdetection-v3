@@ -1,0 +1,6 @@
+# object confidence threshold
+confidence_thresh: 0.45
+
+# NMS IoU threshold (the smaller the value, the fewer boxess will remain after the NMS)
+# note: some models (e.g. DINO) don't have the NMS
+nms_iou_thresh: 0.65

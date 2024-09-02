@@ -1,35 +1,47 @@
 import os
-from mmengine import Config, ConfigDict
-from mmdet.registry import RUNNERS
-from mmengine.visualization import Visualizer
-from mmdet.visualization import DetLocalVisualizer
+from pathlib import Path
 
 import supervisely as sly
+import torch
+from mmdet.registry import RUNNERS
+from mmdet.visualization import DetLocalVisualizer
+from mmengine import Config, ConfigDict
+from mmengine.visualization import Visualizer
 from supervisely.app.widgets import (
-    Card,
     Button,
+    Card,
     Container,
-    Progress,
+    DoneLabel,
     Empty,
     FolderThumbnail,
-    DoneLabel,
+    Progress,
+    ReportThumbnail,
+    SlyTqdm,
+    Text,
 )
+from supervisely.nn.benchmark import (
+    InstanceSegmentationBenchmark,
+    ObjectDetectionBenchmark,
+)
+from supervisely.nn.inference import SessionJSON
 
 import src.sly_globals as g
-from src.train_parameters import TrainParameters
-from src.ui.task import task_selector
-from src.ui.train_val_split import dump_train_val_splits
-from src.ui.classes import classes
 import src.ui.models as models_ui
-from src import sly_utils
-from src.ui.hyperparameters import update_params_with_widgets
-from src.ui.augmentations import get_selected_aug
-from src.ui.graphics import add_classwise_metric, monitoring
-from src.project_cached import download_project
 import src.workflow as w
 
 # register modules (don't remove):
-from src import sly_dataset, sly_hook, sly_imgaugs
+from src import sly_dataset, sly_hook, sly_imgaugs, sly_utils
+from src.project_cached import download_project
+from src.serve import MMDetectionModel
+from src.train_parameters import TrainParameters
+from src.ui.augmentations import get_selected_aug
+from src.ui.classes import classes
+from src.ui.graphics import add_classwise_metric, monitoring
+from src.ui.hyperparameters import update_params_with_widgets
+from src.ui.task import task_selector
+from src.ui.train_val_split import dump_train_val_splits, splits
+
+root_source_path = str(Path(__file__).parents[1])
 
 
 def get_task():
@@ -100,7 +112,7 @@ def add_metadata(cfg: Config):
         metadata = cfg.sly_metadata
 
     metadata["project_id"] = g.PROJECT_ID
-    metadata["project_name"] = g.api.project.get_info_by_id(g.PROJECT_ID).name
+    metadata["project_name"] = g.project_info.name
 
     cfg.sly_metadata = ConfigDict(metadata)
 
@@ -138,7 +150,7 @@ def train():
     # prepare model files
     iter_progress(message="Preparing the model...", total=1)
     config_path, weights_path_or_url = prepare_model()
-    
+
     w.workflow_input(g.api, g.PROJECT_ID)
 
     # create config
@@ -221,8 +233,157 @@ def train():
         get_task(),
         iter_progress,
     )
-    
-    w.workflow_output(g.api, g.mmdet_generated_metadata)
+
+    # ------------------------------------- Model Benchmark ------------------------------------- #
+    try:
+        model_benchmark_done = False
+        if get_task() in [sly.nn.TaskType.INSTANCE_SEGMENTATION, sly.nn.TaskType.OBJECT_DETECTION]:
+            sly.logger.info(f"Creating the report for the best model: {best_filename!r}")
+            creating_report.show()
+
+            best_filename = None
+            best_checkpoints = []
+            for file_name in os.listdir(params.work_dir):
+                if file_name.endswith(".pth"):
+                    if file_name.startswith("best_"):
+                        best_checkpoints.append(file_name)
+                        break
+
+            if len(best_checkpoints) == 0:
+                raise ValueError("Best model checkpoint not found")
+            elif len(best_checkpoints) > 1:
+                best_checkpoints = sorted(best_checkpoints, key=lambda x: x, reverse=True)
+
+            best_filename = best_checkpoints[0]
+
+            # 0. Serve trained model
+            m = MMDetectionModel(
+                model_dir=params.work_dir,
+                use_gui=False,
+                custom_inference_settings=os.path.join(
+                    root_source_path, "src", "custom_settings.yml"
+                ),
+            )
+
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            sly.logger.info(f"Using device: {device}")
+
+            checkpoint_path = os.path.join(out_path, best_filename)
+            deploy_params = dict(
+                device=device,
+                model_source="Custom models",
+                task_type=get_task(),
+                checkpoint_name=best_filename,
+                checkpoint_url=checkpoint_path,
+            )
+            m._load_model(deploy_params)
+            m.serve()
+            session = SessionJSON(g.api, session_url="http://localhost:8000")
+            sly.fs.remove_dir(g.app_data_dir + "/benchmark")
+
+            # 1. Init benchmark (todo: auto-detect task type)
+            benchmark_dataset_ids = None
+            benchmark_images_ids = None
+
+            split_method = splits._content.get_active_tab()
+            train_set, val_set = splits.get_splits()
+
+            if split_method == "Based on datasets":
+                benchmark_dataset_ids = splits._val_ds_select.get_selected_ids()
+            else:
+                dataset_infos = g.api.dataset.get_list(g.PROJECT_ID)
+                ds_infos_dict = {ds_info.name: ds_info for ds_info in dataset_infos}
+                image_names_per_dataset = {}
+                for item in val_set:
+                    image_names_per_dataset.setdefault(item.dataset_name, []).append(item.name)
+                image_infos = []
+                for dataset_name, image_names in image_names_per_dataset.items():
+                    ds_info = ds_infos_dict[dataset_name]
+                    image_infos.extend(
+                        g.api.image.get_list(
+                            ds_info.id,
+                            filters=[{"field": "name", "operator": "in", "value": image_names}],
+                        )
+                    )
+                benchmark_images_ids = [img_info.id for img_info in image_infos]
+
+            if get_task() == sly.nn.TaskType.OBJECT_DETECTION:
+                bm = ObjectDetectionBenchmark(
+                    g.api,
+                    g.project_info.id,
+                    output_dir=g.app_data_dir + "/benchmark",
+                    gt_dataset_ids=benchmark_dataset_ids,
+                    gt_images_ids=benchmark_images_ids,
+                    progress=model_benchmark_pbar,
+                    classes_whitelist=classes.get_selected_classes(),
+                )
+            elif get_task() == sly.nn.TaskType.INSTANCE_SEGMENTATION:
+                bm = InstanceSegmentationBenchmark(
+                    g.api,
+                    g.project_info.id,
+                    output_dir=g.app_data_dir + "/benchmark",
+                    gt_dataset_ids=benchmark_dataset_ids,
+                    gt_images_ids=benchmark_images_ids,
+                    progress=model_benchmark_pbar,
+                    classes_whitelist=classes.get_selected_classes(),
+                )
+            else:
+                raise ValueError(
+                    f"Model benchmark for task type {get_task()} is not implemented (coming soon)"
+                )
+
+            # 2. Run inference
+            bm.run_inference(session)
+
+            # 3. Pull results from the server
+            gt_project_path, dt_project_path = bm.download_projects(save_images=False)
+
+            # 4. Evaluate
+            bm._evaluate(gt_project_path, dt_project_path)
+
+            # 5. Upload evaluation results
+            eval_res_dir = sly_utils.get_eval_results_dir_name(
+                g.api, g.app_session_id, g.project_info
+            )
+            bm.upload_eval_results(eval_res_dir)
+
+            # 6. Prepare visualizations, report and
+            bm.visualize()
+            remote_dir = bm.upload_visualizations(eval_res_dir + "/visualizations/")
+            report = bm.upload_report_link(remote_dir)
+
+            # 7. UI updates
+            benchmark_report_template = g.api.file.get_info_by_path(
+                sly.env.team_id(), remote_dir + "template.vue"
+            )
+            model_benchmark_done = True
+            creating_report.hide()
+            model_benchmark_report.set(benchmark_report_template)
+            model_benchmark_report.show()
+            model_benchmark_pbar.hide()
+            sly.logger.info(
+                f"Predictions project name: {bm.dt_project_info.name}. Workspace_id: {bm.dt_project_info.workspace_id}"
+            )
+            sly.logger.info(
+                f"Differences project name: {bm.diff_project_info.name}. Workspace_id: {bm.diff_project_info.workspace_id}"
+            )
+    except Exception as e:
+        sly.logger.error(f"Model benchmark failed. {repr(e)}", exc_info=True)
+        creating_report.hide()
+        model_benchmark_pbar.hide()
+        try:
+            if bm.dt_project_info:
+                g.api.project.remove(bm.dt_project_info.id)
+            if bm.diff_project_info:
+                g.api.project.remove(bm.diff_project_info.id)
+        except Exception as re:
+            pass
+
+    if not model_benchmark_done:
+        benchmark_report_template = None
+    # ----------------------------------------------- - ---------------------------------------------- #
+
+    w.workflow_output(g.api, g.mmdet_generated_metadata, benchmark_report_template)
 
     # set task results
     if sly.is_production():
@@ -261,6 +422,14 @@ success_msg.hide()
 folder_thumb = FolderThumbnail()
 folder_thumb.hide()
 
+model_benchmark_report = ReportThumbnail()
+model_benchmark_report.hide()
+
+model_benchmark_pbar = SlyTqdm()
+creating_report = Text(status="info", text="Creating report on model...")
+creating_report.hide()
+
+
 btn_container = Container(
     [start_train_btn, stop_train_btn, Empty()],
     "horizontal",
@@ -273,9 +442,12 @@ container = Container(
     [
         success_msg,
         folder_thumb,
+        creating_report,
+        model_benchmark_report,
         btn_container,
         epoch_progress,
         iter_progress,
+        model_benchmark_pbar,
         monitoring.compile_monitoring_container(True),
     ]
 )

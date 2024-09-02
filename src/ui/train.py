@@ -276,7 +276,7 @@ def train():
                 checkpoint_name=best_filename,
                 checkpoint_url=checkpoint_path,
                 config_url=config_path,
-                arch_type=cfg.sly_metadata.architecture_name,
+                arch_type=train_cfg.sly_metadata.architecture_name,
             )
             m._load_model(deploy_params)
             m.serve()
@@ -288,7 +288,7 @@ def train():
             benchmark_images_ids = None
 
             split_method = splits._content.get_active_tab()
-            train_set, val_set = splits.get_splits()
+            _, val_set = splits.get_splits()
 
             if split_method == "Based on datasets":
                 benchmark_dataset_ids = splits._val_ds_select.get_selected_ids()

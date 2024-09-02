@@ -1,41 +1,18 @@
 import os
-import cv2
-import numpy as np
 import shutil
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Union
+from typing import Dict, List, Literal
 
+import cv2
+import numpy as np
 import pkg_resources
+import supervisely as sly
 from mmdet.apis import inference_detector, init_detector
 from mmdet.registry import DATASETS
 from mmdet.structures import DetDataSample
 from mmengine import Config
-from mmengine.dataset import BaseDataset
 from mmengine.structures import InstanceData
-
-import supervisely as sly
 from supervisely.nn.prediction_dto import PredictionBBox, PredictionMask
-
-
-@DATASETS.register_module()
-class SuperviselyDatasetSplit(BaseDataset):
-    def __init__(
-        self,
-        data_root: str,
-        split_file: str,
-        task: str,
-        selected_classes: list = None,
-        filter_images_without_gt: bool = True,
-        save_coco_ann_file: str = None,
-        serialize_data: bool = True,
-        test_mode: bool = False,
-        pipeline: list = [],
-        max_refetch=1000,
-        **kwargs,
-    ):
-        # fake dataset for inference
-        self._metainfo = {"classes": selected_classes, "palette": None}
-
 
 root_source_path = str(Path(__file__).parents[1])
 app_source_path = str(Path(__file__).parents[1])

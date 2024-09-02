@@ -261,9 +261,7 @@ def train():
             m = MMDetectionModel(
                 model_dir=params.work_dir,
                 use_gui=False,
-                custom_inference_settings=os.path.join(
-                    root_source_path, "src", "custom_settings.yml"
-                ),
+                custom_inference_settings=os.path.join(root_source_path, "custom_settings.yml"),
             )
 
             device = "cuda" if torch.cuda.is_available() else "cpu"

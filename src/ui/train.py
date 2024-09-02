@@ -268,12 +268,15 @@ def train():
             sly.logger.info(f"Using device: {device}")
 
             checkpoint_path = os.path.join(out_path, best_filename)
+            config_path = os.path.join(out_path, "config.py")
             deploy_params = dict(
                 device=device,
                 model_source="Custom models",
                 task_type=task_type,
                 checkpoint_name=best_filename,
                 checkpoint_url=checkpoint_path,
+                config_url=config_path,
+                arch_type=cfg.sly_metadata.architecture_name,
             )
             m._load_model(deploy_params)
             m.serve()

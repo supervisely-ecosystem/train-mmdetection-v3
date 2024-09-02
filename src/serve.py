@@ -13,6 +13,7 @@ from mmdet.structures import DetDataSample
 from mmengine import Config
 from mmengine.structures import InstanceData
 from supervisely.nn.prediction_dto import PredictionBBox, PredictionMask
+from supervisely.nn.inference import TaskType, CheckpointInfo, RuntimeType
 
 root_source_path = str(Path(__file__).parents[1])
 app_source_path = str(Path(__file__).parents[1])
@@ -105,31 +106,22 @@ class MMDetectionModel(sly.nn.inference.InstanceSegmentation):
         self.device = device
         self.task_type = task_type
 
+        checkpoint_info = self.api.file.get_info_by_path(sly.env.team_id(), checkpoint_url)
+        # config_info = self.api.file.get_info_by_path(sly.env.team_id(), config_url)
+
         local_weights_path = os.path.join(self.model_dir, checkpoint_name)
-        if model_source == "Pretrained models":
-            if not sly.fs.file_exists(local_weights_path):
-                self.download(
-                    src_path=checkpoint_url,
-                    dst_path=local_weights_path,
-                )
-            local_config_path = os.path.join(root_source_path, config_url)
-        else:
-            self.download(
-                src_path=checkpoint_url,
-                dst_path=local_weights_path,
+        if not sly.fs.file_exists(local_weights_path):
+            self.api.file.download(sly.env.team_id(), checkpoint_url, local_weights_path)
+
+        local_config_path = os.path.join(configs_dir, "custom", "config.py")
+        if sly.fs.file_exists(local_config_path):
+            sly.fs.silent_remove(local_config_path)
+        self.api.file.download(sly.env.team_id(), config_url, local_config_path)
+        if not sly.fs.file_exists(local_config_path):
+            raise FileNotFoundError(
+                f"Config file not found: {config_url}. "
+                "Config should be placed in the same directory as the checkpoint file."
             )
-            local_config_path = os.path.join(configs_dir, "custom", "config.py")
-            if sly.fs.file_exists(local_config_path):
-                sly.fs.silent_remove(local_config_path)
-            self.download(
-                src_path=config_url,
-                dst_path=local_config_path,
-            )
-            if not sly.fs.file_exists(local_config_path):
-                raise FileNotFoundError(
-                    f"Config file not found: {config_url}. "
-                    "Config should be placed in the same directory as the checkpoint file."
-                )
 
         try:
             cfg = Config.fromfile(local_config_path)
@@ -144,6 +136,16 @@ class MMDetectionModel(sly.nn.inference.InstanceSegmentation):
             self.load_model_meta(model_source, cfg, checkpoint_name, arch_type)
         except KeyError as e:
             raise KeyError(f"Error loading config file: {local_config_path}. Error: {e}")
+
+        custom_checkpoint_path = checkpoint_url
+        checkpoint_url = self.api.file.get_url(checkpoint_info.id)
+        self.checkpoint_info = CheckpointInfo(
+            checkpoint_name=checkpoint_name,
+            architecture=arch_type,
+            model_source=model_source,
+            checkpoint_url=checkpoint_url,
+            custom_checkpoint_path=custom_checkpoint_path,
+        )
 
     def get_info(self) -> dict:
         info = super().get_info()

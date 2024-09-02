@@ -1,2 +1,5 @@
 setuptools==69.5.1
 git+https://github.com/supervisely/supervisely.git@model-benchmark-mmdet
+plotly==5.22.0
+scikit-learn
+pycocotools

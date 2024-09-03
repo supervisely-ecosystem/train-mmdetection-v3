@@ -31,7 +31,8 @@ sly_mmdet3 = MMDetection3(TEAM_ID)
 COCO_MTERIC_KEYS = ["mAP", "mAP_50", "mAP_75"]
 MAX_CLASSES_TO_SHOW_CLASSWISE_METRIC = 10
 
-IMAGES_COUNT = api.project.get_info_by_id(PROJECT_ID).items_count
+project_info = api.project.get_info_by_id(PROJECT_ID)
+IMAGES_COUNT = project_info.items_count
 USE_CACHE = True
 
 mmdet_generated_metadata = None

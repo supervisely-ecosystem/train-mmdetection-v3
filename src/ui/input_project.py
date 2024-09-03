@@ -1,9 +1,8 @@
 from supervisely.app.widgets import Card, ProjectThumbnail, Text, Checkbox, Container
 from supervisely.project.download import is_cached
-from src.sly_globals import api, PROJECT_ID, USE_CACHE
+from src.sly_globals import PROJECT_ID, USE_CACHE, project_info
 
 
-project_info = api.project.get_info_by_id(PROJECT_ID)
 project_th = ProjectThumbnail(project_info)
 if is_cached(PROJECT_ID):
     _text = "Use cached data stored on the agent to optimize project downlaod"

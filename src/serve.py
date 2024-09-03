@@ -162,9 +162,10 @@ class MMDetectionModel(sly.nn.inference.InstanceSegmentation):
     def get_classes(self) -> List[str]:
         return self.class_names
 
-    def predict_benchmark(self, images_np: List[np.ndarray], settings: Dict):
-        # RGB to BGR
-        images_np = [cv2.cvtColor(img, cv2.COLOR_RGB2BGR) for img in images_np]
+    def predict(
+        self, image_path: str, settings: Dict[str, Any]
+    ) -> List[Union[PredictionBBox, PredictionMask]]:
+        # set confidence_thresh
         conf_tresh = settings.get("confidence_thresh", 0.45)
         if conf_tresh:
             # TODO: may be set recursively?
@@ -181,45 +182,37 @@ class MMDetectionModel(sly.nn.inference.InstanceSegmentation):
             if hasattr(test_cfg, "rpn") and hasattr(test_cfg["rpn"], "nms"):
                 test_cfg["rpn"]["nms"]["iou_threshold"] = nms_tresh
 
+        # inference
+        result: DetDataSample = inference_detector(self.model, image_path)
+        preds = result.pred_instances.cpu().numpy()
+
+        # collect predictions
         predictions = []
-        preprocess = 0
-        inference = 0
-        postprocess = 0
-        for image_np in images_np:
-            curr_predictions = []
-            # inference
-            result: DetDataSample = inference_detector(self.model, image_np)
-            preds = result.pred_instances.cpu().numpy()
+        for pred in preds:
+            pred: InstanceData
+            score = float(pred.scores[0])
+            if conf_tresh is not None and score < conf_tresh:
+                # filter by confidence
+                continue
+            class_name = self.class_names[pred.labels.astype(int)[0]]
+            if self.task_type == "object detection":
+                x1, y1, x2, y2 = pred.bboxes[0].astype(int).tolist()
+                tlbr = [y1, x1, y2, x2]
+                sly_pred = PredictionBBox(class_name=class_name, bbox_tlbr=tlbr, score=score)
+            else:
+                if pred.get("masks") is None:
+                    raise Exception(
+                        f'The model "{self.checkpoint_name}" can\'t predict masks. Please, try another model.'
+                    )
+                mask = pred.masks[0]
+                sly_pred = PredictionMask(class_name=class_name, mask=mask, score=score)
+            predictions.append(sly_pred)
 
-            # collect predictions
-            for pred in preds:
-                pred: InstanceData
-
-                score = float(pred.scores[0])
-                if conf_tresh is not None and score < conf_tresh:
-                    # filter by confidence
-                    continue
-                class_name = self.class_names[pred.labels.astype(int)[0]]
-                if self.task_type == sly.nn.TaskType.OBJECT_DETECTION:
-                    x1, y1, x2, y2 = pred.bboxes[0].astype(int).tolist()
-                    tlbr = [y1, x1, y2, x2]
-                    sly_pred = PredictionBBox(class_name=class_name, bbox_tlbr=tlbr, score=score)
-                else:
-                    if pred.get("masks") is None:
-                        raise Exception(
-                            f'The model "{self.checkpoint_name}" can\'t predict masks. Please, try another model.'
-                        )
-                    mask = pred.masks[0]
-                    sly_pred = PredictionMask(class_name=class_name, mask=mask, score=score)
-                curr_predictions.append(sly_pred)
-            predictions.append(curr_predictions)
-
-        benchmark = {
-            "preprocess": 0.1,  # TODO: set real values
-            "inference": 0.2,  # TODO: set real values
-            "postprocess": 0.1,  # TODO: set real values
-        }
-        return predictions, benchmark
+        # TODO: debug
+        # ann = self._predictions_to_annotation(image_path, predictions)
+        # img = sly.image.read(image_path)
+        # ann.draw_pretty(img, thickness=2, opacity=0.4, output_path="test.jpg")
+        return predictions
 
 
 # custom_settings_path = os.path.join(app_source_path, "custom_settings.yml")

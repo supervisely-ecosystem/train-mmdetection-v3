@@ -1,7 +1,7 @@
 import os
 import shutil
 from pathlib import Path
-from typing import Dict, List, Literal
+from typing import Any, Dict, List, Literal, Union
 
 import cv2
 import numpy as np

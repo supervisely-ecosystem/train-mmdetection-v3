@@ -26,6 +26,8 @@ from src.ui.hyperparameters import lr_scheduler
 from src.ui import classes
 from src.ui import models
 
+from src.ui.hyperparameters.general import run_model_benchmark_checkbox, run_speedtest_checkbox
+
 
 tabs = Tabs(
     labels=[

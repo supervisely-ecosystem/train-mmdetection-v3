@@ -37,9 +37,8 @@ from src.train_parameters import TrainParameters
 from src.ui.augmentations import get_selected_aug
 from src.ui.classes import classes
 from src.ui.graphics import add_classwise_metric, monitoring
-from src.ui.hyperparameters import (
+from src.ui.hyperparameters import (  # run_speedtest_checkbox,
     run_model_benchmark_checkbox,
-    run_speedtest_checkbox,
     update_params_with_widgets,
 )
 from src.ui.task import task_selector
@@ -244,7 +243,10 @@ def train():
     if run_model_benchmark_checkbox.is_checked():
         try:
             task_type = get_task().replace("_", " ")
-            if task_type in [sly.nn.TaskType.INSTANCE_SEGMENTATION, sly.nn.TaskType.OBJECT_DETECTION]:
+            if task_type in [
+                sly.nn.TaskType.INSTANCE_SEGMENTATION,
+                sly.nn.TaskType.OBJECT_DETECTION,
+            ]:
                 creating_report.show()
 
                 best_filename = None
@@ -308,7 +310,9 @@ def train():
                         ds_infos_dict = {ds_info.name: ds_info for ds_info in dataset_infos}
                         image_names_per_dataset = {}
                         for item in split:
-                            image_names_per_dataset.setdefault(item.dataset_name, []).append(item.name)
+                            image_names_per_dataset.setdefault(item.dataset_name, []).append(
+                                item.name
+                            )
                         image_infos = []
                         for dataset_name, image_names in image_names_per_dataset.items():
                             ds_info = ds_infos_dict[dataset_name]
@@ -377,12 +381,12 @@ def train():
                 eval_res_dir = sly_utils.get_eval_results_dir_name(
                     g.api, sly.env.task_id(), g.project_info
                 )
-                bm.upload_eval_results(eval_res_dir+ "/evaluation/")
+                bm.upload_eval_results(eval_res_dir + "/evaluation/")
 
-                # 6. Speed test
-                if run_speedtest_checkbox.is_checked():
-                    bm.run_speedtest(session, g.project_info.id)
-                    bm.upload_speedtest_results(eval_res_dir + "/speedtest/")
+                # # 6. Speed test
+                # if run_speedtest_checkbox.is_checked():
+                #     bm.run_speedtest(session, g.project_info.id)
+                #     bm.upload_speedtest_results(eval_res_dir + "/speedtest/")
 
                 # 7. Prepare visualizations, report and
                 bm.visualize()

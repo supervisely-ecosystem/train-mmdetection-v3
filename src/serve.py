@@ -12,8 +12,8 @@ from mmdet.registry import DATASETS
 from mmdet.structures import DetDataSample
 from mmengine import Config
 from mmengine.structures import InstanceData
+from supervisely.nn.inference import CheckpointInfo, RuntimeType, TaskType
 from supervisely.nn.prediction_dto import PredictionBBox, PredictionMask
-from supervisely.nn.inference import TaskType, CheckpointInfo, RuntimeType
 
 root_source_path = str(Path(__file__).parents[1])
 app_source_path = str(Path(__file__).parents[1])
@@ -29,9 +29,7 @@ if os.path.isdir(f"/tmp/mmdet/mmdetection-{mmdet_ver}"):
 
 class MMDetectionModel(sly.nn.inference.InstanceSegmentation):
 
-    def load_model_meta(
-        self, model_source: str, cfg: Config, checkpoint_name: str = None, arch_type: str = None
-    ):
+    def load_model_meta(self, model_source: str, cfg: Config, checkpoint_name: str = None):
         def set_common_meta(classes, task_type):
             obj_classes = [
                 sly.ObjClass(
@@ -44,7 +42,7 @@ class MMDetectionModel(sly.nn.inference.InstanceSegmentation):
                 )
                 for name in classes
             ]
-            self.selected_model_name = arch_type
+            self.selected_model_name = cfg.sly_metadata.architecture_name
             self.checkpoint_name = checkpoint_name
             self.dataset_name = cfg.dataset_type
             self.class_names = classes
@@ -67,13 +65,12 @@ class MMDetectionModel(sly.nn.inference.InstanceSegmentation):
 
         else:
             classes = cfg.train_dataloader.dataset.selected_classes
-            self.selected_model_name = cfg.sly_metadata.architecture_name
             self.checkpoint_name = checkpoint_name
             self.dataset_name = cfg.sly_metadata.project_name
             self.task_type = cfg.sly_metadata.task_type.replace("_", " ")
             set_common_meta(classes, self.task_type)
 
-        self.model.test_cfg["score_thr"] = 0.45  # default confidence_thresh
+        self.model.test_cfg["score_thr"] = 0.45  # default confidence_threshold
 
     def load_model(
         self,
@@ -105,6 +102,7 @@ class MMDetectionModel(sly.nn.inference.InstanceSegmentation):
         """
         self.device = device
         self.task_type = task_type
+        self.runtime = RuntimeType.PYTORCH
 
         checkpoint_info = self.api.file.get_info_by_path(sly.env.team_id(), checkpoint_url)
         # config_info = self.api.file.get_info_by_path(sly.env.team_id(), config_url)
@@ -133,15 +131,22 @@ class MMDetectionModel(sly.nn.inference.InstanceSegmentation):
             self.model = init_detector(
                 cfg, checkpoint=local_weights_path, device=device, palette=[]
             )
-            self.load_model_meta(model_source, cfg, checkpoint_name, arch_type)
+            self.load_model_meta(model_source, cfg, checkpoint_name)
         except KeyError as e:
             raise KeyError(f"Error loading config file: {local_config_path}. Error: {e}")
 
-        custom_checkpoint_path = checkpoint_url
-        checkpoint_url = self.api.file.get_url(checkpoint_info.id)
+        checkpoint_name = os.path.splitext(checkpoint_name)[0]
+        if model_source == "Pretrained models":
+            custom_checkpoint_path = None
+        else:
+            custom_checkpoint_path = checkpoint_url
+            checkpoint_url = self.api.file.get_url(checkpoint_info.id)
+
+        model_name = cfg.sly_metadata.model_name
         self.checkpoint_info = CheckpointInfo(
+            model_name=model_name,
             checkpoint_name=checkpoint_name,
-            architecture=arch_type,
+            architecture=self.selected_model_name,
             model_source=model_source,
             checkpoint_url=checkpoint_url,
             custom_checkpoint_path=custom_checkpoint_path,
@@ -165,8 +170,8 @@ class MMDetectionModel(sly.nn.inference.InstanceSegmentation):
     def predict(
         self, image_path: str, settings: Dict[str, Any]
     ) -> List[Union[PredictionBBox, PredictionMask]]:
-        # set confidence_thresh
-        conf_tresh = settings.get("confidence_thresh", 0.45)
+        # set confidence_threshold
+        conf_tresh = settings.get("confidence_threshold", 0.45)
         if conf_tresh:
             # TODO: may be set recursively?
             self.model.test_cfg["score_thr"] = conf_tresh

@@ -1,5 +1,6 @@
 from typing import Tuple
 from supervisely.app.widgets import (
+    Checkbox,
     Container,
     InputNumber,
     BindedInputNumber,
@@ -102,6 +103,23 @@ chart_update_field = Field(
 )
 general_params.add_input("chart_update_interval", chart_update_input)
 
+run_model_benchmark_checkbox = Checkbox(content="Run Model Benchmark evaluation", checked=True)
+# run_speedtest_checkbox = Checkbox(content="Run speed test", checked=True)
+model_benchmark_f = Field(
+    Container(
+        widgets=[
+            run_model_benchmark_checkbox,
+            # run_speedtest_checkbox,
+        ]
+    ),
+    title="Model Evaluation Benchmark",
+    description=f"Generate evalutaion dashboard with visualizations and detailed analysis of the model performance after training. The best checkpoint will be used for evaluation. You can also run speed test to evaluate model inference speed.",
+)
+docs_link = '<a href="https://docs.supervisely.com/neural-networks/model-evaluation-benchmark/" target="_blank">documentation</a>'
+model_benchmark_learn_more = Text(
+    f"Learn more about Model Benchmark in the {docs_link}.", status="info"
+)
+
 general_tab = Container(
     [
         # device_field,
@@ -111,6 +129,8 @@ general_tab = Container(
         bs_val_field,
         validation_field,
         chart_update_field,
+        model_benchmark_f,
+        model_benchmark_learn_more,
     ]
 )
 
@@ -136,3 +156,11 @@ def update_general_params_with_widgets(params: TrainParameters):
     params.input_size = (general_params.bigger_size, general_params.smaller_size)
     params.chart_update_interval = general_params.chart_update_interval
     # params.device_name = general_params.device
+
+
+# @run_model_benchmark_checkbox.value_changed
+# def change_model_benchmark(value):
+#     if value:
+#         run_speedtest_checkbox.show()
+#     else:
+#         run_speedtest_checkbox.hide()

@@ -156,3 +156,11 @@ def update_general_params_with_widgets(params: TrainParameters):
     params.input_size = (general_params.bigger_size, general_params.smaller_size)
     params.chart_update_interval = general_params.chart_update_interval
     # params.device_name = general_params.device
+
+
+@run_model_benchmark_checkbox.value_changed
+def change_model_benchmark(value):
+    if value:
+        run_speedtest_checkbox.show()
+    else:
+        run_speedtest_checkbox.hide()

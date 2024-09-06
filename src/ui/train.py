@@ -287,28 +287,44 @@ def train():
             # 1. Init benchmark (todo: auto-detect task type)
             benchmark_dataset_ids = None
             benchmark_images_ids = None
+            train_dataset_ids = None
+            train_images_ids = None
 
             split_method = splits._content.get_active_tab()
-            _, val_set = splits.get_splits()
+            train_set, val_set = splits.get_splits()
 
             if split_method == "Based on datasets":
                 benchmark_dataset_ids = splits._val_ds_select.get_selected_ids()
+                train_dataset_ids = splits._train_ds_select.get_selected_ids()
             else:
                 dataset_infos = g.api.dataset.get_list(g.PROJECT_ID)
-                ds_infos_dict = {ds_info.name: ds_info for ds_info in dataset_infos}
-                image_names_per_dataset = {}
-                for item in val_set:
-                    image_names_per_dataset.setdefault(item.dataset_name, []).append(item.name)
-                image_infos = []
-                for dataset_name, image_names in image_names_per_dataset.items():
-                    ds_info = ds_infos_dict[dataset_name]
-                    image_infos.extend(
-                        g.api.image.get_list(
-                            ds_info.id,
-                            filters=[{"field": "name", "operator": "in", "value": image_names}],
+                def get_image_infos_by_split(split: list):
+                    ds_infos_dict = {ds_info.name: ds_info for ds_info in dataset_infos}
+                    image_names_per_dataset = {}
+                    for item in split:
+                        image_names_per_dataset.setdefault(item.dataset_name, []).append(
+                            item.name
                         )
-                    )
-                benchmark_images_ids = [img_info.id for img_info in image_infos]
+                    image_infos = []
+                    for dataset_name, image_names in image_names_per_dataset.items():
+                        ds_info = ds_infos_dict[dataset_name]
+                        image_infos.extend(
+                            g.api.image.get_list(
+                                ds_info.id,
+                                filters=[
+                                    {
+                                        "field": "name",
+                                        "operator": "in",
+                                        "value": image_names,
+                                    }
+                                ],
+                            )
+                        )
+                    return image_infos
+                val_image_infos = get_image_infos_by_split(val_set)
+                train_image_infos = get_image_infos_by_split(train_set)
+                benchmark_images_ids = [img_info.id for img_info in val_image_infos]
+                train_images_ids = [img_info.id for img_info in train_image_infos]
 
             if task_type == sly.nn.TaskType.OBJECT_DETECTION:
                 bm = ObjectDetectionBenchmark(
@@ -334,6 +350,14 @@ def train():
                 raise ValueError(
                     f"Model benchmark for task type {task_type} is not implemented (coming soon)"
                 )
+
+            train_info = {
+                "app_session_id": sly.env.task_id(),
+                "train_dataset_ids": train_dataset_ids,
+                "train_images_ids": train_images_ids,
+                "images_count": len(train_set),
+            }
+            bm.train_info = train_info
 
             # 2. Run inference
             bm.run_inference(session)

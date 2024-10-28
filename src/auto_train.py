@@ -1,6 +1,6 @@
 import os
 
-import sly_globals as g
+import src.sly_globals as g
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
@@ -21,8 +21,8 @@ import supervisely as sly
 
 
 def start_auto_train(state: dict):
-    if "yaml_string" in state:
-        state = yaml.safe_load(state["yaml_string"])
+    # if "yaml_string" in state:
+    # state = yaml.safe_load(state["yaml_string"])
 
     # Step 1. Input project
     project_id = state["project_id"]
@@ -34,14 +34,14 @@ def start_auto_train(state: dict):
         input_project_ui.use_cache_checkbox.check()
     else:
         input_project_ui.use_cache_checkbox.uncheck()
-    handlers_ui.stepper.set_active_step(2)
+    # handlers_ui.stepper.set_active_step(2)
     # ----------------------------------------------------------------------------------------------- #
 
     # Step 2. Select task type
     task_type = state["task_type"]
     task_ui.task_selector.set_value(task_type)
     models_ui.update_architecture(task_ui.task_selector.get_value())
-    handlers_ui.stepper.set_active_step(3)
+    handlers_ui.select_task()
     # ----------------------------------------------------------------------------------------------- #
 
     # Step 2. Model Leaderboard
@@ -70,7 +70,7 @@ def start_auto_train(state: dict):
         models_ui.load_from.on()
     else:
         models_ui.load_from.off()
-    handlers_ui.stepper.set_active_step(4)
+    handlers_ui.on_model_selected()
     # ----------------------------------------------------------------------------------------------- #
 
     # Step 4. Select classes
@@ -80,7 +80,7 @@ def start_auto_train(state: dict):
     #     sly.logger.info(f"{n_classes} classes were selected successfully")
     # else:
     #     sly.logger.info(f"{n_classes} class was selected successfully")
-    handlers_ui.stepper.set_active_step(5)
+    handlers_ui.select_classes()
     # ----------------------------------------------------------------------------------------------- #
 
     # Step 5. Split the data
@@ -104,21 +104,21 @@ def start_auto_train(state: dict):
     #     train_val_split_ui.splits._project_fs = sly.Project(project_dir, sly.OpenMode.READ)
     #     train_set, val_set = train_val_split_ui.splits.get_splits()
     # verify_train_val_sets(train_set, val_set)
-    handlers_ui.stepper.set_active_step(6)
+    handlers_ui.select_splits()
     # ----------------------------------------------------------------------------------------------- #
 
     # Step 6. Augmentations
     # augs = state["augmentations"]
-    handlers_ui.stepper.set_active_step(7)
+    handlers_ui.select_augs()
     # ----------------------------------------------------------------------------------------------- #
 
     # Step 7. Hyperparameters
     # General
     set_hyperparameters_ui(state)
-    handlers_ui.stepper.set_active_step(8)
+    handlers_ui.select_hyperparameters()
 
     # Step 8. Train
-    train_ui.train()
+    handlers_ui.start_train()
 
 
 def set_hyperparameters_ui(state: dict):
@@ -157,10 +157,11 @@ def set_hyperparameters_ui(state: dict):
 
     # General
     hyperparameters_ui.general.epochs_input.value = n_epochs
-    hyperparameters_ui.general.bigger_size_input.value = input_image_size
-    hyperparameters_ui.general.smaller_size_input.value = train_batch_size
-    hyperparameters_ui.general.bs_train_input.value = val_batch_size
-    hyperparameters_ui.general.bs_val_input.value = val_interval
+    hyperparameters_ui.general.bigger_size_input.value = input_image_size[0]
+    hyperparameters_ui.general.smaller_size_input.value = input_image_size[1]
+    hyperparameters_ui.general.bs_train_input.value = train_batch_size
+    hyperparameters_ui.general.bs_val_input.value = val_batch_size
+    hyperparameters_ui.general.validation_input.value = val_interval
     hyperparameters_ui.general.chart_update_input.value = chart_interval
     # Checkpoints
     hyperparameters_ui.checkpoints.checkpoint_interval_input.value = checkpoint_interval

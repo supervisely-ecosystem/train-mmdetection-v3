@@ -1,35 +1,19 @@
+from fastapi import Request
+
 import src.sly_globals as g
-import supervisely as sly
-from supervisely.app.widgets import Container
-
-# import src.ui.input_project as input_project
-# import src.ui.task as task
-# import src.ui.models as models
-# import src.ui.classes as classes
-# import src.ui.train_val_split as train_val_split
-# import src.ui.graphics as graphics
-# import src.ui.hyperparameters as hyperparameters
 import src.ui.handlers as handlers
-
-# import src.ui.train as train
-# import src.ui.augmentations as augmentations
-# import src.ui.model_leaderboard as model_leaderboard
-
-
-# widgets = [
-#     input_project.card,
-#     Container(widgets=[task.card, model_leaderboard.card]),
-#     models.card,
-#     classes.card,
-#     train_val_split.card,
-#     augmentations.card,
-#     hyperparameters.card,
-#     train.card,
-# ]
-
-# stepper = Stepper(widgets=widgets)
+import supervisely as sly
+from src.auto_train import start_auto_train
+from supervisely.app.widgets import Container
 
 layout = Container(widgets=[handlers.stepper])
 app = sly.Application(layout=layout)
 
 g.app = app
+
+
+@g.app.server.post("/auto_train")
+def auto_train(request: Request):
+    sly.logger.info("Starting automatic training session...")
+    state = request.state.state
+    start_auto_train(state)

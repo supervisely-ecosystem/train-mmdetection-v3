@@ -21,14 +21,15 @@ import supervisely as sly
 
 
 def start_auto_train(state: dict):
-    # if "yaml_string" in state:
-    # state = yaml.safe_load(state["yaml_string"])
-    print(state)
-
-    # Read state from file
+    # Unpack state
     input_settings = state["input"]
     model_settings = state["model"]
     hyperparameters_settings = state["hyperparameters"]
+
+    # Log settings
+    sly.logger.debug(f"Input settings: {input_settings}")
+    sly.logger.debug(f"Model settings: {model_settings}")
+    sly.logger.debug(f"Hyperparameters settings: {hyperparameters_settings}")
 
     # Step 1. Input project
     set_input_ui(input_settings)
@@ -90,6 +91,7 @@ def set_model_ui(model_settings: dict):
             f"Model {model_name} not found in the table. Check if you have selected correct task type and architecture"
         )
     models_ui.table.select_row(model_idx)
+    models_ui.update_selected_model(model_idx)
 
     if train_mode == "finetune":
         models_ui.load_from.on()

@@ -6,9 +6,9 @@ input:
 # Model settings
 model:
   task_type: "Object detection" # Options: "Object detection", "Instance segmentation"
-  arch_type: "DAB-DETR" # List of available types can be found in the documentation
-  model_source: "Pretrained models"
-  model_name: "dab-detr_r50_8xb2-50e_coco.py" # List of available models can be found in the documentation
+  arch_type: "DAB-DETR" # List of available types can be found in the available_models.json file
+  model_source: "Pretrained models" # "Custom models" is not supported yet
+  model_name: "dab-detr_r50_8xb2-50e_coco.py" # List of available models can be found in the available_models.json file
   train_mode: "scratch" # Options: "finetune", "scratch "
 
 # Hyperparameters

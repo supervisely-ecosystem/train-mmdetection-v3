@@ -1,4 +1,5 @@
-# For full list of config parameters, refer to https://docs.deepcognition.ai/dcv2.0/docs/auto-train-parameters
+# This is a sample configuration file for training a model using auto_train.py script.
+# For full list of config parameters, refer to auto_train_full_params.yaml file
 
 input:
   project_id: 42201

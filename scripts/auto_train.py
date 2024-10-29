@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 import supervisely as sly
 
 load_dotenv(os.path.expanduser("~/supervisely.env"))
-# load_dotenv("supervisely.env")
 load_dotenv("local.env")
 
 api = sly.Api()
@@ -60,8 +59,16 @@ sleep(10)  # still need a time after status changed
 sly.logger.info(f"Session started: #{task_id}")
 
 
+# Read training parameters from yaml file
+import yaml
+
+yaml_config = "scripts/auto_train_params.yaml"
+with open(yaml_config, "r") as file:
+    train_parameters = yaml.safe_load(file)
+
+# Or set training parameters directly
 train_parameters = {
-    "input": {"project_id": 42201, "use_cache": True},
+    "input": {"project_id": PROJECT_ID, "use_cache": True},
     "model": {
         "task_type": "Object detection",
         "arch_type": "DAB-DETR",

@@ -91,7 +91,7 @@ def set_model_ui(model_settings: dict):
             f"Model {model_name} not found in the table. Check if you have selected correct task type and architecture"
         )
     models_ui.table.select_row(model_idx)
-    models_ui.update_selected_model(model_idx)
+    models_ui.update_selected_model(models_ui.table.get_selected_row())
 
     if train_mode == "finetune":
         models_ui.load_from.on()

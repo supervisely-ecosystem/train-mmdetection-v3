@@ -79,6 +79,8 @@ def set_model_ui(model_settings: dict):
     train_mode = model_settings["train_mode"]
 
     models_ui.arch_select.set_value(arch_type)
+    models_ui.update_models(models_ui.arch_select.get_value())
+
     models_ui.radio_tabs.set_active_tab(model_source)
     table_data = models_ui.table.get_json_data()
     model_idx = None

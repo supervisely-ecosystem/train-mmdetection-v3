@@ -6,9 +6,9 @@ input:
 # Model settings
 model:
   task_type: "Object detection" # Options: "Object detection", "Instance segmentation"
-  arch_type: "DINO" # List of available types can be found in the documentation
+  arch_type: "DAB-DETR" # List of available types can be found in the documentation
   model_source: "Pretrained models"
-  model_name: "dino-5scale_swin-l_8xb2-12e_coco.py" # List of available models can be found in the documentation
+  model_name: "dab-detr_r50_8xb2-50e_coco.py" # List of available models can be found in the documentation
   train_mode: "scratch" # Options: "finetune", "scratch "
 
 # Hyperparameters

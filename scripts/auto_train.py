@@ -64,9 +64,9 @@ train_parameters = {
     "input": {"project_id": 42201, "use_cache": True},
     "model": {
         "task_type": "Object detection",
-        "arch_type": "DINO",
+        "arch_type": "DAB-DETR",
         "model_source": "Pretrained models",
-        "model_name": "dino-5scale_swin-l_8xb2-12e_coco.py",
+        "model_name": "dab-detr_r50_8xb2-50e_coco.py",
         "train_mode": "finetune",
     },
     "hyperparameters": {

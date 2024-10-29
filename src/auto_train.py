@@ -47,6 +47,7 @@ def start_auto_train(state: dict):
     set_hyperparameters_ui(hyperparameters_settings)
     # Step 8. Train
     handlers_ui.start_train()
+    return {"result": "successfully finished automatic training session"}
 
 
 def set_input_ui(input_settings: dict):

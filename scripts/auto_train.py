@@ -101,7 +101,7 @@ train_parameters = {
             "warmup_ratio": 0.001,
             "by_epoch": True,
         },
-        "evaluation": {"model_evaluation_bm": True},
+        "evaluation": {"model_evaluation_bm": False},
     },
 }
 

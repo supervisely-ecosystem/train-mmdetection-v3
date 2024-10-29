@@ -74,12 +74,8 @@ def upload_artifacts(
             unit_divisor=1024,
             unit_scale=True,
         )
-
-        def cb(monitor: MultipartEncoderMonitor):
-            pbar.update(int(monitor.bytes_read - pbar.n))
-
     else:
-        cb = None
+        pbar = None
 
     framework_folder = g.sly_mmdet3.framework_folder
     remote_artifacts_dir = f"{framework_folder}/{task_id}_{experiment_name}"
@@ -90,7 +86,7 @@ def upload_artifacts(
         g.TEAM_ID,
         work_dir,
         remote_artifacts_dir,
-        progress_size_cb=cb,
+        progress_size_cb=pbar,
     )
     progress_widget.hide()
 

@@ -20,10 +20,6 @@ PROJECT_ID = sly.env.project_id()
 TEAM_ID = sly.env.team_id()
 WORKSPACE_ID = sly.env.workspace_id()
 DATA_DIR = sly.app.get_data_dir()
-task_type = "object detection"  # or "instance segmentation"
-
-BRANCH = True
-APP_VERSION = "auto-train-impl-v2"
 
 ##################### PART 1: TRAINING #####################
 
@@ -42,8 +38,6 @@ session = api.app.start(
     description=f"AutoTrain session for {module_info.name}",
     task_name="AutoTrain/train",
     params=params,
-    app_version=APP_VERSION,
-    is_branch=BRANCH,
 )
 
 task_id = session.task_id

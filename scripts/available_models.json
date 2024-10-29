@@ -13,7 +13,7 @@
 			"rtmdet_l_8xb32-300e_coco",
 			"rtmdet_x_8xb32-300e_coco"
 		],
-		"RetinaNet": [
+		"PVT: Pyramid Vision Transformer": [
 			"retinanet_pvt-t_fpn_1x_coco",
 			"retinanet_pvt-s_fpn_1x_coco",
 			"retinanet_pvt-m_fpn_1x_coco",
@@ -22,24 +22,7 @@
 			"retinanet_pvtv2-b2_fpn_1x_coco",
 			"retinanet_pvtv2-b3_fpn_1x_coco",
 			"retinanet_pvtv2-b4_fpn_1x_coco",
-			"retinanet_pvtv2-b5_fpn_1x_coco",
-			"retinanet_r18_fpn_1x_coco",
-			"retinanet_r18_fpn_1xb8-1x_coco",
-			"retinanet_r50-caffe_fpn_1x_coco",
-			"retinanet_r50_fpn_1x_coco",
-			"retinanet_r50_fpn_amp-1x_coco",
-			"retinanet_r50_fpn_2x_coco",
-			"retinanet_r50_fpn_ms-640-800-3x_coco",
-			"retinanet_r101-caffe_fpn_1x_coco",
-			"retinanet_r101-caffe_fpn_ms-3x_coco",
-			"retinanet_r101_fpn_1x_coco",
-			"retinanet_r101_fpn_2x_coco",
-			"retinanet_r101_fpn_ms-640-800-3x_coco",
-			"retinanet_x101-32x4d_fpn_1x_coco",
-			"retinanet_x101-32x4d_fpn_2x_coco",
-			"retinanet_x101-64x4d_fpn_1x_coco",
-			"retinanet_x101-64x4d_fpn_2x_coco",
-			"retinanet_x101-64x4d_fpn_ms-640-800-3x_coco"
+			"retinanet_pvtv2-b5_fpn_1x_coco"
 		],
 		"DyHead": [
 			"atss_r50-caffe_fpn_dyhead_1x_coco",
@@ -47,11 +30,11 @@
 			"atss_swin-l-p4-w12_fpn_dyhead_ms-2x_coco"
 		],
 		"DDOD": ["ddod_r50_fpn_1x_coco"],
-		"Label Assignment Distillation": [
+		"LAD: Label Assignment Distillation": [
 			"lad_r101-paa-r50_fpn_2xb8_coco_1x",
 			"lad_r50-paa-r101_fpn_2xb8_coco_1x"
 		],
-		"Localization Distillation": [
+		"LD: Localization Distillation": [
 			"ld_r18-gflv1-r101_fpn_1x_coco",
 			"ld_r34-gflv1-r101_fpn_1x_coco",
 			"ld_r50-gflv1-r101_fpn_1x_coco",
@@ -88,7 +71,7 @@
 			"sparse-rcnn_r101_fpn_ms-480-800-3x_coco",
 			"sparse-rcnn_r101_fpn_300-proposals_crop-ms-480-800-3x_coco"
 		],
-		"VFNet": [
+		"VarifocalNet": [
 			"vfnet_r50_fpn_1x_coco",
 			"vfnet_r50_fpn_ms-2x_coco",
 			"vfnet_r50-mdconv-c3-c5_fpn_ms-2x_coco",
@@ -114,7 +97,7 @@
 			"detectors_cascade-rcnn_r50_1x_coco"
 		],
 		"Dynamic R-CNN": ["dynamic-rcnn_r50_fpn_1x_coco"],
-		"SABL": [
+		"Side-Aware Boundary Localization": [
 			"sabl-faster-rcnn_r50_fpn_1x_coco",
 			"sabl-faster-rcnn_r101_fpn_1x_coco",
 			"sabl-retinanet_r50_fpn_1x_coco",
@@ -130,10 +113,8 @@
 			"nas-fcos_r50-caffe_fpn_fcoshead-gn-head_4xb4-1x_coco"
 		],
 		"ATSS": ["atss_r50_fpn_1x_coco", "atss_r101_fpn_1x_coco"],
-		"Rethinking Classification and Localization for Object Detection": [
-			"dh-faster-rcnn_r50_fpn_1x_coco"
-		],
-		"FoveaBox": [
+		"Double-Head R-CNN": ["dh-faster-rcnn_r50_fpn_1x_coco"],
+		"Foveabox": [
 			"fovea_r50_fpn_4xb4-1x_coco",
 			"fovea_r50_fpn_4xb4-2x_coco",
 			"fovea_r50_fpn_gn-head-align_4xb4-2x_coco",
@@ -143,7 +124,7 @@
 			"fovea_r101_fpn_gn-head-align_4xb4-2x_coco",
 			"fovea_r101_fpn_gn-head-align_ms-640-800-4xb4-2x_coco"
 		],
-		"FreeAnchor": [
+		"Free Anchor": [
 			"freeanchor_r50_fpn_1x_coco",
 			"freeanchor_r101_fpn_1x_coco",
 			"freeanchor_x101-32x4d_fpn_1x_coco"
@@ -228,6 +209,25 @@
 			"cascade-rcnn_x101-64x4d_fpn_1x_coco",
 			"cascade-rcnn_x101_64x4d_fpn_20e_coco"
 		],
+		"RetinaNet": [
+			"retinanet_r18_fpn_1x_coco",
+			"retinanet_r18_fpn_1xb8-1x_coco",
+			"retinanet_r50-caffe_fpn_1x_coco",
+			"retinanet_r50_fpn_1x_coco",
+			"retinanet_r50_fpn_amp-1x_coco",
+			"retinanet_r50_fpn_2x_coco",
+			"retinanet_r50_fpn_ms-640-800-3x_coco",
+			"retinanet_r101-caffe_fpn_1x_coco",
+			"retinanet_r101-caffe_fpn_ms-3x_coco",
+			"retinanet_r101_fpn_1x_coco",
+			"retinanet_r101_fpn_2x_coco",
+			"retinanet_r101_fpn_ms-640-800-3x_coco",
+			"retinanet_x101-32x4d_fpn_1x_coco",
+			"retinanet_x101-32x4d_fpn_2x_coco",
+			"retinanet_x101-64x4d_fpn_1x_coco",
+			"retinanet_x101-64x4d_fpn_2x_coco",
+			"retinanet_x101-64x4d_fpn_ms-640-800-3x_coco"
+		],
 		"SSD": [
 			"ssd300_coco",
 			"ssd512_coco",
@@ -265,35 +265,8 @@
 		]
 	},
 	"instance segmentation": {
-		"Mask R-CNN": [
+		"ConvNeXt": [
 			"mask-rcnn_convnext-t-p4-w7_fpn_amp-ms-crop-3x_coco",
-			"mask-rcnn_swin-s-p4-w7_fpn_amp-ms-crop-3x_coco",
-			"mask-rcnn_swin-t-p4-w7_fpn_ms-crop-3x_coco",
-			"mask-rcnn_swin-t-p4-w7_fpn_1x_coco",
-			"mask-rcnn_swin-t-p4-w7_fpn_amp-ms-crop-3x_coco",
-			"mask-rcnn_r50-caffe_fpn_1x_coco",
-			"mask-rcnn_r50_fpn_1x_coco",
-			"mask-rcnn_r50_fpn_fp16_1x_coco",
-			"mask-rcnn_r50_fpn_2x_coco",
-			"mask-rcnn_r101-caffe_fpn_1x_coco",
-			"mask-rcnn_r101_fpn_1x_coco",
-			"mask-rcnn_r101_fpn_2x_coco",
-			"mask-rcnn_x101-32x4d_fpn_1x_coco",
-			"mask-rcnn_x101-32x4d_fpn_2x_coco",
-			"mask-rcnn_x101-64x4d_fpn_1x_coco",
-			"mask-rcnn_x101-64x4d_fpn_2x_coco",
-			"mask-rcnn_x101-32x8d_fpn_1x_coco",
-			"mask-rcnn_r50-caffe_fpn_ms-poly-2x_coco",
-			"mask-rcnn_r50-caffe_fpn_ms-poly-3x_coco",
-			"mask-rcnn_r50_fpn_mstrain-poly_3x_coco",
-			"mask-rcnn_r101_fpn_ms-poly-3x_coco",
-			"mask-rcnn_r101-caffe_fpn_ms-poly-3x_coco",
-			"mask-rcnn_x101-32x4d_fpn_ms-poly-3x_coco",
-			"mask-rcnn_x101-32x8d_fpn_ms-poly-1x_coco",
-			"mask-rcnn_x101-32x8d_fpn_ms-poly-3x_coco",
-			"mask-rcnn_x101-64x4d_fpn_ms-poly_3x_coco"
-		],
-		"Cascade Mask R-CNN": [
 			"cascade-mask-rcnn_convnext-t-p4-w7_fpn_4conv1fc-giou_amp-ms-crop-3x_coco",
 			"cascade-mask-rcnn_convnext-s-p4-w7_fpn_4conv1fc-giou_amp-ms-crop-3x_coco"
 		],
@@ -303,6 +276,12 @@
 			"rtmdet-ins_m_8xb32-300e_coco",
 			"rtmdet-ins_l_8xb32-300e_coco",
 			"rtmdet-ins_x_8xb16-300e_coco"
+		],
+		"Swin Transformer": [
+			"mask-rcnn_swin-s-p4-w7_fpn_amp-ms-crop-3x_coco",
+			"mask-rcnn_swin-t-p4-w7_fpn_ms-crop-3x_coco",
+			"mask-rcnn_swin-t-p4-w7_fpn_1x_coco",
+			"mask-rcnn_swin-t-p4-w7_fpn_amp-ms-crop-3x_coco"
 		],
 		"Mask2Former": [
 			"mask2former_r101_8xb2-lsj-50e_coco",
@@ -352,7 +331,7 @@
 			"yolact_r50_8x8_coco",
 			"yolact_r101_1x8_coco"
 		],
-		"HTC": [
+		"Hybrid Task Cascade": [
 			"htc_r50_fpn_1x_coco",
 			"htc_r50_fpn_20e_coco",
 			"htc_r101_fpn_20e_coco",
@@ -369,7 +348,7 @@
 			"ms-rcnn_x101-64x4d_fpn_1x_coco",
 			"ms-rcnn_x101-64x4d_fpn_2x_coco"
 		],
-		"Cascade R-CNN": [
+		"Cascade Mask R-CNN": [
 			"cascade-mask-rcnn_r50-caffe_fpn_1x_coco",
 			"cascade-mask-rcnn_r50_fpn_1x_coco",
 			"cascade-mask-rcnn_r50_fpn_20e_coco",
@@ -387,6 +366,29 @@
 			"cascade-mask-rcnn_x101-32x4d_fpn_ms-3x_coco",
 			"cascade-mask-rcnn_x101-32x8d_fpn_ms-3x_coco",
 			"cascade-mask-rcnn_x101-64x4d_fpn_ms-3x_coco"
+		],
+		"Mask R-CNN": [
+			"mask-rcnn_r50-caffe_fpn_1x_coco",
+			"mask-rcnn_r50_fpn_1x_coco",
+			"mask-rcnn_r50_fpn_fp16_1x_coco",
+			"mask-rcnn_r50_fpn_2x_coco",
+			"mask-rcnn_r101-caffe_fpn_1x_coco",
+			"mask-rcnn_r101_fpn_1x_coco",
+			"mask-rcnn_r101_fpn_2x_coco",
+			"mask-rcnn_x101-32x4d_fpn_1x_coco",
+			"mask-rcnn_x101-32x4d_fpn_2x_coco",
+			"mask-rcnn_x101-64x4d_fpn_1x_coco",
+			"mask-rcnn_x101-64x4d_fpn_2x_coco",
+			"mask-rcnn_x101-32x8d_fpn_1x_coco",
+			"mask-rcnn_r50-caffe_fpn_ms-poly-2x_coco",
+			"mask-rcnn_r50-caffe_fpn_ms-poly-3x_coco",
+			"mask-rcnn_r50_fpn_mstrain-poly_3x_coco",
+			"mask-rcnn_r101_fpn_ms-poly-3x_coco",
+			"mask-rcnn_r101-caffe_fpn_ms-poly-3x_coco",
+			"mask-rcnn_x101-32x4d_fpn_ms-poly-3x_coco",
+			"mask-rcnn_x101-32x8d_fpn_ms-poly-1x_coco",
+			"mask-rcnn_x101-32x8d_fpn_ms-poly-3x_coco",
+			"mask-rcnn_x101-64x4d_fpn_ms-poly_3x_coco"
 		]
 	}
 }

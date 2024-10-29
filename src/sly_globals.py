@@ -1,4 +1,5 @@
 import os
+
 import supervisely as sly
 from dotenv import load_dotenv
 from supervisely.nn.artifacts.mmdetection import MMDetection3
@@ -10,6 +11,11 @@ load_dotenv("local.env")
 
 PROJECT_ID = sly.env.project_id()
 TEAM_ID = sly.env.team_id()
+
+if sly.is_production():
+    app_session_id = os.getenv("TASK_ID")
+else:
+    app_session_id = 34522
 
 api: sly.Api = sly.Api.from_env()
 app_dir = sly.app.get_synced_data_dir()

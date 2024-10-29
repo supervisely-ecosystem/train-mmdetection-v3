@@ -1,12 +1,31 @@
 import os
 from pathlib import Path
 
-import supervisely as sly
 import torch
 from mmdet.registry import RUNNERS
 from mmdet.visualization import DetLocalVisualizer
 from mmengine import Config, ConfigDict
 from mmengine.visualization import Visualizer
+
+import src.sly_globals as g
+import src.ui.models as models_ui
+import src.workflow as w
+import supervisely as sly
+
+# register modules (don't remove):
+from src import sly_dataset, sly_hook, sly_imgaugs, sly_utils
+from src.project_cached import download_project
+from src.serve import MMDetectionModel
+from src.train_parameters import TrainParameters
+from src.ui.augmentations import get_selected_aug
+from src.ui.classes import classes
+from src.ui.graphics import add_classwise_metric, monitoring
+from src.ui.hyperparameters import (  # run_speedtest_checkbox,
+    run_model_benchmark_checkbox,
+    update_params_with_widgets,
+)
+from src.ui.task import task_selector
+from src.ui.train_val_split import dump_train_val_splits, splits
 from supervisely.app.widgets import (
     Button,
     Card,
@@ -24,25 +43,6 @@ from supervisely.nn.benchmark import (
     ObjectDetectionBenchmark,
 )
 from supervisely.nn.inference import SessionJSON
-
-import src.sly_globals as g
-import src.ui.models as models_ui
-import src.workflow as w
-
-# register modules (don't remove):
-from src import sly_dataset, sly_hook, sly_imgaugs, sly_utils
-from src.project_cached import download_project
-from src.serve import MMDetectionModel
-from src.train_parameters import TrainParameters
-from src.ui.augmentations import get_selected_aug
-from src.ui.classes import classes
-from src.ui.graphics import add_classwise_metric, monitoring
-from src.ui.hyperparameters import (  # run_speedtest_checkbox,
-    run_model_benchmark_checkbox,
-    update_params_with_widgets,
-)
-from src.ui.task import task_selector
-from src.ui.train_val_split import dump_train_val_splits, splits
 
 root_source_path = str(Path(__file__).parents[1])
 app_data_dir = os.path.join(root_source_path, "tempfiles")
@@ -265,10 +265,17 @@ def train():
                 sly.logger.info(f"Creating the report for the best model: {best_filename!r}")
 
                 # 0. Serve trained model
+                custom_inference_settings = os.path.join(root_source_path, "custom_settings.yml")
+                if not os.path.exists(custom_inference_settings):
+                    custom_inference_settings = {
+                        "confidence_threshold": 0.45,
+                        "nms_iou_thresh": 0.65,
+                    }
+
                 m = MMDetectionModel(
                     model_dir=params.work_dir,
                     use_gui=False,
-                    custom_inference_settings=os.path.join(root_source_path, "custom_settings.yml"),
+                    custom_inference_settings=custom_inference_settings,
                 )
 
                 device = "cuda" if torch.cuda.is_available() else "cpu"

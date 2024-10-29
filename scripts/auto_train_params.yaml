@@ -1,0 +1,48 @@
+# This is a sample configuration file for training a model using auto_train.py script.
+# For full list of config parameters, refer to auto_train_full_params.yaml file
+
+input:
+  project_id: 42201
+  use_cache: true
+
+model:
+  task_type: "Object detection"
+  arch_type: "DAB-DETR"
+  model_source: "Pretrained models"
+  model_name: "dab-detr_r50_8xb2-50e_coco.py"
+  train_mode: "finetune"
+
+hyperparameters:
+  general:
+    n_epochs: 20
+    input_image_size: [1000, 600]
+    train_batch_size: 2
+    val_batch_size: 1
+    val_interval: 1
+    chart_interval: 1
+
+  checkpoint:
+    checkpoint_interval: 1
+    keep_checkpoints: true
+    max_keep_checkpoints: 3
+    save_last_checkpoint: true
+    save_best_checkpoint: true
+    save_optimizer_state: false
+
+  optimizer:
+    override_frozen_stages: false
+    type: "AdamW"
+    lr: 0.0001
+    weight_decay: 0.0001
+    use_clip_grad_norm: true
+    clip_grad_norm: 0.1
+
+  lr_scheduler:
+    scheduler: "empty"
+    use_warmup: true
+    warmup_iters: 1
+    warmup_ratio: 0.001
+    by_epoch: true
+
+  evaluation:
+    model_evaluation_bm: true

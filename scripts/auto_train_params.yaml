@@ -1,5 +1,8 @@
 # This is a sample configuration file for training a model using auto_train.py script.
 # For full list of config parameters, refer to auto_train_full_params.yaml file
+# https://github.com/supervisely-ecosystem/train-mmdetection-v3/blob/master/scripts/auto_train_full_params.yaml
+# For full list of available architectures and models, refer to available_models.json file
+# https://github.com/supervisely-ecosystem/train-mmdetection-v3/blob/master/scripts/available_models.json
 
 input:
   project_id: 42201

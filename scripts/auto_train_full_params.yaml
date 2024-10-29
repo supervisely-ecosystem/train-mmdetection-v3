@@ -1,3 +1,7 @@
+# This is a complete config file with all available parameters
+# For full list of available architectures and models, refer to available_models.json file
+# https://github.com/supervisely-ecosystem/train-mmdetection-v3/blob/master/scripts/available_models.json
+
 # Input settings
 input:
   project_id: 42201

@@ -101,7 +101,7 @@ train_parameters = {
             "warmup_ratio": 0.001,
             "by_epoch": True,
         },
-        "evaluation": {"model_evaluation_bm": False},
+        "evaluation": {"model_evaluation_bm": True},
     },
 }
 
@@ -125,11 +125,13 @@ best = None
 while best is None:
     sleep(GLOBAL_TIMEOUT)
     if api.file.dir_exists(TEAM_ID, str(weights)):
-        for filename in api.file.listdir(TEAM_ID, str(weights)):
+        for file_path in api.file.listdir(TEAM_ID, str(weights)):
+            filename = sly.fs.get_file_name_with_ext(file_path)
             if filename.endswith(mmdet3_artifacts.weights_ext):
                 if filename.startswith("best_"):
-                    best = str(weights / filename)
+                    best = f"{weights}/{filename}"
                     sly.logger.info(f"Checkpoint founded : {best}")
+                    break
 
 requests.post(post_shutdown)
 

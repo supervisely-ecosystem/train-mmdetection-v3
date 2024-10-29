@@ -40,6 +40,7 @@ hyperparameters:
     use_clip_grad_norm: true
     clip_grad_norm: 0.1
 
+    # Pick one of the following optimizers, default is AdamW
     # Adam
     adam:
       betas:
@@ -59,7 +60,7 @@ hyperparameters:
     warmup_ratio: 0.001
     by_epoch: true # applicable to all except "empty" scheduler
 
-    # Pick one of the following learning rate schedulers
+    # Pick one of the following learning rate schedulers or use "empty" to disable scheduler
     # StepLR
     step_lr:
       step_size: 1

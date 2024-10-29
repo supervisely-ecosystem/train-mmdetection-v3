@@ -18,3 +18,4 @@ def auto_train(request: Request):
     sly.logger.info("Starting automatic training session...")
     state = request.state.state
     start_auto_train(state)
+    return {"result": "successfully finished automatic training session"}

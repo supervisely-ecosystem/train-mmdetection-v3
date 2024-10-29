@@ -1,117 +1,47 @@
-# Basic training parameters
+# For full list of config parameters, refer to https://docs.deepcognition.ai/dcv2.0/docs/auto-train-parameters
 
-# # input project id
-# project_id: 18520
-# # use cache
-# use_cache: True
-# # task type (object detection / instance segmentation)
-# task_type: "object detection"
+input:
+  project_id: 42201
+  use_cache: true
 
-# # model source (Pretrained models / Custom models)
-# model_source: "Pretrained models"
-# # architecture type
-# architecture: "DINO"
-# # model name
-# model: "dino-4scale_r50_8xb2-12e_coco"
-# # train mode (finetune / scratch)
-# train_mode: "finetune"
+model:
+  task_type: "Object detection"
+  arch_type: "DINO"
+  model_source: "Pretrained models"
+  model_name: "dino-5scale_swin-l_8xb2-12e_coco.py"
+  train_mode: "finetune"
 
-# # number of epochs to train model for
-# n_epochs: 20
-# # input image resolution
-# input_image_size: [1000, 600]
-# # train batch size
-# train_batch_size: 16
-# # val batch size
-# val_batch_size: 16
-# # save checkpoint every n epochs
-# checkpoint_interval: 1
-# # optimizer (AdamW / Adam / SGD)
-# optimizer: "AdamW"
-# # learning rate
-# lr: 0.0001
-# # weight decay
-# weight_decay: 0.0001
+hyperparameters:
+  general:
+    n_epochs: 20
+    input_image_size: [1000, 600]
+    train_batch_size: 2
+    val_batch_size: 1
+    val_interval: 1
+    chart_interval: 1
 
-# # won't use?
-# val_interval: 1
-# chart_interval: 1
-# keep_checkpoints: True
-# max_keep_checkpoints: 3
-# save_last_checkpoint: True
-# save_best_checkpoint: True
-# save_optimizer_state: False
-# override_frozen_stages: False
-# use_clip_grad_norm: True
-# clip_grad_norm: 0.1
-# scheduler: "Without scheduler"
-# use_warmup: True
-# warmup_iters: 1
-# warmup_ratio: 0.1
-# model_evaluation_bm: True
+  checkpoint:
+    checkpoint_interval: 1
+    keep_checkpoints: true
+    max_keep_checkpoints: 3
+    save_last_checkpoint: true
+    save_best_checkpoint: true
+    save_optimizer_state: false
 
-# # Additional training parameters
+  optimizer:
+    override_frozen_stages: false
+    type: "AdamW"
+    lr: 0.0001
+    weight_decay: 0.0001
+    use_clip_grad_norm: true
+    clip_grad_norm: 0.1
 
-# # Augmentations
+  lr_scheduler:
+    scheduler: "empty"
+    use_warmup: true
+    warmup_iters: 1
+    warmup_ratio: 0.001
+    by_epoch: true
 
-# # image HSV-Hue augmentation (fraction)
-# hsv_h: 0.015
-# # image HSV-Saturation augmentation (fraction)
-# hsv_s: 0.4
-# # image HSV-Value augmentation (fraction)
-# hsv_v: 0.4
-# # image rotation (+/- deg)
-# degrees: 0.0
-# # image translation (+/- fraction)
-# translate: 0.0
-# # image scale (+/- gain)
-# scale: 0.0
-# # image shear (+/- deg)
-# shear: 0.0
-# # image perspective (+/- fraction), range 0-0.001
-# perspective: 0.0
-# # image flip up-down (probability)
-# flipud: 0.0
-# # image flip left-right (probability) - will be disabled for pose estimation task
-# fliplr: 0.5
-# # image mosaic (probability)
-# mosaic: 0.0
-# # image mixup (probability)
-# mixup: 0.0
-# # segment copy-paste (probability)
-# copy_paste: 0.0
-
-project_id: 42201
-use_cache: False
-task_type: "object detection"
-arch_type: "DINO"
-model_source: "Pretrained models"
-model_name: "dino-4scale_r50_8xb2-12e_coco.py"
-train_mode: "finetune"
-n_epochs: 20
-input_image_size: [1000, 600]
-train_batch_size: 16
-val_batch_size: 16
-val_interval: 66
-chart_interval: 66
-checkpoint_interval: 66
-keep_checkpoints: True
-max_keep_checkpoints: 66
-save_last_checkpoint: False
-save_best_checkpoint: False
-save_optimizer_state: False
-override_frozen_stages: False
-optimizer: "AdamW"
-lr: 0.0001345
-weight_decay: 0.00011123
-use_clip_grad_norm: False
-clip_grad_norm: 0.15555
-use_amsgrad: True
-beta1: 2342
-beta2: 123
-sgd_momentum: 44
-scheduler: "Without scheduler"
-use_warmup: False
-warmup_iters: 11
-warmup_ratio: 11
-model_evaluation_bm: False
+  evaluation:
+    model_evaluation_bm: true

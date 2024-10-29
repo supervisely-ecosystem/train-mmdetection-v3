@@ -1,24 +1,24 @@
 from typing import List
+
+from src.train_parameters import TrainParameters
+from src.ui.utils import (
+    OrderedWidgetWrapper,
+    create_linked_getter,
+    get_switch_value,
+    set_switch_value,
+)
 from supervisely.app.widgets import (
-    Select,
+    Button,
     Container,
+    Empty,
     Field,
     Input,
     InputNumber,
-    Empty,
+    LineChart,
+    Select,
     SelectString,
     Switch,
-    LineChart,
-    Button,
 )
-
-from src.ui.utils import (
-    OrderedWidgetWrapper,
-    set_switch_value,
-    get_switch_value,
-    create_linked_getter,
-)
-from src.train_parameters import TrainParameters
 
 schedulers = [("empty", "Without scheduler")]
 
@@ -214,15 +214,15 @@ cosinerestart_scheduler.add_input(
     set_switch_value,
 )
 
-cosinerestart_preiods_input = Input("1")
+cosinerestart_periods_input = Input("1")
 cosinerestart_preiods_field = Field(
-    cosinerestart_preiods_input,
+    cosinerestart_periods_input,
     "Periods",
     "Periods for each cosine anneling cycle. Many int step values splitted by comma",
 )
 cosinerestart_scheduler.add_input(
     "periods",
-    cosinerestart_preiods_input,
+    cosinerestart_periods_input,
     wraped_widget=cosinerestart_preiods_field,
     custom_value_getter=get_multisteps,
     custom_value_setter=set_multisteps,

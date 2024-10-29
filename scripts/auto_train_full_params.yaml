@@ -1,0 +1,109 @@
+# Input settings
+input:
+  project_id: 42201
+  use_cache: false
+
+# Model settings
+model:
+  task_type: "Object detection" # Options: "Object detection", "Instance segmentation"
+  arch_type: "DINO" # List of available types can be found in the documentation
+  model_source: "Pretrained models"
+  model_name: "dino-5scale_swin-l_8xb2-12e_coco.py" # List of available models can be found in the documentation
+  train_mode: "scratch" # Options: "finetune", "scratch "
+
+# Hyperparameters
+hyperparameters:
+  # General training settings
+  general:
+    n_epochs: 20
+    input_image_size: [1000, 600] # Format: [longer, shorter]. Images will be scaled approximately to the specified sizes while keeping the aspect ratio. Uses 'Resize' transform from mmcv
+    train_batch_size: 2
+    val_batch_size: 1
+    val_interval: 1
+    chart_interval: 1
+
+  # Checkpoint settings
+  checkpoint:
+    checkpoint_interval: 1
+    keep_checkpoints: true
+    max_keep_checkpoints: 3
+    save_last_checkpoint: true
+    save_best_checkpoint: true
+    save_optimizer_state: false
+
+  # Optimizer settings
+  optimizer:
+    override_frozen_stages: false
+    type: "AdamW" # Options: Adam, AdamW, SGD
+    lr: 0.0001
+    weight_decay: 0.0001
+    use_clip_grad_norm: true
+    clip_grad_norm: 0.1
+
+    # Adam
+    adam:
+      betas:
+        beta1: 0.9
+        beta2: 0.999
+      use_amsgrad: true
+
+    # SGD
+    sgd:
+      sgd_momentum: 0.9
+
+  # Learning rate scheduler
+  lr_scheduler:
+    scheduler: "empty" # Options: "StepLR", "MultiStepLR", "ExponentialLR", "ReduceLROnPlateau", "CosineAnnealingLR", "CosineRestartLR", "LinearLR", "PolynomialLR"
+    use_warmup: true
+    warmup_iters: 1
+    warmup_ratio: 0.001
+    by_epoch: true # applicable to all except "empty" scheduler
+
+    # Pick one of the following learning rate schedulers
+    # StepLR
+    step_lr:
+      step_size: 1
+      gamma: 0.1
+
+    # MultiStepLR
+    multi_step_lr:
+      milestones: [16, 22]
+      gamma: 0.1
+
+    # ExponentialLR
+    exponential_lr:
+      gamma: 0.1
+
+    # ReduceLROnPlateau
+    reduce_lr_on_plateau:
+      factor: 0.1
+      patience: 10
+
+    # CosineAnnealingLR
+    cosine_annealing_lr:
+      t_max: 1
+      use_min_lr: true
+      min_lr: 0
+      min_lr_ratio: 0 # use if use_min_lr is false
+
+    # CosineRestartLR
+    cosine_annealing_warm_restarts_lr:
+      periods: 1
+      restart_weights: 1
+      use_min_lr: true
+      min_lr: 0
+      min_lr_ratio: 0 # use if use_min_lr is false
+
+    # LinearLR
+    linear_lr:
+      start_factor: 0.333
+      end_factor: 1
+
+    # PolynomialLR
+    polynomial_lr:
+      min_lr: 0
+      power: 1
+
+  # Model evaluation settings
+  evaluation:
+    model_evaluation_bm: true

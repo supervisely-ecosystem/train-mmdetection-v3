@@ -126,7 +126,7 @@ while best is None:
     sleep(GLOBAL_TIMEOUT)
     if api.file.dir_exists(TEAM_ID, str(weights)):
         for filename in api.file.listdir(TEAM_ID, str(weights)):
-            if filename.endswith(".pth"):
+            if filename.endswith(mmdet3_artifacts.weights_ext):
                 if filename.startswith("best_"):
                     best = str(weights / filename)
                     sly.logger.info(f"Checkpoint founded : {best}")

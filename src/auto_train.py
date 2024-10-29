@@ -45,7 +45,7 @@ def start_auto_train(state: dict):
     # Step 7. Hyperparameters
     set_hyperparameters_ui(hyperparameters_settings)
     # Step 8. Train
-    # handlers_ui.start_train()
+    handlers_ui.start_train()
 
 
 def set_input_ui(input_settings: dict):

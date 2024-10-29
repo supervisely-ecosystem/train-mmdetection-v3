@@ -9,10 +9,11 @@ from supervisely.app.widgets import Container
 
 layout = Container(widgets=[handlers.stepper])
 app = sly.Application(layout=layout)
+server = app.get_server()
 g.app = app
 
 
-@g.app.server.post("/auto_train")
+@server.post("/auto_train")
 def auto_train(request: Request):
     sly.logger.info("Starting automatic training session...")
     state = request.state.state

@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 
 import supervisely as sly
 
-load_dotenv("supervisely.env")
+load_dotenv(os.path.expanduser("~/supervisely.env"))
+# load_dotenv("supervisely.env")
 load_dotenv("local.env")
 
 api = sly.Api()
@@ -70,7 +71,7 @@ train_parameters = {
     },
     "hyperparameters": {
         "general": {
-            "n_epochs": 20,
+            "n_epochs": 5,
             "input_image_size": [1000, 600],
             "train_batch_size": 2,
             "val_batch_size": 1,
@@ -114,9 +115,8 @@ api.task.send_request(
 )
 
 mmdet3_artifacts = sly.nn.artifacts.MMDetection3(TEAM_ID)
-framework_folder = mmdet3_artifacts.framework_folder
-model_name = train_parameters["model"]["model_name"]
-team_files_folder = Path(framework_folder) / f"{task_id}_{model_name}"
+model_name = sly.fs.get_file_name(train_parameters["model"]["model_name"])
+team_files_folder = Path(mmdet3_artifacts.framework_folder) / f"{task_id}_{model_name}"
 weights = mmdet3_artifacts.get_weights_path(str(team_files_folder))
 
 

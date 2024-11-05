@@ -12,11 +12,11 @@
   <a href="#Acknowledgment">Acknowledgment</a>
 </p>
 
-[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/train-mmdetection-v3)
-[![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervise.ly/slack)
+[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervisely.com/apps/supervisely-ecosystem/train-mmdetection-v3)
+[![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervisely.com/slack)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/supervisely-ecosystem/train-mmdetection-v3)
-[![views](https://app.supervise.ly/img/badges/views/supervisely-ecosystem/train-mmdetection-v3.png)](https://supervise.ly)
-[![runs](https://app.supervise.ly/img/badges/runs/supervisely-ecosystem/train-mmdetection-v3.png)](https://supervise.ly)
+[![views](https://app.supervisely.com/img/badges/views/supervisely-ecosystem/train-mmdetection-v3.png)](https://supervisely.com)
+[![runs](https://app.supervisely.com/img/badges/runs/supervisely-ecosystem/train-mmdetection-v3.png)](https://supervisely.com)
 
 </div>
 
@@ -238,7 +238,7 @@ Application key points:
 
 # Obtain saved checkpoints
 
-All the trained checkpoints, that are generated through the process of training models are stored in [Team Files](https://app.supervise.ly/files/) in the folder **mmdetection-3**.
+All the trained checkpoints, that are generated through the process of training models are stored in [Team Files](https://app.supervisely.com/files/) in the folder **mmdetection-3**.
 
 To navigate to team files, go to the `Start` menu and press the `Team files` button
 

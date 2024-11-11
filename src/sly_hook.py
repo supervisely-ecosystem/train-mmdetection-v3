@@ -1,13 +1,14 @@
 from typing import Dict, Optional, Sequence
+
+import torch
 from mmdet.registry import HOOKS
 from mmengine.hooks import Hook  # LoggerHook, CheckpointHook
 from mmengine.hooks.hook import DATA_BATCH
 from mmengine.runner import Runner
-import supervisely as sly
-import torch
 
 import src.sly_globals as g
 import src.ui.train as train_ui
+import supervisely as sly
 from src.ui.graphics import monitoring
 
 
@@ -95,4 +96,9 @@ class SuperviselyHook(Hook):
                 if k.endswith("_precision")
             }
             for class_name, value in classwise_metrics.items():
-                monitoring.add_scalar("val", "Classwise mAP", class_name, runner.epoch, value)
+                try:
+                    monitoring.add_scalar("val", "Classwise mAP", class_name, runner.epoch, value)
+                except Exception as e:
+                    sly.logger.warn(
+                        f"Can't add classwise metric: {e}. Most likely, problem is in the class name."
+                    )

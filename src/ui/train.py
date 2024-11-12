@@ -20,7 +20,8 @@ from src.train_parameters import TrainParameters
 from src.ui.augmentations import get_selected_aug
 from src.ui.classes import classes
 from src.ui.graphics import add_classwise_metric, monitoring
-from src.ui.hyperparameters import (  # run_speedtest_checkbox,
+from src.ui.hyperparameters import ( 
+    run_speedtest_checkbox,
     run_model_benchmark_checkbox,
     update_params_with_widgets,
 )
@@ -392,9 +393,21 @@ def train():
                 bm.upload_eval_results(eval_res_dir + "/evaluation/")
 
                 # # 6. Speed test
-                # if run_speedtest_checkbox.is_checked():
-                #     bm.run_speedtest(session, g.project_info.id)
-                #     bm.upload_speedtest_results(eval_res_dir + "/speedtest/")
+                if run_speedtest_checkbox.is_checked():
+                    bm.run_speedtest(session, g.project_info.id)
+                    bm.upload_speedtest_results(eval_res_dir + "/speedtest/")
+                try:
+                    support_batch_inference = session.get("batch_inference_support", False)
+                    max_batch_size = session.get("max_batch_size")
+                    batch_sizes = (1, 8, 16)
+                    if not support_batch_inference:
+                        batch_sizes = (1,)
+                    elif max_batch_size is not None:
+                        batch_sizes = tuple([bs for bs in batch_sizes if bs <= max_batch_size])
+                    bm.run_speedtest(session, g.project_info.id, batch_sizes=batch_sizes)
+                    bm.upload_speedtest_results(eval_res_dir + "/speedtest/")
+                except Exception as e:
+                    sly.logger.warning(f"Speedtest failed. Skipping. {e}")
 
                 # 7. Prepare visualizations, report and
                 bm.visualize()

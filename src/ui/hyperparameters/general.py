@@ -104,12 +104,12 @@ chart_update_field = Field(
 general_params.add_input("chart_update_interval", chart_update_input)
 
 run_model_benchmark_checkbox = Checkbox(content="Run Model Benchmark evaluation", checked=True)
-# run_speedtest_checkbox = Checkbox(content="Run speed test", checked=True)
+run_speedtest_checkbox = Checkbox(content="Run speed test", checked=True)
 model_benchmark_f = Field(
     Container(
         widgets=[
             run_model_benchmark_checkbox,
-            # run_speedtest_checkbox,
+            run_speedtest_checkbox,
         ]
     ),
     title="Model Evaluation Benchmark",
@@ -158,9 +158,9 @@ def update_general_params_with_widgets(params: TrainParameters):
     # params.device_name = general_params.device
 
 
-# @run_model_benchmark_checkbox.value_changed
-# def change_model_benchmark(value):
-#     if value:
-#         run_speedtest_checkbox.show()
-#     else:
-#         run_speedtest_checkbox.hide()
+@run_model_benchmark_checkbox.value_changed
+def change_model_benchmark(value):
+    if value:
+        run_speedtest_checkbox.show()
+    else:
+        run_speedtest_checkbox.hide()

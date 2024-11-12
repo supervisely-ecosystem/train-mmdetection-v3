@@ -394,8 +394,9 @@ def train():
 
                 # # 6. Speed test
                 try:
-                    support_batch_inference = session.get("batch_inference_support", False)
-                    max_batch_size = session.get("max_batch_size")
+                    session_info = session.get_session_info()
+                    support_batch_inference = session_info.get("batch_inference_support", False)
+                    max_batch_size = session_info.get("max_batch_size")
                     batch_sizes = (1, 8, 16)
                     if not support_batch_inference:
                         batch_sizes = (1,)

@@ -393,9 +393,6 @@ def train():
                 bm.upload_eval_results(eval_res_dir + "/evaluation/")
 
                 # # 6. Speed test
-                if run_speedtest_checkbox.is_checked():
-                    bm.run_speedtest(session, g.project_info.id)
-                    bm.upload_speedtest_results(eval_res_dir + "/speedtest/")
                 try:
                     support_batch_inference = session.get("batch_inference_support", False)
                     max_batch_size = session.get("max_batch_size")

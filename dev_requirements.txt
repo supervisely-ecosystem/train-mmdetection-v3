@@ -2,4 +2,4 @@
 
 # see docker/Dockerfile
 
-supervisely[model-benchmark]==6.73.225
+supervisely[model-benchmark]==6.73.229

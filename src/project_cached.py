@@ -59,10 +59,8 @@ def download_project(
         _no_cache_download(api, project_info, project_dir, progress)
         return
     try:
-        # get datasets to download and cached
-        dataset_infos = api.dataset.get_list(project_id)
         # get images count
-        total = sum([ds_info.images_count for ds_info in dataset_infos])
+        total = project_info.items_count
         # download
         with progress(message="Downloading input data...", total=total) as pbar:
             download_to_cache(api, project_id, progress_cb=pbar.update)

@@ -323,6 +323,8 @@ def train():
                             )
                         image_infos = []
                         for dataset_name, image_names in image_names_per_dataset.items():
+                            if "/" in dataset_name:
+                                dataset_name = dataset_name.split("/")[-1]
                             ds_info = ds_infos_dict[dataset_name]
                             image_infos.extend(
                                 g.api.image.get_list(
@@ -424,9 +426,6 @@ def train():
                 sly.logger.info(
                     f"Predictions project name: {bm.dt_project_info.name}. Workspace_id: {bm.dt_project_info.workspace_id}"
                 )
-                sly.logger.info(
-                    f"Differences project name: {bm.diff_project_info.name}. Workspace_id: {bm.diff_project_info.workspace_id}"
-                )
         except Exception as e:
             sly.logger.error(f"Model benchmark failed. {repr(e)}", exc_info=True)
             creating_report.hide()
@@ -434,8 +433,6 @@ def train():
             try:
                 if bm.dt_project_info:
                     g.api.project.remove(bm.dt_project_info.id)
-                if bm.diff_project_info:
-                    g.api.project.remove(bm.diff_project_info.id)
             except Exception as re:
                 pass
 

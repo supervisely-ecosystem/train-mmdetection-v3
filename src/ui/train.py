@@ -431,11 +431,11 @@ def train():
             sly.logger.error(f"Model benchmark failed. {repr(e)}", exc_info=True)
             creating_report.hide()
             model_benchmark_pbar.hide()
-            try:
-                if bm.dt_project_info:
-                    g.api.project.remove(bm.dt_project_info.id)
-            except Exception as re:
-                pass
+            # try:
+            #     if bm.dt_project_info:
+            #         g.api.project.remove(bm.dt_project_info.id)
+            # except Exception as re:
+            #     pass
 
     if not model_benchmark_done:
         benchmark_report_template = None

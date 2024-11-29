@@ -312,7 +312,7 @@ def train():
                     benchmark_dataset_ids = splits._val_ds_select.get_selected_ids()
                     train_dataset_ids = splits._train_ds_select.get_selected_ids()
                 else:
-                    dataset_infos = g.api.dataset.get_list(g.PROJECT_ID)
+                    dataset_infos = g.api.dataset.get_list(g.PROJECT_ID, recursive=True)
 
                     def get_image_infos_by_split(split: list):
                         ds_infos_dict = {ds_info.name: ds_info for ds_info in dataset_infos}
@@ -346,7 +346,7 @@ def train():
                     train_images_ids = [img_info.id for img_info in train_image_infos]
 
                 if task_type == sly.nn.TaskType.OBJECT_DETECTION:
-                    bm = ObjectDetectionBenchmark(
+                    bm = sly.nn.benchmark.ObjectDetectionBenchmark(
                         g.api,
                         g.project_info.id,
                         output_dir=app_data_dir + "/benchmark",
@@ -356,7 +356,7 @@ def train():
                         classes_whitelist=classes.get_selected_classes(),
                     )
                 elif task_type == sly.nn.TaskType.INSTANCE_SEGMENTATION:
-                    bm = InstanceSegmentationBenchmark(
+                    bm = sly.nn.benchmark.InstanceSegmentationBenchmark(
                         g.api,
                         g.project_info.id,
                         output_dir=app_data_dir + "/benchmark",

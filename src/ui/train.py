@@ -312,7 +312,7 @@ def train():
                     benchmark_dataset_ids = splits._val_ds_select.get_selected_ids()
                     train_dataset_ids = splits._train_ds_select.get_selected_ids()
                 else:
-                    dataset_infos = g.api.dataset.get_list(g.PROJECT_ID)
+                    dataset_infos = g.api.dataset.get_list(g.PROJECT_ID, recursive=True)
 
                     def get_image_infos_by_split(split: list):
                         ds_infos_dict = {ds_info.name: ds_info for ds_info in dataset_infos}
@@ -323,6 +323,8 @@ def train():
                             )
                         image_infos = []
                         for dataset_name, image_names in image_names_per_dataset.items():
+                            if "/" in dataset_name:
+                                dataset_name = dataset_name.split("/")[-1]
                             ds_info = ds_infos_dict[dataset_name]
                             image_infos.extend(
                                 g.api.image.get_list(
@@ -344,7 +346,7 @@ def train():
                     train_images_ids = [img_info.id for img_info in train_image_infos]
 
                 if task_type == sly.nn.TaskType.OBJECT_DETECTION:
-                    bm = ObjectDetectionBenchmark(
+                    bm = sly.nn.benchmark.ObjectDetectionBenchmark(
                         g.api,
                         g.project_info.id,
                         output_dir=app_data_dir + "/benchmark",
@@ -354,7 +356,7 @@ def train():
                         classes_whitelist=classes.get_selected_classes(),
                     )
                 elif task_type == sly.nn.TaskType.INSTANCE_SEGMENTATION:
-                    bm = InstanceSegmentationBenchmark(
+                    bm = sly.nn.benchmark.InstanceSegmentationBenchmark(
                         g.api,
                         g.project_info.id,
                         output_dir=app_data_dir + "/benchmark",
@@ -393,19 +395,20 @@ def train():
                 bm.upload_eval_results(eval_res_dir + "/evaluation/")
 
                 # # 6. Speed test
-                try:
-                    session_info = session.get_session_info()
-                    support_batch_inference = session_info.get("batch_inference_support", False)
-                    max_batch_size = session_info.get("max_batch_size")
-                    batch_sizes = (1, 8, 16)
-                    if not support_batch_inference:
-                        batch_sizes = (1,)
-                    elif max_batch_size is not None:
-                        batch_sizes = tuple([bs for bs in batch_sizes if bs <= max_batch_size])
-                    bm.run_speedtest(session, g.project_info.id, batch_sizes=batch_sizes)
-                    bm.upload_speedtest_results(eval_res_dir + "/speedtest/")
-                except Exception as e:
-                    sly.logger.warning(f"Speedtest failed. Skipping. {e}")
+                if run_speedtest_checkbox.is_checked():
+                    try:
+                        session_info = session.get_session_info()
+                        support_batch_inference = session_info.get("batch_inference_support", False)
+                        max_batch_size = session_info.get("max_batch_size")
+                        batch_sizes = (1, 8, 16)
+                        if not support_batch_inference:
+                            batch_sizes = (1,)
+                        elif max_batch_size is not None:
+                            batch_sizes = tuple([bs for bs in batch_sizes if bs <= max_batch_size])
+                        bm.run_speedtest(session, g.project_info.id, batch_sizes=batch_sizes)
+                        bm.upload_speedtest_results(eval_res_dir + "/speedtest/")
+                    except Exception as e:
+                        sly.logger.warning(f"Speedtest failed. Skipping. {e}")
 
                 # 7. Prepare visualizations, report and
                 bm.visualize()
@@ -424,20 +427,15 @@ def train():
                 sly.logger.info(
                     f"Predictions project name: {bm.dt_project_info.name}. Workspace_id: {bm.dt_project_info.workspace_id}"
                 )
-                sly.logger.info(
-                    f"Differences project name: {bm.diff_project_info.name}. Workspace_id: {bm.diff_project_info.workspace_id}"
-                )
         except Exception as e:
             sly.logger.error(f"Model benchmark failed. {repr(e)}", exc_info=True)
             creating_report.hide()
             model_benchmark_pbar.hide()
-            try:
-                if bm.dt_project_info:
-                    g.api.project.remove(bm.dt_project_info.id)
-                if bm.diff_project_info:
-                    g.api.project.remove(bm.diff_project_info.id)
-            except Exception as re:
-                pass
+            # try:
+            #     if bm.dt_project_info:
+            #         g.api.project.remove(bm.dt_project_info.id)
+            # except Exception as re:
+            #     pass
 
     if not model_benchmark_done:
         benchmark_report_template = None

@@ -199,6 +199,13 @@ class TrainParameters:
             dict(type="SuperviselyHook", chart_update_interval=self.chart_update_interval),
         ]
 
+        # change max_per_img
+        if hasattr(cfg.model.test_cfg, "max_per_img"):
+            cfg.model.test_cfg.max_per_img = 500
+        if hasattr(cfg.model.test_cfg, "rcnn"):
+            if hasattr(cfg.model.test_cfg.rcnn, "max_per_img"):
+                cfg.model.test_cfg.rcnn.max_per_img = 500
+
         # visualization
         # from mmdet.engine.hooks import DetVisualizationHook
         # TODO: debug

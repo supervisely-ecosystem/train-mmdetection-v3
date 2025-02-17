@@ -1,4 +1,5 @@
 import os
+import yaml
 from pathlib import Path
 
 import torch
@@ -348,6 +349,7 @@ def train():
 
                 if task_type == sly.nn.TaskType.OBJECT_DETECTION:
                     params = sly.nn.benchmark.ObjectDetectionEvaluator.load_yaml_evaluation_params()
+                    params = yaml.safe_load(params)
                     params["max_detections"] = max_per_img.get_value()
                     bm = sly.nn.benchmark.ObjectDetectionBenchmark(
                         g.api,
@@ -360,6 +362,7 @@ def train():
                     )
                 elif task_type == sly.nn.TaskType.INSTANCE_SEGMENTATION:
                     params = sly.nn.benchmark.InstanceSegmentationEvaluator.load_yaml_evaluation_params()
+                    params = yaml.safe_load(params)
                     params["max_detections"] = max_per_img.get_value()
                     bm = sly.nn.benchmark.InstanceSegmentationBenchmark(
                         g.api,

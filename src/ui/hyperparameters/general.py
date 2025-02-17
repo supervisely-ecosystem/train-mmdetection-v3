@@ -88,6 +88,13 @@ validation_field = Field(
 )
 general_params.add_input("val_interval", validation_input)
 
+max_per_img = InputNumber(100, min=50, max=500)
+max_per_img_field = Field(
+    max_per_img,
+    title="Max detections",
+    description="Maximum number of detections per image.",
+)
+general_params.add_input("max_per_img", max_per_img)
 
 chart_update_input = InputNumber(50, 1)
 chart_update_text = Text(
@@ -129,6 +136,7 @@ general_tab = Container(
         bs_val_field,
         validation_field,
         chart_update_field,
+        max_per_img_field,
         model_benchmark_f,
         model_benchmark_learn_more,
     ]
@@ -143,6 +151,7 @@ def update_general_widgets_with_params(params: TrainParameters):
     general_params.set("bigger_size", max(params.input_size))
     general_params.set("smaller_size", min(params.input_size))
     general_params.set("chart_update_interval", params.chart_update_interval)
+    general_params.set("max_per_img", params.max_per_img)
 
     chart_update_text.text = f"Update chart every {params.chart_update_interval} iterations"
     val_text.text = f"Evaluate validation set every {params.val_interval} epochs"
@@ -156,6 +165,7 @@ def update_general_params_with_widgets(params: TrainParameters):
     params.input_size = (general_params.bigger_size, general_params.smaller_size)
     params.chart_update_interval = general_params.chart_update_interval
     # params.device_name = general_params.device
+    params.max_per_img = general_params.max_per_img
 
 
 @run_model_benchmark_checkbox.value_changed

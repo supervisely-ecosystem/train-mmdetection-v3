@@ -128,15 +128,6 @@ class MMDetectionModel(sly.nn.inference.InstanceSegmentation):
             elif "init_cfg" in cfg.model.backbone:
                 cfg.model.backbone.init_cfg = None
             cfg.model.train_cfg = None
-            try:
-                # change max_per_img
-                if hasattr(cfg.model.test_cfg, "max_per_img"):
-                    cfg.model.test_cfg.max_per_img = 500
-                if hasattr(cfg.model.test_cfg, "rcnn"):
-                    if hasattr(cfg.model.test_cfg.rcnn, "max_per_img"):
-                        cfg.model.test_cfg.rcnn.max_per_img = 500
-            except AttributeError:
-                sly.logger.warning("Can't change max_per_img in test_cfg")
             self.model = init_detector(
                 cfg, checkpoint=local_weights_path, device=device, palette=[]
             )

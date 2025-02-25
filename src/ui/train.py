@@ -359,6 +359,7 @@ def train():
                         gt_images_ids=benchmark_images_ids,
                         progress=model_benchmark_pbar,
                         classes_whitelist=classes.get_selected_classes(),
+                        evaluation_params=params,
                     )
                 elif task_type == sly.nn.TaskType.INSTANCE_SEGMENTATION:
                     params = sly.nn.benchmark.InstanceSegmentationEvaluator.load_yaml_evaluation_params()
@@ -372,6 +373,7 @@ def train():
                         gt_images_ids=benchmark_images_ids,
                         progress=model_benchmark_pbar,
                         classes_whitelist=classes.get_selected_classes(),
+                        evaluation_params=params,
                     )
                 else:
                     raise ValueError(

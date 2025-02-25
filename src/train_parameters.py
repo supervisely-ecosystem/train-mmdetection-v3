@@ -26,6 +26,7 @@ class TrainParameters:
         self.load_from: bool = True  # load weights to continue training (path or url in config)
         self.log_interval = 50  # for text logger
         self.chart_update_interval = 1
+        self.max_per_img = 100
         self.filter_images_without_gt = True
         self.experiment_name = None
         self.add_classwise_metric = True
@@ -75,7 +76,7 @@ class TrainParameters:
         self.app_dir = app_dir
         self.work_dir = app_dir + "/work_dir"
 
-    def update_config(self, config: Config):
+    def update_config(self, config: Config, max_per_img: int = 100):
         cfg = deepcopy(config)
         assert self.is_inited(), "TrainParameters: wrong initialization parameters."
 
@@ -201,10 +202,10 @@ class TrainParameters:
 
         # change max_per_img
         if hasattr(cfg.model.test_cfg, "max_per_img"):
-            cfg.model.test_cfg.max_per_img = 500
+            cfg.model.test_cfg.max_per_img = max_per_img
         if hasattr(cfg.model.test_cfg, "rcnn"):
             if hasattr(cfg.model.test_cfg.rcnn, "max_per_img"):
-                cfg.model.test_cfg.rcnn.max_per_img = 500
+                cfg.model.test_cfg.rcnn.max_per_img = max_per_img
 
         # visualization
         # from mmdet.engine.hooks import DetVisualizationHook

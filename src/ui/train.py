@@ -1,4 +1,5 @@
 import os
+import yaml
 from pathlib import Path
 
 import torch
@@ -20,10 +21,11 @@ from src.train_parameters import TrainParameters
 from src.ui.augmentations import get_selected_aug
 from src.ui.classes import classes
 from src.ui.graphics import add_classwise_metric, monitoring
-from src.ui.hyperparameters import ( 
-    run_speedtest_checkbox,
+from src.ui.hyperparameters import (
     run_model_benchmark_checkbox,
+    run_speedtest_checkbox,
     update_params_with_widgets,
+    max_per_img,
 )
 from src.ui.task import task_selector
 from src.ui.train_val_split import dump_train_val_splits, splits
@@ -180,7 +182,7 @@ def train():
     DetLocalVisualizer._instance_dict.clear()
 
     # create config from params
-    train_cfg = params.update_config(cfg)
+    train_cfg = params.update_config(cfg, max_per_img.get_value())
 
     # update load_from with custom_weights_path
     if params.load_from and weights_path_or_url:
@@ -346,6 +348,9 @@ def train():
                     train_images_ids = [img_info.id for img_info in train_image_infos]
 
                 if task_type == sly.nn.TaskType.OBJECT_DETECTION:
+                    params = sly.nn.benchmark.ObjectDetectionEvaluator.load_yaml_evaluation_params()
+                    params = yaml.safe_load(params)
+                    params["max_detections"] = max_per_img.get_value()
                     bm = sly.nn.benchmark.ObjectDetectionBenchmark(
                         g.api,
                         g.project_info.id,
@@ -354,8 +359,12 @@ def train():
                         gt_images_ids=benchmark_images_ids,
                         progress=model_benchmark_pbar,
                         classes_whitelist=classes.get_selected_classes(),
+                        evaluation_params=params,
                     )
                 elif task_type == sly.nn.TaskType.INSTANCE_SEGMENTATION:
+                    params = sly.nn.benchmark.InstanceSegmentationEvaluator.load_yaml_evaluation_params()
+                    params = yaml.safe_load(params)
+                    params["max_detections"] = max_per_img.get_value()
                     bm = sly.nn.benchmark.InstanceSegmentationBenchmark(
                         g.api,
                         g.project_info.id,
@@ -364,6 +373,7 @@ def train():
                         gt_images_ids=benchmark_images_ids,
                         progress=model_benchmark_pbar,
                         classes_whitelist=classes.get_selected_classes(),
+                        evaluation_params=params,
                     )
                 else:
                     raise ValueError(

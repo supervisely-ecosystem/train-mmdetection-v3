@@ -17,6 +17,9 @@ NUM_EPOCHS = 10
 # General
 general_params = InputContainer()
 
+cuda_getter = lambda input_w: input_w.get_device()
+cuda_setter = lambda input_w, value: input_w.set_device(value)
+
 device_input = SelectCudaDevice(True, True, True)
 device_field = Field(
     device_input,
@@ -27,7 +30,7 @@ device_field = Field(
         "or keep by default"
     ),
 )
-general_params.add_input("device", device_input, custom_value_getter=device_input.get_device)
+general_params.add_input("device", device_input, custom_value_getter=cuda_getter, custom_value_setter=cuda_setter)
 
 
 epochs_input = InputNumber(NUM_EPOCHS, min=1)

@@ -4,11 +4,10 @@ from supervisely.app.widgets import (
     Container,
     InputNumber,
     BindedInputNumber,
-    Select,
     Field,
     Text,
     Empty,
-    Button,
+    SelectCudaDevice
 )
 
 from src.ui.utils import InputContainer, get_switch_value, set_switch_value, refresh_devices
@@ -18,14 +17,9 @@ NUM_EPOCHS = 10
 # General
 general_params = InputContainer()
 
-device_input = Select()
-refresh_button = Button(
-    text="", button_type="text", button_size="large", icon="zmdi zmdi-refresh"
-)
-
-refresh_devices(device_input, True, True)
+device_input = SelectCudaDevice(True, True, True)
 device_field = Field(
-    Container([device_input, refresh_button], 'horizontal'),
+    device_input,
     title="Device",
     description=(
         "Run nvidia-smi or check agent page to "

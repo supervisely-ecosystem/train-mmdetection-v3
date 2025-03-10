@@ -13,7 +13,7 @@ import src.ui.input_project as input_project
 import src.ui.task as task_ui
 
 from src import sly_utils
-from src.utils import parse_yaml_metafile, refresh_devices
+from src.utils import parse_yaml_metafile
 from src.train_parameters import TrainParameters
 
 from src.ui import hyperparameters
@@ -256,7 +256,3 @@ def start_train():
 @train.stop_train_btn.click
 def stop_train():
     train.stop_train()
-
-@hyperparameters.general.refresh_button.click
-def refresh_devices_callback():
-    refresh_devices(hyperparameters.general.device_input, True, True)

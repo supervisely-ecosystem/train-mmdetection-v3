@@ -65,7 +65,7 @@ def set_device_env(device_name: str):
     else:
         device_id = str(device_name.split(":")[1].strip())
         os.environ["CUDA_VISIBLE_DEVICES"] = device_id
-        torch.cuda.device(device_name)
+        torch.cuda.set_device(device_name)
 
 def get_train_params(cfg) -> TrainParameters:
     task = get_task()

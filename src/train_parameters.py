@@ -30,7 +30,7 @@ class TrainParameters:
         self.filter_images_without_gt = True
         self.experiment_name = None
         self.add_classwise_metric = True
-        self.device_name = "cuda:0"  # selecting device doesn't supported now
+        self.device_name = "cuda:0"
 
         # checkpoints
         self.checkpoint_interval = 1
@@ -69,12 +69,13 @@ class TrainParameters:
         # TODO: load general params if it is custom config
         return self
 
-    def init(self, task, selected_classes, augs_config_path, app_dir):
+    def init(self, task, selected_classes, augs_config_path, app_dir, device_name):
         self.task = task
         self.selected_classes = selected_classes
         self.augs_config_path = augs_config_path
         self.app_dir = app_dir
         self.work_dir = app_dir + "/work_dir"
+        self.device_name = device_name
 
     def update_config(self, config: Config, max_per_img: int = 100):
         cfg = deepcopy(config)

@@ -26,8 +26,8 @@ from src.ui.hyperparameters import (
     run_speedtest_checkbox,
     update_params_with_widgets,
     max_per_img,
+    general
 )
-from src.ui.hyperparameters.general import device_input
 from src.ui.task import task_selector
 from src.ui.train_val_split import dump_train_val_splits, splits
 from supervisely.app.widgets import (
@@ -71,7 +71,7 @@ def get_train_params(cfg) -> TrainParameters:
     task = get_task()
     selected_classes = classes.get_selected_classes()
     augs_config_path = get_selected_aug()
-    device_name = device_input.get_device() or "cuda:0"
+    device_name = general.device_input.get_device() or "cuda:0"
     # create params from config
     sly.logger.info("Initializing train parameters with device: %s", device_name)
     params = TrainParameters.from_config(cfg)

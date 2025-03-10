@@ -56,7 +56,6 @@ hyperparameters_select_callback = wrap_button_click(
     cards_to_unlock=[train.card],
     widgets_to_disable=[
         hyperparameters.general_params,
-        hyperparameters.device_input,
         hyperparameters.checkpoint_params,
         *hyperparameters.optimizers_params.values(),
         hyperparameters.select_optim,

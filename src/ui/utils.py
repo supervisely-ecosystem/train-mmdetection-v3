@@ -2,7 +2,7 @@ import torch
 from collections import OrderedDict
 from typing import Callable, Dict, Any, List, Optional, Iterable
 from supervisely.app import DataJson
-from supervisely.app.widgets import Button, Widget, Container, Switch, Card, InputNumber, Stepper
+from supervisely.app.widgets import Button, Widget, Container, Switch, Card, InputNumber, Stepper, Select
 
 
 button_clicked = {}
@@ -179,15 +179,83 @@ def unlock_lock(cards: List[Card], unlock: bool = True, message: str = None):
             # w.collapse()
 
 
-def get_devices():
-    cuda_names = [
-        f"cuda:{i} ({torch.cuda.get_device_name(i)})" for i in range(torch.cuda.device_count())
-    ]
-    cuda_devices = [f"cuda:{i}" for i in range(torch.cuda.device_count())]
-    device_names = cuda_names + ["cpu"]
-    torch_devices = cuda_devices + ["cpu"]
-    return device_names, torch_devices
+# def get_devices():
+#     cuda_names = [
+#         f"cuda:{i} ({torch.cuda.get_device_name(i)})" for i in range(torch.cuda.device_count())
+#     ]
+#     cuda_devices = [f"cuda:{i}" for i in range(torch.cuda.device_count())]
+#     device_names = cuda_names + ["cpu"]
+#     torch_devices = cuda_devices + ["cpu"]
+#     return device_names, torch_devices
 
+def refresh_devices(widget, include_cpu, sort_by_free_ram) -> None:
+    def _get_gpu_infos(
+        sort_by_free_ram: bool
+    ):
+        from supervisely import logger
+        try:
+            from torch import cuda
+        except ImportError as ie:
+            logger.warn(
+                "Unable to import Torch. Please, run 'pip install torch' to resolve the issue.",
+                extra={"error message": str(ie)},
+            )
+            return
+
+        devices = {}
+        try:
+            if not cuda.is_initialized():
+                cuda.init()
+            if not cuda.is_available():
+                raise RuntimeError("CUDA is not available")
+        except Exception as e:
+            logger.warn(f"Failed to initialize CUDA: {e}")
+            return
+        try:
+            for idx in range(cuda.device_count()):
+                current_device = f"cuda:{idx}"
+                full_device_name = f"{cuda.get_device_name(idx)} ({current_device})"
+                free_mem, total_mem = cuda.mem_get_info(current_device)
+
+                convert_to_gb = lambda number: round(number / 1024**3, 1)
+                right_text = (
+                    f"{convert_to_gb(total_mem - free_mem)} GB / {convert_to_gb(total_mem)} GB"
+                )
+
+                devices[full_device_name] = {
+                    "device_idx": current_device,
+                    "right_text": right_text,
+                    "free": free_mem,
+                }
+            if sort_by_free_ram:
+                devices = dict(
+                    sorted(devices.items(), key=lambda item: item[1]["free"], reverse=True)
+                )
+        except Exception as e:
+            logger.warning(repr(e))
+        finally:
+            return devices
+            
+    cuda_devices = _get_gpu_infos(sort_by_free_ram)
+    if cuda_devices is None:
+        if include_cpu is True:
+            widget.set([Select.Item(value="cpu", label="CPU")])
+        else:
+            widget.set([Select.Item(None, "No devices available")])
+        widget.disable()
+        return
+    items = [
+        Select.Item(
+            value=info["device_idx"],
+            label=device,
+            right_text=info["right_text"],
+        )
+        for device, info in cuda_devices.items()
+    ]
+
+    if include_cpu:
+        items.append(Select.Item(value="cpu", label="CPU"))
+    widget.set(items)
 
 def create_linked_getter(
     widget1: InputNumber,

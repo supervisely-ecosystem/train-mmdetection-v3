@@ -8,28 +8,32 @@ from supervisely.app.widgets import (
     Field,
     Text,
     Empty,
-    Switch,
+    Button,
 )
 
-from src.ui.utils import InputContainer, get_switch_value, set_switch_value, get_devices
+from src.ui.utils import InputContainer, get_switch_value, set_switch_value, refresh_devices
 from src.train_parameters import TrainParameters
 
 NUM_EPOCHS = 10
 # General
 general_params = InputContainer()
 
-# device_names, torch_devices = get_devices()
-# device_input = Select([Select.Item(v, l) for v, l in zip(torch_devices, device_names)])
-# device_field = Field(
-#     device_input,
-#     title="Device",
-#     description=(
-#         "Run nvidia-smi or check agent page to "
-#         "see how many devices your machine has "
-#         "or keep by default"
-#     ),
-# )
-# general_params.add_input("device", device_input)
+device_input = Select()
+refresh_button = Button(
+    text="", button_type="text", button_size="large", icon="zmdi zmdi-refresh"
+)
+
+refresh_devices(device_input, True, True)
+device_field = Field(
+    Container([device_input, refresh_button], 'horizontal'),
+    title="Device",
+    description=(
+        "Run nvidia-smi or check agent page to "
+        "see how many devices your machine has "
+        "or keep by default"
+    ),
+)
+general_params.add_input("device", device_input)
 
 
 epochs_input = InputNumber(NUM_EPOCHS, min=1)
@@ -129,7 +133,7 @@ model_benchmark_learn_more = Text(
 
 general_tab = Container(
     [
-        # device_field,
+        device_field,
         epochs_field,
         size_field,
         bs_train_field,
@@ -164,7 +168,7 @@ def update_general_params_with_widgets(params: TrainParameters):
     params.batch_size_val = general_params.batch_size_val
     params.input_size = (general_params.bigger_size, general_params.smaller_size)
     params.chart_update_interval = general_params.chart_update_interval
-    # params.device_name = general_params.device
+    params.device_name = general_params.device
     params.max_per_img = general_params.max_per_img
 
 

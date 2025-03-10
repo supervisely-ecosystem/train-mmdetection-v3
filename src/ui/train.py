@@ -71,14 +71,14 @@ def get_train_params(cfg) -> TrainParameters:
     task = get_task()
     selected_classes = classes.get_selected_classes()
     augs_config_path = get_selected_aug()
-    device_name = general.device_input.get_device() or "cuda:0"
     # create params from config
-    sly.logger.info("Initializing train parameters with device: %s", device_name)
     params = TrainParameters.from_config(cfg)
-    params.init(task, selected_classes, augs_config_path, g.app_dir, device_name)
+    params.init(task, selected_classes, augs_config_path, g.app_dir)
 
     # update params with UI
     update_params_with_widgets(params)
+    sly.logger.info("Initialized train parameters with device: %s", params.device_name)
+
     params.add_classwise_metric = len(selected_classes) <= g.MAX_CLASSES_TO_SHOW_CLASSWISE_METRIC
     return params
 

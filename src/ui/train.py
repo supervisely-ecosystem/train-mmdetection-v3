@@ -60,14 +60,12 @@ def get_task():
 
 
 def set_device_env(device_name: str):
-    import importlib
     if device_name == "cpu":
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
     else:
-        device_id = device_name.split(":")[1].strip()
-        os.environ["CUDA_VISIBLE_DEVICES"] = str(device_id)
-    importlib.reload(torch)
-
+        device_id = str(device_name.split(":")[1].strip())
+        os.environ["CUDA_VISIBLE_DEVICES"] = device_id
+        torch.cuda.device(device_id)
 
 def get_train_params(cfg) -> TrainParameters:
     task = get_task()

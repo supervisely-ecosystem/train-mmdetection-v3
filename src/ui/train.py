@@ -65,7 +65,9 @@ def set_device_env(device_name: str):
     else:
         device_id = str(device_name.split(":")[1].strip())
         os.environ["CUDA_VISIBLE_DEVICES"] = device_id
-        torch.cuda.set_device(device_name)
+    torch.cuda.set_device(device_name)
+    sly.logger.info("Pytorch device: %s", torch.cuda.current_device())
+
 
 def get_train_params(cfg) -> TrainParameters:
     task = get_task()
@@ -77,7 +79,6 @@ def get_train_params(cfg) -> TrainParameters:
 
     # update params with UI
     update_params_with_widgets(params)
-    sly.logger.info("Initialized train parameters with device: %s", params.device_name)
 
     params.add_classwise_metric = len(selected_classes) <= g.MAX_CLASSES_TO_SHOW_CLASSWISE_METRIC
     return params

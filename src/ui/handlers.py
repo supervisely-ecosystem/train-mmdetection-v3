@@ -19,7 +19,7 @@ from src.train_parameters import TrainParameters
 from src.ui import hyperparameters
 from src.ui import augmentations
 from src.ui import model_leaderboard
-from src.ui.utils import wrap_button_click, button_clicked, set_stepper_step, refresh_devices
+from src.ui.utils import wrap_button_click, button_clicked, set_stepper_step
 import src.sly_globals as g
 
 

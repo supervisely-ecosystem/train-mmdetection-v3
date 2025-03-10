@@ -10,7 +10,7 @@ from supervisely.app.widgets import (
     SelectCudaDevice
 )
 
-from src.ui.utils import InputContainer, get_switch_value, set_switch_value, refresh_devices
+from src.ui.utils import InputContainer, get_switch_value, set_switch_value
 from src.train_parameters import TrainParameters
 
 NUM_EPOCHS = 10

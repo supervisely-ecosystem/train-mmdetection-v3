@@ -27,7 +27,7 @@ device_field = Field(
         "or keep by default"
     ),
 )
-general_params.add_input("device", device_input)
+general_params.add_input("device", device_input, custom_value_getter=device_input.get_device)
 
 
 epochs_input = InputNumber(NUM_EPOCHS, min=1)

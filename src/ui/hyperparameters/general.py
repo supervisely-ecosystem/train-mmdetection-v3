@@ -20,7 +20,7 @@ general_params = InputContainer()
 cuda_getter = lambda input_w: input_w.get_device()
 cuda_setter = lambda input_w, value: input_w.set_device(value)
 
-device_input = SelectCudaDevice(True, True, True)
+device_input = SelectCudaDevice(sort_by_free_ram=True)
 device_field = Field(
     device_input,
     title="Device",

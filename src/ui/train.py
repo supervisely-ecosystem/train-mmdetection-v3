@@ -167,16 +167,9 @@ def train():
     cfg = Config.fromfile(config_path)
     params = get_train_params(cfg)
 
-<<<<<<< Updated upstream
-    # set device
-    set_device_env(params.device_name)
-    # doesn't work :(
-    # maybe because of torch has been imported earlier and it already read CUDA_VISIBLE_DEVICES
-=======
     if params.device_name is None:
         raise ValueError("Device is not set. Cannot start training.")
     set_device_env(params.device_name)
->>>>>>> Stashed changes
 
     ### TODO: debug
     # params.checkpoint_interval = 5

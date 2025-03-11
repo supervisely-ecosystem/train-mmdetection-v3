@@ -30,7 +30,7 @@ class TrainParameters:
         self.filter_images_without_gt = True
         self.experiment_name = None
         self.add_classwise_metric = True
-        self.device_name = "cuda:0"  # selecting device doesn't supported now
+        self.device_name = "cuda:0"
 
         # checkpoints
         self.checkpoint_interval = 1

@@ -2,7 +2,7 @@ import torch
 from collections import OrderedDict
 from typing import Callable, Dict, Any, List, Optional, Iterable
 from supervisely.app import DataJson
-from supervisely.app.widgets import Button, Widget, Container, Switch, Card, InputNumber, Stepper
+from supervisely.app.widgets import Button, Widget, Container, Switch, Card, InputNumber, Stepper, Select
 
 
 button_clicked = {}
@@ -179,15 +179,14 @@ def unlock_lock(cards: List[Card], unlock: bool = True, message: str = None):
             # w.collapse()
 
 
-def get_devices():
-    cuda_names = [
-        f"cuda:{i} ({torch.cuda.get_device_name(i)})" for i in range(torch.cuda.device_count())
-    ]
-    cuda_devices = [f"cuda:{i}" for i in range(torch.cuda.device_count())]
-    device_names = cuda_names + ["cpu"]
-    torch_devices = cuda_devices + ["cpu"]
-    return device_names, torch_devices
-
+# def get_devices():
+#     cuda_names = [
+#         f"cuda:{i} ({torch.cuda.get_device_name(i)})" for i in range(torch.cuda.device_count())
+#     ]
+#     cuda_devices = [f"cuda:{i}" for i in range(torch.cuda.device_count())]
+#     device_names = cuda_names + ["cpu"]
+#     torch_devices = cuda_devices + ["cpu"]
+#     return device_names, torch_devices
 
 def create_linked_getter(
     widget1: InputNumber,

@@ -26,6 +26,7 @@ from src.ui.hyperparameters import (
     run_speedtest_checkbox,
     update_params_with_widgets,
     max_per_img,
+    general
 )
 from src.ui.task import task_selector
 from src.ui.train_val_split import dump_train_val_splits, splits
@@ -62,21 +63,23 @@ def set_device_env(device_name: str):
     if device_name == "cpu":
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
     else:
-        device_id = device_name.split(":")[1].strip()
-        os.environ["CUDA_VISIBLE_DEVICES"] = str(device_id)
+        device_id = str(device_name.split(":")[1].strip())
+        os.environ["CUDA_VISIBLE_DEVICES"] = device_id
+    torch.cuda.set_device(device_name)
+    sly.logger.info("Pytorch device: %s", torch.cuda.current_device())
 
 
 def get_train_params(cfg) -> TrainParameters:
     task = get_task()
     selected_classes = classes.get_selected_classes()
     augs_config_path = get_selected_aug()
-
     # create params from config
     params = TrainParameters.from_config(cfg)
     params.init(task, selected_classes, augs_config_path, g.app_dir)
 
     # update params with UI
     update_params_with_widgets(params)
+
     params.add_classwise_metric = len(selected_classes) <= g.MAX_CLASSES_TO_SHOW_CLASSWISE_METRIC
     return params
 
@@ -165,7 +168,7 @@ def train():
     params = get_train_params(cfg)
 
     # set device
-    # set_device_env(params.device_name)
+    set_device_env(params.device_name)
     # doesn't work :(
     # maybe because of torch has been imported earlier and it already read CUDA_VISIBLE_DEVICES
 

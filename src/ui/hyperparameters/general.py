@@ -19,8 +19,20 @@ general_params = InputContainer()
 
 cuda_getter = lambda input_w: input_w.get_device()
 cuda_setter = lambda input_w, value: input_w.set_device(value)
-
 device_input = SelectCudaDevice(sort_by_free_ram=True)
+
+def disable_widget():
+    device_input._select.disable()
+    device_input._refresh_button.disable()
+
+
+def enable_widget():
+    device_input._select.enable()
+    device_input._refresh_button.enable()
+
+device_input.disable = disable_widget
+device_input.enable = enable_widget
+
 device_field = Field(
     device_input,
     title="Device",

@@ -433,7 +433,7 @@ def train():
                 remote_dir = bm.upload_visualizations(eval_res_dir + "/visualizations/")
                 report = bm.upload_report_link(remote_dir)
 
-                sly_utils.create_experiment(g.params.sly_metadata['model_name'], bm, out_path)
+                sly_utils.create_experiment(train_cfg.sly_metadata['model_name'], bm, out_path)
 
                 # 8. UI updates
                 benchmark_report_template = g.api.file.get_info_by_path(

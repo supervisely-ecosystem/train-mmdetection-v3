@@ -168,7 +168,7 @@ def get_eval_results_dir_name(api, task_id, project_info):
 
 def write_info_to_checkpoint(path, experiment_info, **kwargs):
     from torch import load, save
-    model_meta = kwargs.get("model_files", None)
+    model_meta = kwargs.get("model_meta", None)
     model_files = kwargs.get("model_files", None)
     state_dict = load(path, map_location="cpu")
     state_dict['model_info'] = {

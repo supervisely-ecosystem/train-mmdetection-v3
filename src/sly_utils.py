@@ -9,7 +9,6 @@ import src.sly_globals as g
 import supervisely as sly
 from supervisely.app.widgets import Progress
 
-
 def download_custom_config(remote_weights_path: str):
     # # download config_xxx.py
     # save_dir = remote_weights_path.split("checkpoints")
@@ -47,6 +46,8 @@ def upload_artifacts(
     task_type: str = None,
     progress_widget: Progress = None,
 ):
+    from src.ui.train_val_split import splits
+
     task_id = g.api.task_id or ""
     paths = [path for path in os.listdir(work_dir) if path.endswith(".py")]
     assert len(paths) > 0, "Can't find config file saved during training."
@@ -102,11 +103,15 @@ def upload_artifacts(
         config_path=remote_config_dir,
     )
     model_name = g.params.sly_metadata['model_name']
+    
+    train_split, val_split = splits.get_splits()
 
     train_info = sly.TrainInfo(**g.mmdet_generated_metadata)
     experiment_info = g.sly_mmdet3.convert_train_to_experiment_info(train_info) 
     experiment_info.experiment_name = experiment_name
     experiment_info.model_name = model_name
+    experiment_info.train_size = len(train_split)
+    experiment_info.val_size = len(val_split)
     g.experiment_info = experiment_info
 
     return out_path

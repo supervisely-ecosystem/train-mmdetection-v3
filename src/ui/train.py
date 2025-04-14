@@ -395,6 +395,7 @@ def train():
 
                 # get experiment info and write to json file
                 experiment_info_json = asdict(g.experiment_info)
+                experiment_info_json['project_preview'] = g.project_info.image_preview_url
                 experiment_name = experiment_info.experiment_name
                 artifacts_folder = g.mmdet_generated_metadata['artifacts_folder']
                 json_name = "{}.json".format(experiment_name)

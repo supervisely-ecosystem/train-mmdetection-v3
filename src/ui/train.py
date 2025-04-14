@@ -1,6 +1,8 @@
 import os
 import yaml
 from pathlib import Path
+from dataclasses import asdict
+import json
 
 import torch
 from mmdet.registry import RUNNERS
@@ -120,7 +122,6 @@ def add_metadata(cfg: Config):
         }
     else:
         metadata = cfg.sly_metadata
-
     metadata["project_id"] = g.PROJECT_ID
     metadata["project_name"] = g.project_info.name
 
@@ -267,6 +268,11 @@ def train():
                     best_checkpoints = sorted(best_checkpoints, key=lambda x: x, reverse=True)
 
                 best_filename = best_checkpoints[0]
+                experiment_info = g.experiment_info
+                model_meta = model_meta.to_json() # todo
+                model_files = {}
+                checkpoint_path = os.path.join(params.work_dir, best_filename)
+                sly_utils.write_info_to_checkpoint(checkpoint_path, experiment_info, model_meta, model_files)
                 sly.logger.info(f"Creating the report for the best model: {best_filename!r}")
 
                 # 0. Serve trained model
@@ -381,6 +387,27 @@ def train():
                     raise ValueError(
                         f"Model benchmark for task type {task_type} is not implemented (coming soon)"
                     )
+                
+                g.experiment_info.evaluation_report_id = bm.report_id
+                g.experiment_info.evaluation_report_link = f"/model-benchmark?id={str(bm.report.id)}"
+                g.experiment_info.evaluation_metrics = bm.key_metrics
+                g.experiment_info.primary_metric = bm.primary_metric_name
+
+                # get experiment info and write to json file
+                experiment_info_json = asdict(g.experiment_info)
+                experiment_name = experiment_info.experiment_name
+                artifacts_folder = g.mmdet_generated_metadata['artifacts_folder']
+                json_name = "{}.json".format(experiment_name)
+                exp_info_path = os.path.join(artifacts_folder, json_name)
+                with open(exp_info_path, "w") as f:
+                    json.dump(experiment_info_json, f)
+
+                # upload json file to artifacts dir
+                remote_path = f"{g.sly_mmdet3.framework_folder}/{g.api.task_id}_{json_name}"
+                g.api.file.upload(g.TEAM_ID, exp_info_path, remote_path)
+
+                # set output experiment info
+                g.api.task.set_output_experiment(g.api.task_id, experiment_info_json)
 
                 train_info = {
                     "app_session_id": sly.env.task_id(),

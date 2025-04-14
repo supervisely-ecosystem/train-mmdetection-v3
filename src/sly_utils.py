@@ -101,6 +101,13 @@ def upload_artifacts(
         task_type=task_type,
         config_path=remote_config_dir,
     )
+    model_name = g.params.sly_metadata['model_name']
+
+    train_info = sly.TrainInfo(**g.mmdet_generated_metadata)
+    experiment_info = g.sly_mmdet3.convert_train_to_experiment_info(train_info) 
+    experiment_info.experiment_name = experiment_name
+    experiment_info.model_name = model_name
+    g.experiment_info = experiment_info
 
     return out_path
 
@@ -160,3 +167,20 @@ def get_eval_results_dir_name(api, task_id, project_info):
     eval_res_dir = f"/model-benchmark/{project_info.id}_{project_info.name}/{task_dir}/"
     eval_res_dir = api.storage.get_free_dir_name(sly.env.team_id(), eval_res_dir)
     return eval_res_dir
+
+def write_info_to_checkpoint(path, experiment_info, **kwargs):
+    from torch import load, save
+    model_meta = kwargs.get("model_files", None)
+    model_files = kwargs.get("model_files", None)
+    state_dict = load(path, map_location="cpu")
+    state_dict['model_info'] = {
+        "model_name":experiment_info.model_name,
+        "framework":experiment_info.framework,
+        "checkpoint": os.path.basename(path),
+        "experiment": experiment_info.experiment_name,
+    }
+    if model_meta is not None:
+        state_dict['model_meta'] = model_meta
+    if model_files is not None:
+        state_dict['model_files'] = model_files
+    save(state_dict, path)

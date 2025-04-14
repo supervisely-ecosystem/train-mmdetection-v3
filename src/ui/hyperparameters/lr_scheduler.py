@@ -218,7 +218,7 @@ cosinerestart_periods_input = Input("1")
 cosinerestart_preiods_field = Field(
     cosinerestart_periods_input,
     "Periods",
-    "Periods for each cosine anneling cycle. Many int step values splitted by comma",
+    "Periods for each cosine anneling cycle. Many step values splitted by comma",
 )
 cosinerestart_scheduler.add_input(
     "periods",
@@ -232,7 +232,7 @@ cosinerestart_restart_weights_input = Input("1")
 cosinerestart_restart_weights_field = Field(
     cosinerestart_restart_weights_input,
     "Restart weights",
-    "Periods for each cosine anneling cycle. Many int step values splitted by comma",
+    "Periods for each cosine anneling cycle. Many step values splitted by comma",
 )
 
 cosinerestart_scheduler.add_input(

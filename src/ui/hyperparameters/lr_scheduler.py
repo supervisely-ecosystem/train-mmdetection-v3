@@ -50,9 +50,9 @@ schedulers.append((repr(step_scheduler), "Step LR"))
 
 
 # Multistep
-def get_multisteps(input_w: Input) -> List[int]:
+def get_multisteps(input_w: Input) -> List[float]:
     steps: str = input_w.get_value()
-    return [int(st.strip()) for st in steps.split(",")]
+    return [float(st.strip()) for st in steps.split(",")]
 
 
 def set_multisteps(input_w: Input, value: List[int]):

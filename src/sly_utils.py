@@ -9,7 +9,7 @@ import src.sly_globals as g
 import supervisely as sly
 from supervisely.app.widgets import Progress
 from dataclasses import asdict
-from supervisely import TrainInfo
+from supervisely.nn.artifacts import TrainInfo
 from supervisely.io.json import dump_json_file
 from src.ui.train_val_split import splits
 

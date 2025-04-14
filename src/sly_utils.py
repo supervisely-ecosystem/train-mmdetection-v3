@@ -8,6 +8,10 @@ from tqdm import tqdm
 import src.sly_globals as g
 import supervisely as sly
 from supervisely.app.widgets import Progress
+from dataclasses import asdict
+from supervisely import TrainInfo
+from supervisely.io.json import dump_json_file
+from src.ui.train_val_split import splits
 
 def download_custom_config(remote_weights_path: str):
     # # download config_xxx.py
@@ -102,17 +106,6 @@ def upload_artifacts(
         task_type=task_type,
         config_path=remote_config_dir,
     )
-    model_name = g.params.sly_metadata['model_name']
-    
-    train_split, val_split = splits.get_splits()
-
-    train_info = sly.TrainInfo(**g.mmdet_generated_metadata)
-    experiment_info = g.sly_mmdet3.convert_train_to_experiment_info(train_info) 
-    experiment_info.experiment_name = experiment_name
-    experiment_info.model_name = model_name
-    experiment_info.train_size = len(train_split)
-    experiment_info.val_size = len(val_split)
-    g.experiment_info = experiment_info
 
     return out_path
 
@@ -189,3 +182,31 @@ def write_info_to_checkpoint(path, experiment_info, **kwargs):
     if model_files is not None:
         state_dict['model_files'] = model_files
     save(state_dict, path)
+
+def create_experiment(model_name, bm, remote_dir):
+    # Create ExperimentInfo
+    train_size, val_size = map(len, splits.get_splits())
+    train_info = TrainInfo(**g.sly_mmdet_generated_metadata)
+    experiment_info = g.sly_mmdet3.convert_train_to_experiment_info(train_info)
+    experiment_info.experiment_name = f"{g.task_id}_{g.project_info.name}_{model_name}"
+    experiment_info.model_name = model_name
+    experiment_info.train_size = train_size
+    experiment_info.val_size = val_size
+
+    # Write benchmark results
+    experiment_info.evaluation_report_id = bm.report_id
+    experiment_info.evaluation_report_link = f"/model-benchmark?id={str(bm.report.id)}"
+    experiment_info.evaluation_metrics = bm.key_metrics
+    experiment_info.primary_metric = bm.primary_metric_name
+
+    # Set ExperimentInfo to task
+    experiment_info_json = asdict(experiment_info)
+    experiment_info_json["project_preview"] = g.project_info.image_preview_url
+    g.api.task.set_output_experiment(g.task_id, experiment_info_json)
+    experiment_info_json.pop("project_preview")
+
+    # Upload experiment_info.json to Team Files
+    experiment_info_path = os.path.join(g.artifacts_dir, "experiment_info.json")
+    remote_experiment_info_path = os.path.join(remote_dir, "experiment_info.json")
+    dump_json_file(experiment_info_json, experiment_info_path)
+    g.api.file.upload(g.team_id, experiment_info_path, remote_experiment_info_path)

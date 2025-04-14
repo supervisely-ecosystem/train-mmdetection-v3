@@ -388,28 +388,6 @@ def train():
                         f"Model benchmark for task type {task_type} is not implemented (coming soon)"
                     )
                 
-                g.experiment_info.evaluation_report_id = bm.report_id
-                g.experiment_info.evaluation_report_link = f"/model-benchmark?id={str(bm.report.id)}"
-                g.experiment_info.evaluation_metrics = bm.key_metrics
-                g.experiment_info.primary_metric = bm.primary_metric_name
-
-                # get experiment info and write to json file
-                experiment_info_json = asdict(g.experiment_info)
-                experiment_info_json['project_preview'] = g.project_info.image_preview_url
-                experiment_name = experiment_info.experiment_name
-                artifacts_folder = g.mmdet_generated_metadata['artifacts_folder']
-                json_name = "{}.json".format(experiment_name)
-                exp_info_path = os.path.join(artifacts_folder, json_name)
-                with open(exp_info_path, "w") as f:
-                    json.dump(experiment_info_json, f)
-
-                # upload json file to artifacts dir
-                remote_path = f"{g.sly_mmdet3.framework_folder}/{g.api.task_id}_{json_name}"
-                g.api.file.upload(g.TEAM_ID, exp_info_path, remote_path)
-
-                # set output experiment info
-                g.api.task.set_output_experiment(g.api.task_id, experiment_info_json)
-
                 train_info = {
                     "app_session_id": sly.env.task_id(),
                     "train_dataset_ids": train_dataset_ids,
@@ -454,6 +432,8 @@ def train():
                 bm.visualize()
                 remote_dir = bm.upload_visualizations(eval_res_dir + "/visualizations/")
                 report = bm.upload_report_link(remote_dir)
+
+                sly_utils.create_experiment(g.params.sly_metadata['model_name'], bm, out_path)
 
                 # 8. UI updates
                 benchmark_report_template = g.api.file.get_info_by_path(

@@ -42,4 +42,3 @@ IMAGES_COUNT = project_info.items_count
 USE_CACHE = True
 
 mmdet_generated_metadata = None
-experiment_info = None

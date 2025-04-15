@@ -50,8 +50,6 @@ def upload_artifacts(
     task_type: str = None,
     progress_widget: Progress = None,
 ):
-    from src.ui.train_val_split import splits
-
     task_id = g.api.task_id or ""
     paths = [path for path in os.listdir(work_dir) if path.endswith(".py")]
     assert len(paths) > 0, "Can't find config file saved during training."
@@ -165,23 +163,6 @@ def get_eval_results_dir_name(api, task_id, project_info):
     eval_res_dir = f"/model-benchmark/{project_info.id}_{project_info.name}/{task_dir}/"
     eval_res_dir = api.storage.get_free_dir_name(sly.env.team_id(), eval_res_dir)
     return eval_res_dir
-
-def write_info_to_checkpoint(path, experiment_info, **kwargs):
-    from torch import load, save
-    model_meta = kwargs.get("model_meta", None)
-    model_files = kwargs.get("model_files", None)
-    state_dict = load(path, map_location="cpu")
-    state_dict['model_info'] = {
-        "model_name":experiment_info.model_name,
-        "framework":experiment_info.framework,
-        "checkpoint": os.path.basename(path),
-        "experiment": experiment_info.experiment_name,
-    }
-    if model_meta is not None:
-        state_dict['model_meta'] = model_meta
-    if model_files is not None:
-        state_dict['model_files'] = model_files
-    save(state_dict, path)
 
 def create_experiment(model_name, bm, remote_dir):
     # Create ExperimentInfo

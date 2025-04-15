@@ -246,6 +246,7 @@ def train():
 
     # ------------------------------------- Model Benchmark ------------------------------------- #
     model_benchmark_done = False
+    bm = None
     if run_model_benchmark_checkbox.is_checked():
         try:
             task_type = get_task().replace("_", " ")

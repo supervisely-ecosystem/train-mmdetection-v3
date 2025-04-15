@@ -175,7 +175,8 @@ def create_experiment(model_name, bm, remote_dir):
     # Write benchmark results
     if bm is not None:
         experiment_info.evaluation_report_id = bm.report_id
-        experiment_info.evaluation_report_link = f"/model-benchmark?id={str(bm.report.id)}"
+        if bm.visualizer is not None:
+            experiment_info.evaluation_report_link = f"/model-benchmark?id={str(bm.report.id)}"
         experiment_info.evaluation_metrics = bm.key_metrics
         experiment_info.primary_metric = bm.primary_metric_name
 

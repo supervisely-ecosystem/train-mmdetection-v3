@@ -268,9 +268,9 @@ def train():
                     best_checkpoints = sorted(best_checkpoints, key=lambda x: x, reverse=True)
 
                 best_filename = best_checkpoints[0]
-                # model_meta = sly.ProjectMeta
+                model_meta = sly.ProjectMeta([g.project_meta.get_obj_class(name) for name in g.params.selected_classes])
                 checkpoint_path = os.path.join(params.work_dir, best_filename)
-                sly_utils.write_info_to_checkpoint(checkpoint_path, g.experiment_info)
+                sly_utils.write_info_to_checkpoint(checkpoint_path, g.experiment_info, model_meta=model_meta.to_json())
                 sly.logger.info(f"Creating the report for the best model: {best_filename!r}")
 
                 # 0. Serve trained model

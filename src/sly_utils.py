@@ -11,8 +11,7 @@ from supervisely.app.widgets import Progress
 from dataclasses import asdict
 from supervisely.nn.artifacts.artifacts import TrainInfo
 from supervisely.io.json import dump_json_file
-from src.ui.train_val_split import splits
-
+    
 def download_custom_config(remote_weights_path: str):
     # # download config_xxx.py
     # save_dir = remote_weights_path.split("checkpoints")

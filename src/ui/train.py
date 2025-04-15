@@ -431,7 +431,6 @@ def train():
                 remote_dir = bm.upload_visualizations(eval_res_dir + "/visualizations/")
                 report = bm.upload_report_link(remote_dir)
 
-                sly_utils.create_experiment(train_cfg.sly_metadata['model_name'], bm, out_path)
 
                 # 8. UI updates
                 benchmark_report_template = g.api.file.get_info_by_path(
@@ -458,7 +457,7 @@ def train():
     if not model_benchmark_done:
         benchmark_report_template = None
     # ----------------------------------------------- - ---------------------------------------------- #
-
+    sly_utils.create_experiment(train_cfg.sly_metadata['model_name'], bm, out_path)
     w.workflow_output(g.api, g.mmdet_generated_metadata, benchmark_report_template)
 
     # set task results

@@ -429,21 +429,19 @@ def train():
                 remote_dir = bm.upload_visualizations(eval_res_dir + "/visualizations/")
                 report = bm.upload_report_link(remote_dir)
 
-
                 # 8. UI updates
                 benchmark_report_template = g.api.file.get_info_by_path(
                     sly.env.team_id(), remote_dir + "template.vue"
                 )
                 model_benchmark_done = True
-                creating_report.hide()
                 model_benchmark_report.set(benchmark_report_template)
                 model_benchmark_report.show()
-                model_benchmark_pbar.hide()
                 sly.logger.info(
                     f"Predictions project name: {bm.dt_project_info.name}. Workspace_id: {bm.dt_project_info.workspace_id}"
                 )
         except Exception as e:
             sly.logger.error(f"Model benchmark failed. {repr(e)}", exc_info=True)
+        finally:
             creating_report.hide()
             model_benchmark_pbar.hide()
             # try:

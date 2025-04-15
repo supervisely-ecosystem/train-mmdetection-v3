@@ -186,7 +186,7 @@ def write_info_to_checkpoint(path, experiment_info, **kwargs):
 def create_experiment(model_name, bm, remote_dir):
     # Create ExperimentInfo
     train_size, val_size = map(len, splits.get_splits())
-    train_info = TrainInfo(**g.sly_mmdet_generated_metadata)
+    train_info = TrainInfo(**g.mmdet_generated_metadata)
     experiment_info = g.sly_mmdet3.convert_train_to_experiment_info(train_info)
     experiment_info.experiment_name = f"{g.task_id}_{g.project_info.name}_{model_name}"
     experiment_info.model_name = model_name

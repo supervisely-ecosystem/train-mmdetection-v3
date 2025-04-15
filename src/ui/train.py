@@ -453,11 +453,13 @@ def train():
             #         g.api.project.remove(bm.dt_project_info.id)
             # except Exception as re:
             #     pass
+        sly.logger.info("Creating experiment...")
+        sly_utils.create_experiment(train_cfg.sly_metadata['model_name'], bm, out_path)
+
 
     if not model_benchmark_done:
         benchmark_report_template = None
     # ----------------------------------------------- - ---------------------------------------------- #
-    sly_utils.create_experiment(train_cfg.sly_metadata['model_name'], bm, out_path)
     w.workflow_output(g.api, g.mmdet_generated_metadata, benchmark_report_template)
 
     # set task results

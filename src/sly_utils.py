@@ -166,25 +166,31 @@ def get_eval_results_dir_name(api, task_id, project_info):
 
 def create_experiment(model_name, bm, remote_dir):
     # Create ExperimentInfo
-    train_size, val_size = map(len, splits.get_splits())
     train_info = TrainInfo(**g.mmdet_generated_metadata)
     experiment_info = g.sly_mmdet3.convert_train_to_experiment_info(train_info)
     experiment_info.experiment_name = f"{g.api.task_id}_{g.project_info.name}_{model_name}"
     experiment_info.model_name = model_name
-    experiment_info.train_size = train_size
-    experiment_info.val_size = val_size
+    experiment_info.train_size = g.train_size
+    experiment_info.val_size = g.val_size
 
     # Write benchmark results
-    experiment_info.evaluation_report_id = bm.report_id
-    experiment_info.evaluation_report_link = f"/model-benchmark?id={str(bm.report.id)}"
-    experiment_info.evaluation_metrics = bm.key_metrics
-    experiment_info.primary_metric = bm.primary_metric_name
+    if bm is not None:
+        experiment_info.evaluation_report_id = bm.report_id
+        experiment_info.evaluation_report_link = f"/model-benchmark?id={str(bm.report.id)}"
+        experiment_info.evaluation_metrics = bm.key_metrics
+        experiment_info.primary_metric = bm.primary_metric_name
 
     # Set ExperimentInfo to task
     experiment_info_json = asdict(experiment_info)
     experiment_info_json["project_preview"] = g.project_info.image_preview_url
+    if bm is not None:
+        experiment_info_json["primary_metric"] = bm.primary_metric_name
     g.api.task.set_output_experiment(g.api.task_id, experiment_info_json)
     experiment_info_json.pop("project_preview")
+    try:
+        experiment_info_json.pop("primary_metric")
+    except KeyError:
+        pass
 
     # Upload experiment_info.json to Team Files
     experiment_info_path = os.path.join(g.params.work_dir, "experiment_info.json")

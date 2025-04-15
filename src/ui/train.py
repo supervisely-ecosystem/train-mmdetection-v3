@@ -312,6 +312,7 @@ def train():
 
                 split_method = splits._content.get_active_tab()
                 train_set, val_set = splits.get_splits()
+                g.train_size, g.val_size = len(train_set), len(val_set)
 
                 if split_method == "Based on datasets":
                     benchmark_dataset_ids = splits._val_ds_select.get_selected_ids()
@@ -450,10 +451,6 @@ def train():
             #         g.api.project.remove(bm.dt_project_info.id)
             # except Exception as re:
             #     pass
-        finally:
-            sly.logger.info("Creating experiment...")
-            sly_utils.create_experiment(train_cfg.sly_metadata['model_name'], bm, out_path)
-
 
     if not model_benchmark_done:
         benchmark_report_template = None
@@ -475,6 +472,15 @@ def train():
         # disable buttons after training
         start_train_btn.hide()
         stop_train_btn.hide()
+
+        # create experiment
+        try:
+            sly.logger.info("Creating experiment...")
+            sly_utils.create_experiment(train_cfg.sly_metadata['model_name'], bm, out_path)
+        except Exception as e:
+            sly.logger.warning(
+                f"Couldn't create experiment, this training session will not appear in experiments table. Error: {e}"
+            )
 
         # set link to artifacts in ws tasks
         g.api.task.set_output_directory(sly.env.task_id(), file_info.id, out_path)

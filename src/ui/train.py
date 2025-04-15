@@ -450,8 +450,9 @@ def train():
             #         g.api.project.remove(bm.dt_project_info.id)
             # except Exception as re:
             #     pass
-        sly.logger.info("Creating experiment...")
-        sly_utils.create_experiment(train_cfg.sly_metadata['model_name'], bm, out_path)
+        finally:
+            sly.logger.info("Creating experiment...")
+            sly_utils.create_experiment(train_cfg.sly_metadata['model_name'], bm, out_path)
 
 
     if not model_benchmark_done:

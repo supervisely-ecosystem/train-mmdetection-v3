@@ -183,11 +183,11 @@ def create_experiment(model_name, bm, remote_dir):
     # Set ExperimentInfo to task
     experiment_info_json = asdict(experiment_info)
     experiment_info_json["project_preview"] = g.project_info.image_preview_url
-    g.api.task.set_output_experiment(g.task_id, experiment_info_json)
+    g.api.task.set_output_experiment(g.api.task_id, experiment_info_json)
     experiment_info_json.pop("project_preview")
 
     # Upload experiment_info.json to Team Files
-    experiment_info_path = os.path.join(g.artifacts_dir, "experiment_info.json")
+    experiment_info_path = os.path.join(g.params.work_dir, "experiment_info.json")
     remote_experiment_info_path = os.path.join(remote_dir, "experiment_info.json")
     dump_json_file(experiment_info_json, experiment_info_path)
-    g.api.file.upload(g.team_id, experiment_info_path, remote_experiment_info_path)
+    g.api.file.upload(g.team.id, experiment_info_path, remote_experiment_info_path)

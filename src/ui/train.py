@@ -1,8 +1,6 @@
 import os
 import yaml
 from pathlib import Path
-from dataclasses import asdict
-import json
 
 import torch
 from mmdet.registry import RUNNERS

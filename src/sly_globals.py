@@ -42,5 +42,4 @@ IMAGES_COUNT = project_info.items_count
 USE_CACHE = True
 
 mmdet_generated_metadata = None
-train_size = 0
-val_size = 0
+train_size, val_size = None, None 

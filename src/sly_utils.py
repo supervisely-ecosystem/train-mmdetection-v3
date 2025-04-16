@@ -175,8 +175,10 @@ def create_experiment(model_name, bm, remote_dir):
     # Write benchmark results
     if bm is not None:
         experiment_info.evaluation_report_id = bm.report_id
-        if bm.visualizer is not None:
+        try:
             experiment_info.evaluation_report_link = f"/model-benchmark?id={str(bm.report.id)}"
+        except Exception as e:
+            sly.logger.warning("Couldn't get report link: %s", e, exc_info=True)
         experiment_info.evaluation_metrics = bm.key_metrics
         experiment_info.primary_metric = bm.primary_metric_name
 

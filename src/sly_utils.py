@@ -8,8 +8,10 @@ from tqdm import tqdm
 import src.sly_globals as g
 import supervisely as sly
 from supervisely.app.widgets import Progress
-
-
+from dataclasses import asdict
+from supervisely.nn.artifacts.artifacts import TrainInfo
+from supervisely.io.json import dump_json_file
+    
 def download_custom_config(remote_weights_path: str):
     # # download config_xxx.py
     # save_dir = remote_weights_path.split("checkpoints")
@@ -160,3 +162,40 @@ def get_eval_results_dir_name(api, task_id, project_info):
     eval_res_dir = f"/model-benchmark/{project_info.id}_{project_info.name}/{task_dir}/"
     eval_res_dir = api.storage.get_free_dir_name(sly.env.team_id(), eval_res_dir)
     return eval_res_dir
+
+def create_experiment(model_name, bm, remote_dir):
+    # Create ExperimentInfo
+    train_info = TrainInfo(**g.mmdet_generated_metadata)
+    experiment_info = g.sly_mmdet3.convert_train_to_experiment_info(train_info)
+    experiment_info.experiment_name = f"{g.api.task_id}_{g.project_info.name}_{model_name}"
+    experiment_info.model_name = model_name
+    experiment_info.train_size = g.train_size
+    experiment_info.val_size = g.val_size
+
+    # Write benchmark results
+    if bm is not None:
+        experiment_info.evaluation_report_id = bm.report_id
+        try:
+            experiment_info.evaluation_report_link = f"/model-benchmark?id={str(bm.report.id)}"
+        except Exception as e:
+            sly.logger.warning("Couldn't get report link: %s", e, exc_info=True)
+        experiment_info.evaluation_metrics = bm.key_metrics
+        experiment_info.primary_metric = bm.primary_metric_name
+
+    # Set ExperimentInfo to task
+    experiment_info_json = asdict(experiment_info)
+    experiment_info_json["project_preview"] = g.project_info.image_preview_url
+    if bm is not None:
+        experiment_info_json["primary_metric"] = bm.primary_metric_name
+    g.api.task.set_output_experiment(g.api.task_id, experiment_info_json)
+    experiment_info_json.pop("project_preview")
+    try:
+        experiment_info_json.pop("primary_metric")
+    except KeyError:
+        pass
+
+    # Upload experiment_info.json to Team Files
+    experiment_info_path = os.path.join(g.params.work_dir, "experiment_info.json")
+    remote_experiment_info_path = os.path.join(remote_dir, "experiment_info.json")
+    dump_json_file(experiment_info_json, experiment_info_path)
+    g.api.file.upload(g.team.id, experiment_info_path, remote_experiment_info_path)

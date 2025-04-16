@@ -120,7 +120,6 @@ def add_metadata(cfg: Config):
         }
     else:
         metadata = cfg.sly_metadata
-
     metadata["project_id"] = g.PROJECT_ID
     metadata["project_name"] = g.project_info.name
 
@@ -245,6 +244,7 @@ def train():
 
     # ------------------------------------- Model Benchmark ------------------------------------- #
     model_benchmark_done = False
+    bm = None
     if run_model_benchmark_checkbox.is_checked():
         try:
             task_type = get_task().replace("_", " ")
@@ -311,6 +311,7 @@ def train():
 
                 split_method = splits._content.get_active_tab()
                 train_set, val_set = splits.get_splits()
+                g.train_size, g.val_size = len(train_set), len(val_set)
 
                 if split_method == "Based on datasets":
                     benchmark_dataset_ids = splits._val_ds_select.get_selected_ids()
@@ -381,7 +382,7 @@ def train():
                     raise ValueError(
                         f"Model benchmark for task type {task_type} is not implemented (coming soon)"
                     )
-
+                
                 train_info = {
                     "app_session_id": sly.env.task_id(),
                     "train_dataset_ids": train_dataset_ids,
@@ -432,15 +433,14 @@ def train():
                     sly.env.team_id(), remote_dir + "template.vue"
                 )
                 model_benchmark_done = True
-                creating_report.hide()
                 model_benchmark_report.set(benchmark_report_template)
                 model_benchmark_report.show()
-                model_benchmark_pbar.hide()
                 sly.logger.info(
                     f"Predictions project name: {bm.dt_project_info.name}. Workspace_id: {bm.dt_project_info.workspace_id}"
                 )
         except Exception as e:
             sly.logger.error(f"Model benchmark failed. {repr(e)}", exc_info=True)
+        finally:
             creating_report.hide()
             model_benchmark_pbar.hide()
             # try:
@@ -452,7 +452,6 @@ def train():
     if not model_benchmark_done:
         benchmark_report_template = None
     # ----------------------------------------------- - ---------------------------------------------- #
-
     w.workflow_output(g.api, g.mmdet_generated_metadata, benchmark_report_template)
 
     # set task results
@@ -470,6 +469,15 @@ def train():
         # disable buttons after training
         start_train_btn.hide()
         stop_train_btn.hide()
+
+        # create experiment
+        try:
+            sly.logger.info("Creating experiment...")
+            sly_utils.create_experiment(train_cfg.sly_metadata['model_name'], bm, out_path)
+        except Exception as e:
+            sly.logger.warning(
+                f"Couldn't create experiment, this training session will not appear in experiments table. Error: {e}", exc_info=True
+            )
 
         # set link to artifacts in ws tasks
         g.api.task.set_output_directory(sly.env.task_id(), file_info.id, out_path)

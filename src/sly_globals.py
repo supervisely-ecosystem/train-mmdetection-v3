@@ -6,8 +6,9 @@ from supervisely.nn.artifacts.mmdetection import MMDetection3
 
 from src.train_parameters import TrainParameters
 
-load_dotenv(os.path.expanduser("~/supervisely.env"))
 load_dotenv("local.env")
+load_dotenv("supervisely.env")
+# load_dotenv(os.path.expanduser("~/supervisely.env"))
 
 PROJECT_ID = sly.env.project_id()
 TEAM_ID = sly.env.team_id()

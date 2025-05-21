@@ -1,4 +1,5 @@
 import os
+import time
 import supervisely as sly
 from mmengine import Config
 from supervisely.app import StateJson
@@ -19,6 +20,7 @@ from src.train_parameters import TrainParameters
 from src.ui import hyperparameters
 from src.ui import augmentations
 from src.ui import model_leaderboard
+from src.ui import train_config
 from src.ui.utils import wrap_button_click, button_clicked, set_stepper_step
 import src.sly_globals as g
 
@@ -31,6 +33,7 @@ all_widgets = [
     splits_ui.card,
     augmentations.card,
     hyperparameters.card,
+    train_config.card,
     train.card,
 ]
 
@@ -51,9 +54,15 @@ train_start_callback = wrap_button_click(
     upd_params=False,
 )
 
+train_config_select_callback = wrap_button_click(
+    train_config.select_btn,
+    cards_to_unlock=[train.card],
+    widgets_to_disable=[train_config.editor, train_config.switch],
+)
+
 hyperparameters_select_callback = wrap_button_click(
     hyperparameters.select_btn,
-    cards_to_unlock=[train.card],
+    cards_to_unlock=[train_config.card],
     widgets_to_disable=[
         hyperparameters.general_params,
         hyperparameters.checkpoint_params,
@@ -67,6 +76,7 @@ hyperparameters_select_callback = wrap_button_click(
         hyperparameters.warmup,
         hyperparameters.enable_warmup_input,
     ],
+    callback=train_config_select_callback,
 )
 
 augmentations_select_callback = wrap_button_click(
@@ -239,12 +249,29 @@ def select_augs():
 @hyperparameters.select_btn.click
 def select_hyperparameters():
     hyperparameters_select_callback()
+
+    # @TODO: get config for custom models
+    config_path = models.get_selected_pretrained_model()["config"]
+    cfg = Config.fromfile(config_path)
+    params = train.get_train_params(cfg)
+    cfg = params.update_config(cfg)
+    train_config.editor.set_text(cfg.pretty_text)
+    time.sleep(1) # set_text takes time
+
     set_stepper_step(
         stepper,
         hyperparameters.select_btn,
         next_pos=8,
     )
 
+@train_config.select_btn.click
+def select_train_config():
+    train_config_select_callback()
+    set_stepper_step(
+        stepper,
+        train_config.select_btn,
+        next_pos=9,
+    )
 
 @train.start_train_btn.click
 def start_train():

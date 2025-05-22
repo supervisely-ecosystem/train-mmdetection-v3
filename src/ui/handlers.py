@@ -301,7 +301,7 @@ def start_train():
         train.iter_progress.hide()
         train.epoch_progress.hide()
         train.stop_train_btn.disable()
-        train.validation_text.set(f"Error during training: {e}", "error")
+        train.validation_text.set(f"Error during training: {str(e)}", "error")
         train.validation_text.show()
         raise e
 

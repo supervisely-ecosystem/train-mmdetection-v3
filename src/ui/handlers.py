@@ -248,15 +248,20 @@ def select_augs():
 
 @hyperparameters.select_btn.click
 def select_hyperparameters():
-    hyperparameters_select_callback()
 
-    # @TODO: get config for custom models
-    config_path = models.get_selected_pretrained_model()["config"]
+    is_pretrained_model = models.is_pretrained_model_selected()
+    if is_pretrained_model:
+        config_path = models.get_selected_pretrained_model()["config"]
+    else:
+        config_path = sly_utils.download_custom_config(models.get_selected_custom_path())
+
     cfg = Config.fromfile(config_path)
     params = train.get_train_params(cfg)
     cfg = params.update_config(cfg)
     train_config.editor.set_text(cfg.pretty_text)
     time.sleep(1) # set_text takes time
+
+    hyperparameters_select_callback()
 
     set_stepper_step(
         stepper,
@@ -266,6 +271,12 @@ def select_hyperparameters():
 
 @train_config.select_btn.click
 def select_train_config():
+    if train_config.select_btn.text == "Select":
+        train_config.editor.read_only = True
+    else:
+        train_config.editor.read_only = train_config.switch.is_switched()
+    g.cfg = Config.fromstring(train_config.editor.get_text(), ".py")
+
     train_config_select_callback()
     set_stepper_step(
         stepper,

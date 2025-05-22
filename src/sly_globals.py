@@ -42,5 +42,6 @@ project_info = api.project.get_info_by_id(PROJECT_ID)
 IMAGES_COUNT = project_info.items_count
 USE_CACHE = True
 
+cfg = None
 mmdet_generated_metadata = None
 train_size, val_size = None, None 

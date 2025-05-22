@@ -163,8 +163,8 @@ def train():
     w.workflow_input(g.api, g.PROJECT_ID)
 
     # create config
-    cfg = Config.fromfile(config_path)
-    params = get_train_params(cfg)
+    # cfg = Config.fromfile(config_path)
+    params = get_train_params(g.cfg)
 
     if params.device_name is None:
         raise ValueError("Device is not set. Cannot start training.")
@@ -183,7 +183,7 @@ def train():
     DetLocalVisualizer._instance_dict.clear()
 
     # create config from params
-    train_cfg = params.update_config(cfg, max_per_img.get_value())
+    train_cfg = params.update_config(g.cfg, max_per_img.get_value())
 
     # update load_from with custom_weights_path
     if params.load_from and weights_path_or_url:

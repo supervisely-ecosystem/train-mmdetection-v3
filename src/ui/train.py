@@ -547,7 +547,7 @@ def start_train():
     g.stop_training = False
     monitoring.container.show()
     stop_train_btn.enable()
-    epoch_progress.show()
+    # epoch_progress.show()
     iter_progress.show()
     train()
 

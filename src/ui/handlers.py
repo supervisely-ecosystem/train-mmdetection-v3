@@ -249,9 +249,9 @@ def select_augs():
 @hyperparameters.select_btn.click
 def select_hyperparameters():
     if hyperparameters.select_btn.text == "Select":
-        train_config.editor.read_only = True
+        train_config.editor.readonly = True
     else:
-        train_config.editor.read_only = train_config.switch.is_switched()
+        train_config.editor.readonly = train_config.switch.is_switched()
 
     is_pretrained_model = models.is_pretrained_model_selected()
     if is_pretrained_model:
@@ -266,7 +266,7 @@ def select_hyperparameters():
     time.sleep(1) # set_text takes time
 
     hyperparameters_select_callback()
-    train_config.editor.read_only = True
+    train_config.editor.readonly = True
 
     set_stepper_step(
         stepper,
@@ -277,9 +277,9 @@ def select_hyperparameters():
 @train_config.select_btn.click
 def select_train_config():
     if train_config.select_btn.text == "Select":
-        train_config.editor.read_only = True
+        train_config.editor.readonly = True
     else:
-        train_config.editor.read_only = train_config.switch.is_switched()
+        train_config.editor.readonly = train_config.switch.is_switched()
 
     g.cfg = Config.fromstring(train_config.editor.get_text(), ".py")
     train_config_select_callback()

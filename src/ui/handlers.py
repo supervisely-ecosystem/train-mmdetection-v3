@@ -251,7 +251,8 @@ def select_hyperparameters():
     if hyperparameters.select_btn.text == "Select":
         train_config.editor.readonly = True
     else:
-        train_config.editor.readonly = train_config.switch.is_switched()
+        train_config.editor.readonly = False
+        train_config.switch.off()
 
     is_pretrained_model = models.is_pretrained_model_selected()
     if is_pretrained_model:
@@ -279,7 +280,8 @@ def select_train_config():
     if train_config.select_btn.text == "Select":
         train_config.editor.readonly = True
     else:
-        train_config.editor.readonly = train_config.switch.is_switched()
+        train_config.editor.readonly = False
+        train_config.switch.off()
 
     g.cfg = Config.fromstring(train_config.editor.get_text(), ".py")
     train_config_select_callback()

@@ -276,6 +276,11 @@ def select_hyperparameters():
 
 @train_config.select_btn.click
 def select_train_config():
+    if train_config.select_btn.text == "Select":
+        train_config.editor.read_only = True
+    else:
+        train_config.editor.read_only = train_config.switch.is_switched()
+
     g.cfg = Config.fromstring(train_config.editor.get_text(), ".py")
     train_config_select_callback()
     set_stepper_step(

@@ -498,6 +498,9 @@ iter_progress.hide()
 success_msg = DoneLabel("Training completed. Training artifacts were uploaded to Team Files.")
 success_msg.hide()
 
+validation_text = Text("")
+validation_text.hide()
+
 folder_thumb = FolderThumbnail()
 folder_thumb.hide()
 
@@ -519,6 +522,7 @@ btn_container = Container(
 
 container = Container(
     [
+        validation_text,
         success_msg,
         folder_thumb,
         creating_report,

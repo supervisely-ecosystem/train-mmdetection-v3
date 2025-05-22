@@ -291,9 +291,19 @@ def select_train_config():
 
 @train.start_train_btn.click
 def start_train():
+    train.validation_text.hide()
     train_start_callback()
     g.USE_CACHE = input_project.use_cache_checkbox.is_checked()
-    train.start_train()
+    try:
+        train.start_train()
+    except Exception as e:
+        sly.logger.error(f"Error starting training: {e}")
+        train.iter_progress.hide()
+        train.epoch_progress.hide()
+        train.stop_train_btn.disable()
+        train.validation_text.set(f"Error during training: {e}", "error")
+        train.validation_text.show()
+        raise e
 
 
 @train.stop_train_btn.click

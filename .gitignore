@@ -20,3 +20,4 @@ local.env
 vis
 tmp
 supervisely
+supervisely.env

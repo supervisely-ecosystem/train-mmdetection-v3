@@ -25,6 +25,11 @@ def download_custom_config(remote_weights_path: str):
     remote_config_path = remote_dir + "/config.py"
     config_name = remote_config_path.split("/")[-1]
     config_path = g.app_dir + f"/{config_name}"
+    
+    # remove config file if it exists
+    if os.path.exists(config_path):
+        sly.fs.silent_remove(config_path)
+    
     g.api.file.download(g.TEAM_ID, remote_config_path, config_path)
     return config_path
 

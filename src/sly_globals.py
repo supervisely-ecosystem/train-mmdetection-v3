@@ -6,8 +6,10 @@ from supervisely.nn.artifacts.mmdetection import MMDetection3
 
 from src.train_parameters import TrainParameters
 
-load_dotenv(os.path.expanduser("~/supervisely.env"))
-load_dotenv("local.env")
+if sly.is_development():
+    load_dotenv("local.env")
+    # load_dotenv("supervisely.env")
+    load_dotenv(os.path.expanduser("~/supervisely.env"))
 
 PROJECT_ID = sly.env.project_id()
 TEAM_ID = sly.env.team_id()
@@ -41,5 +43,6 @@ project_info = api.project.get_info_by_id(PROJECT_ID)
 IMAGES_COUNT = project_info.items_count
 USE_CACHE = True
 
+cfg = None
 mmdet_generated_metadata = None
 train_size, val_size = None, None 

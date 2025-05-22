@@ -1,4 +1,5 @@
 import os
+import time
 import supervisely as sly
 from mmengine import Config
 from supervisely.app import StateJson
@@ -19,6 +20,7 @@ from src.train_parameters import TrainParameters
 from src.ui import hyperparameters
 from src.ui import augmentations
 from src.ui import model_leaderboard
+from src.ui import train_config
 from src.ui.utils import wrap_button_click, button_clicked, set_stepper_step
 import src.sly_globals as g
 
@@ -31,6 +33,7 @@ all_widgets = [
     splits_ui.card,
     augmentations.card,
     hyperparameters.card,
+    train_config.card,
     train.card,
 ]
 
@@ -51,9 +54,15 @@ train_start_callback = wrap_button_click(
     upd_params=False,
 )
 
+train_config_select_callback = wrap_button_click(
+    train_config.select_btn,
+    cards_to_unlock=[train.card],
+    widgets_to_disable=[train_config.editor, train_config.switch],
+)
+
 hyperparameters_select_callback = wrap_button_click(
     hyperparameters.select_btn,
-    cards_to_unlock=[train.card],
+    cards_to_unlock=[train_config.card],
     widgets_to_disable=[
         hyperparameters.general_params,
         hyperparameters.checkpoint_params,
@@ -67,6 +76,7 @@ hyperparameters_select_callback = wrap_button_click(
         hyperparameters.warmup,
         hyperparameters.enable_warmup_input,
     ],
+    callback=train_config_select_callback,
 )
 
 augmentations_select_callback = wrap_button_click(
@@ -238,19 +248,64 @@ def select_augs():
 
 @hyperparameters.select_btn.click
 def select_hyperparameters():
+    if hyperparameters.select_btn.text == "Select":
+        train_config.editor.readonly = True
+    else:
+        train_config.editor.readonly = False
+        train_config.switch.off()
+
+    is_pretrained_model = models.is_pretrained_model_selected()
+    if is_pretrained_model:
+        config_path = models.get_selected_pretrained_model()["config"]
+    else:
+        config_path = sly_utils.download_custom_config(models.get_selected_custom_path())
+
+    cfg = Config.fromfile(config_path)
+    params = train.get_train_params(cfg)
+    cfg = params.update_config(cfg)
+    train_config.editor.set_text(cfg.pretty_text)
+    time.sleep(1) # set_text takes time
+
     hyperparameters_select_callback()
+    train_config.editor.readonly = True
+
     set_stepper_step(
         stepper,
         hyperparameters.select_btn,
         next_pos=8,
     )
 
+@train_config.select_btn.click
+def select_train_config():
+    if train_config.select_btn.text == "Select":
+        train_config.editor.readonly = True
+    else:
+        train_config.editor.readonly = False
+        train_config.switch.off()
+
+    g.cfg = Config.fromstring(train_config.editor.get_text(), ".py")
+    train_config_select_callback()
+    set_stepper_step(
+        stepper,
+        train_config.select_btn,
+        next_pos=9,
+    )
 
 @train.start_train_btn.click
 def start_train():
+    train.validation_text.hide()
     train_start_callback()
     g.USE_CACHE = input_project.use_cache_checkbox.is_checked()
-    train.start_train()
+    try:
+        train.start_train()
+    except Exception as e:
+        sly.logger.error(f"Error starting training: {e}")
+        train.iter_progress.hide()
+        train.epoch_progress.hide()
+        train.stop_train_btn.disable()
+        train.validation_text.set(f"Error during training: {str(e)}", "error")
+        train.validation_text.show()
+        raise e
 
 
 @train.stop_train_btn.click

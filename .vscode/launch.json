@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Main",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
             "args": [
@@ -28,7 +28,7 @@
         },
         {
             "name": "Python: Current File",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
@@ -40,7 +40,7 @@
         },
         {
             "name": "train_test2.py",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "src/test/train_test2.py",
             "console": "integratedTerminal",
@@ -52,7 +52,7 @@
         },
         {
             "name": "Test UI",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
             "args": [

@@ -160,11 +160,12 @@ def train():
     iter_progress(message="Preparing the model...", total=1)
     config_path, weights_path_or_url = prepare_model()
 
-    w.workflow_input(g.api, g.PROJECT_ID)
+    if sly.is_production():
+        w.workflow_input(g.api, g.PROJECT_ID)
 
     # create config
-    cfg = Config.fromfile(config_path)
-    params = get_train_params(cfg)
+    # cfg = Config.fromfile(config_path)
+    params = get_train_params(g.cfg)
 
     if params.device_name is None:
         raise ValueError("Device is not set. Cannot start training.")
@@ -183,7 +184,7 @@ def train():
     DetLocalVisualizer._instance_dict.clear()
 
     # create config from params
-    train_cfg = params.update_config(cfg, max_per_img.get_value())
+    train_cfg = params.update_config(g.cfg, max_per_img.get_value())
 
     # update load_from with custom_weights_path
     if params.load_from and weights_path_or_url:
@@ -452,10 +453,10 @@ def train():
     if not model_benchmark_done:
         benchmark_report_template = None
     # ----------------------------------------------- - ---------------------------------------------- #
-    w.workflow_output(g.api, g.mmdet_generated_metadata, benchmark_report_template)
 
     # set task results
     if sly.is_production():
+        w.workflow_output(g.api, g.mmdet_generated_metadata, benchmark_report_template)
         remote_file_path = g.sly_mmdet3.get_config_path(out_path)
         file_info = g.api.file.get_info_by_path(g.TEAM_ID, remote_file_path)
 
@@ -497,6 +498,9 @@ iter_progress.hide()
 success_msg = DoneLabel("Training completed. Training artifacts were uploaded to Team Files.")
 success_msg.hide()
 
+validation_text = Text("")
+validation_text.hide()
+
 folder_thumb = FolderThumbnail()
 folder_thumb.hide()
 
@@ -518,6 +522,7 @@ btn_container = Container(
 
 container = Container(
     [
+        validation_text,
         success_msg,
         folder_thumb,
         creating_report,

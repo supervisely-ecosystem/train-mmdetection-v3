@@ -262,6 +262,7 @@ def select_hyperparameters():
     time.sleep(1) # set_text takes time
 
     hyperparameters_select_callback()
+    train_config.editor.read_only = True
 
     set_stepper_step(
         stepper,

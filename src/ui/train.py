@@ -160,7 +160,8 @@ def train():
     iter_progress(message="Preparing the model...", total=1)
     config_path, weights_path_or_url = prepare_model()
 
-    w.workflow_input(g.api, g.PROJECT_ID)
+    if sly.is_production():
+        w.workflow_input(g.api, g.PROJECT_ID)
 
     # create config
     # cfg = Config.fromfile(config_path)
@@ -452,10 +453,10 @@ def train():
     if not model_benchmark_done:
         benchmark_report_template = None
     # ----------------------------------------------- - ---------------------------------------------- #
-    w.workflow_output(g.api, g.mmdet_generated_metadata, benchmark_report_template)
 
     # set task results
     if sly.is_production():
+        w.workflow_output(g.api, g.mmdet_generated_metadata, benchmark_report_template)
         remote_file_path = g.sly_mmdet3.get_config_path(out_path)
         file_info = g.api.file.get_info_by_path(g.TEAM_ID, remote_file_path)
 

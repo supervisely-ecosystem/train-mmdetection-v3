@@ -473,10 +473,10 @@ def train():
 
         # create experiment
         try:
-            sly.logger.info("Creating experiment...")
+            sly.logger.info("Creating experiment info")
             sly_utils.create_experiment(train_cfg.sly_metadata['model_name'], bm, out_path)
         except Exception as e:
-            sly.logger.warning(
+            sly.logger.error(
                 f"Couldn't create experiment, this training session will not appear in experiments table. Error: {e}", exc_info=True
             )
 

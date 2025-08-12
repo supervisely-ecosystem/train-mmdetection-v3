@@ -176,6 +176,7 @@ def create_experiment(model_name, bm, remote_dir):
     experiment_info.model_name = model_name
     experiment_info.train_size = g.train_size
     experiment_info.val_size = g.val_size
+    experiment_info.experiment_report_id = None
 
     # Write benchmark results
     if bm is not None:

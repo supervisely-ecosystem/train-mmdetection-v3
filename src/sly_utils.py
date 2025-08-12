@@ -172,7 +172,7 @@ def create_experiment(model_name, bm, remote_dir):
     # Create ExperimentInfo
     train_info = TrainInfo(**g.mmdet_generated_metadata)
     experiment_info = g.sly_mmdet3.convert_train_to_experiment_info(train_info)
-    experiment_info.experiment_name = f"{g.api.task_id}_{g.project_info.name}_{model_name}"
+    experiment_info.experiment_name = f"{g.api.task_id} {g.project_info.name} {model_name}"
     experiment_info.model_name = model_name
     experiment_info.train_size = g.train_size
     experiment_info.val_size = g.val_size

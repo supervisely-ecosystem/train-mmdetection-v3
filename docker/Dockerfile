@@ -14,6 +14,6 @@ RUN pip install yapf==0.40.1
 RUN mim install mmdet==3.0.0 "mmcls>=1.0.0rc0"
 
 RUN python3 -m pip install supervisely==6.73.418
-RUN python3 -m pip install pycocotools scikit-learn plotly==5.22.0
+RUN python3 -m pip install supervisely[model-benchmark]==6.73.418
 
 LABEL python_sdk_version=6.73.418

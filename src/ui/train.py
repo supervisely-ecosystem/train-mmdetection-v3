@@ -473,12 +473,11 @@ def train():
 
         # create experiment
         try:
-            sly.logger.info("Creating experiment...")
-            sly_utils.create_experiment(train_cfg.sly_metadata['model_name'], bm, out_path)
+            sly.logger.info("Creating experiment info")
+            model_name = train_cfg.sly_metadata['model_name']
+            sly_utils.create_experiment(model_name, bm, out_path)
         except Exception as e:
-            sly.logger.warning(
-                f"Couldn't create experiment, this training session will not appear in experiments table. Error: {e}", exc_info=True
-            )
+            sly.logger.error(f"Couldn't create experiment, this training session will not appear in the experiments table. Error: {e}", exc_info=True)
 
         # set link to artifacts in ws tasks
         g.api.task.set_output_directory(sly.env.task_id(), file_info.id, out_path)

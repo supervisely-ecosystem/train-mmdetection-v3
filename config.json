@@ -34,24 +34,10 @@
   },
   "framework": {
     "name": "MMDetection 3.0",
-    "conference": "various",
-    "released": 2022,
-    "tasks": {
-      "object detection": {
-        "metric": 58.4,
-        "metric_name": "mAP",
-        "models": 51,
-        "best_model": "DINO Swin-L"
-      },
-      "instance segmentation": {
-        "metric": 46.1,
-        "metric_name": "mAP (mask)",
-        "models": 18,
-        "best_model": "Mask2Former Swin-S"
-      }
-    },
-    "real_time": false,
-    "onnx": false,
-    "tensorrt": false
-  }
+    "tags": [],
+    "export": [],
+    "conference": null,
+    "released": "2023",
+    "description": "A collection of popular detection and instance segmentation models maintained by MMLab.",
+    "github": "https://github.com/open-mmlab/mmdetection"
 }

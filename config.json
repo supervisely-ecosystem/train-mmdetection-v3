@@ -40,4 +40,5 @@
     "released": "2023",
     "description": "A collection of popular detection and instance segmentation models maintained by MMLab.",
     "github": "https://github.com/open-mmlab/mmdetection"
+  }
 }

@@ -13,7 +13,7 @@ RUN pip install yapf==0.40.1
 # mmdet
 RUN mim install mmdet==3.0.0 "mmcls>=1.0.0rc0"
 
-RUN python3 -m pip install supervisely==6.73.424
-RUN python3 -m pip install supervisely[model-benchmark]==6.73.424
+RUN python3 -m pip install supervisely==6.73.448
+RUN python3 -m pip install supervisely[model-benchmark]==6.73.448
 
-LABEL python_sdk_version=6.73.424
+LABEL python_sdk_version=6.73.448

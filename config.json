@@ -15,7 +15,7 @@
         "train"
     ],
     "description": "Training dashboard for mmdetection framework (v3.0.0 and above).",
-    "docker_image": "supervisely/mmdet-3.0:1.1.16",
+    "docker_image": "supervisely/mmdet-3.0:1.1.18",
     "instance_version": "6.15.35",
     "task_location": "workspace_tasks",
     "context_menu": {

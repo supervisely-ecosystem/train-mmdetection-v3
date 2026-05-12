@@ -1,3 +1,15 @@
 # git+https://github.com/supervisely/supervisely.git@some-test-branch
 
 supervisely[model-benchmark]==6.73.567
+
+--extra-index-url https://download.pytorch.org/whl/cu118
+-f https://download.openmmlab.com/mmcv/dist/cu118/torch2.0/index.html
+
+torch==2.0.1+cu118
+torchvision==0.15.2+cu118
+openmim==0.3.7
+mmengine==0.7.4
+mmcv==2.0.0
+mmdet==3.0.0
+mmcls>=1.0.0rc0
+yapf==0.40.1

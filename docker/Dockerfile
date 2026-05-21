@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y build-essential
 RUN apt-get install -y git ffmpeg libsm6 libxext6 ninja-build
 
 RUN python3 -m pip install setuptools==69.5.1
-RUN pip3 install torch==2.0.1 torchvision==0.15.2
+RUN pip3 install "numpy<2" torch==2.0.1 torchvision==0.15.2
 RUN pip3 install openmim==0.3.7
 RUN mim install mmengine==0.7.4 mmcv==2.0.0
 RUN pip install yapf==0.40.1

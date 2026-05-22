@@ -1,11 +1,11 @@
 import os
 import shutil
+from importlib.metadata import version
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Union
 
 import cv2
 import numpy as np
-import pkg_resources
 import supervisely as sly
 from mmdet.apis import inference_detector, init_detector
 from mmdet.registry import DATASETS
@@ -19,7 +19,7 @@ root_source_path = str(Path(__file__).parents[1])
 app_source_path = str(Path(__file__).parents[1])
 
 configs_dir = os.path.join(root_source_path, "configs")
-mmdet_ver = pkg_resources.get_distribution("mmdet").version
+mmdet_ver = version("mmdet")
 if os.path.isdir(f"/tmp/mmdet/mmdetection-{mmdet_ver}"):
     if os.path.isdir(configs_dir):
         shutil.rmtree(configs_dir)

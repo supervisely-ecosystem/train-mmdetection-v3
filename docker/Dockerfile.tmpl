@@ -82,8 +82,8 @@ RUN --mount=from=requirements-builder,source=/tmp/wheels,target=/tmp/wheels,ro \
         # /opt/venv/lib/python*/site-packages/setuptools* \
         /opt/venv/lib/python*/site-packages/wheel* \
         /opt/venv/lib/python*/site-packages/pkg_resources* \
-        /opt/venv/lib/python*/site-packages/_distutils_hack* \
-        /opt/venv/lib/python*/site-packages/_distutils* \
+        # /opt/venv/lib/python*/site-packages/_distutils_hack* \
+        # /opt/venv/lib/python*/site-packages/_distutils* \
         /opt/venv/lib/python*/site-packages/distutils-precedence.pth \
         /opt/venv/bin/pip \
         /opt/venv/bin/pip3 \
@@ -111,7 +111,7 @@ RUN --mount=from=requirements-builder,source=/tmp/wheels,target=/tmp/wheels,ro \
     # /usr/local/lib/python*/site-packages/setuptools* \
     /usr/local/lib/python*/site-packages/wheel* \
     /usr/local/lib/python*/site-packages/pkg_resources* \
-    /usr/local/lib/python*/site-packages/_distutils* \
+    # /usr/local/lib/python*/site-packages/_distutils* \
     /usr/local/lib/python*/site-packages/distutils-precedence.pth; \
   find /opt/venv -type d -name '__pycache__' -prune -exec rm -rf {} +; \
   find /opt/venv -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete; \

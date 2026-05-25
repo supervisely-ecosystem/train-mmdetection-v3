@@ -79,7 +79,7 @@ RUN --mount=from=requirements-builder,source=/tmp/wheels,target=/tmp/wheels,ro \
       /opt/venv/bin/python -c "import torch; print(torch.__version__, torch.version.cuda)"; \
       rm -rf \
         /opt/venv/lib/python*/site-packages/pip* \
-        /opt/venv/lib/python*/site-packages/setuptools* \
+        # /opt/venv/lib/python*/site-packages/setuptools* \
         /opt/venv/lib/python*/site-packages/wheel* \
         /opt/venv/lib/python*/site-packages/pkg_resources* \
         /opt/venv/lib/python*/site-packages/_distutils_hack* \
@@ -108,7 +108,7 @@ RUN --mount=from=requirements-builder,source=/tmp/wheels,target=/tmp/wheels,ro \
     /usr/bin/curl \
     /usr/bin/wget \
     /usr/local/lib/python*/site-packages/pip* \
-    /usr/local/lib/python*/site-packages/setuptools* \
+    # /usr/local/lib/python*/site-packages/setuptools* \
     /usr/local/lib/python*/site-packages/wheel* \
     /usr/local/lib/python*/site-packages/pkg_resources* \
     /usr/local/lib/python*/site-packages/_distutils* \

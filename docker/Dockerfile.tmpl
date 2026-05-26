@@ -81,7 +81,6 @@ RUN --mount=from=requirements-builder,source=/tmp/wheels,target=/tmp/wheels,ro \
         /opt/venv/lib/python*/site-packages/pip* \
         # /opt/venv/lib/python*/site-packages/setuptools* \
         /opt/venv/lib/python*/site-packages/wheel* \
-        /opt/venv/lib/python*/site-packages/pkg_resources* \
         # /opt/venv/lib/python*/site-packages/_distutils_hack* \
         # /opt/venv/lib/python*/site-packages/_distutils* \
         /opt/venv/lib/python*/site-packages/distutils-precedence.pth \
@@ -110,7 +109,6 @@ RUN --mount=from=requirements-builder,source=/tmp/wheels,target=/tmp/wheels,ro \
     /usr/local/lib/python*/site-packages/pip* \
     # /usr/local/lib/python*/site-packages/setuptools* \
     /usr/local/lib/python*/site-packages/wheel* \
-    /usr/local/lib/python*/site-packages/pkg_resources* \
     # /usr/local/lib/python*/site-packages/_distutils* \
     /usr/local/lib/python*/site-packages/distutils-precedence.pth; \
   find /opt/venv -type d -name '__pycache__' -prune -exec rm -rf {} +; \

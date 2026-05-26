@@ -55,7 +55,7 @@ RUN set -eux; \
       cd /; \
     fi; \
     if [ -s /tmp/requirements-no-mmcv.txt ]; then \
-      /opt/venv/bin/python -m pip wheel --no-cache-dir --no-build-isolation -r /tmp/requirements-no-mmcv.txt -w /tmp/wheels; \
+      /opt/venv/bin/python -m pip wheel --no-cache-dir --no-build-isolation --find-links /tmp/wheels -r /tmp/requirements-no-mmcv.txt -w /tmp/wheels; \
     fi; \
   else \
     mkdir -p /tmp/wheels; \

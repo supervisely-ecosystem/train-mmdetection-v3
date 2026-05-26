@@ -44,6 +44,7 @@ RUN set -eux; \
     torch==2.7.1+cu128 torchvision==0.22.1+cu128; \
   grep -Ev '^[[:space:]]*mmcv==' /tmp/requirements.txt > /tmp/requirements-no-mmcv.txt; \
   if [ -s /tmp/requirements.txt ]; then \
+    mkdir -p /tmp/wheels; \
     if grep -Eq '^[[:space:]]*mmcv==' /tmp/requirements.txt; then \
       mkdir -p /tmp/mmcv-src; \
       git clone --branch v2.1.0 --depth 1 https://github.com/open-mmlab/mmcv.git /tmp/mmcv-src/mmcv-2.1.0; \

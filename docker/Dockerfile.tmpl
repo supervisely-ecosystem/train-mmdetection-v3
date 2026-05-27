@@ -105,19 +105,14 @@ RUN --mount=from=requirements-builder,source=/tmp/wheels,target=/tmp/wheels,ro \
       /opt/venv/bin/python -c "import torch, mmcv, mmdet; from mmcv.ops import MultiScaleDeformableAttention; print(torch.__version__, torch.version.cuda, mmcv.__version__, mmdet.__version__, torch.cuda.get_arch_list())"; \
       rm -rf \
         /opt/venv/lib/python*/site-packages/pip* \
-        # Keep setuptools/pkg_resources in case a legacy OpenMMLab path still imports them. \
-        # /opt/venv/lib/python*/site-packages/setuptools* \
         /opt/venv/lib/python*/site-packages/wheel* \
-        # /opt/venv/lib/python*/site-packages/pkg_resources* \
-        /opt/venv/lib/python*/site-packages/_distutils_hack* \
-        /opt/venv/lib/python*/site-packages/_distutils* \
-        /opt/venv/lib/python*/site-packages/distutils-precedence.pth \
         /opt/venv/bin/pip \
         /opt/venv/bin/pip3 \
         /opt/venv/bin/pip3.* \
         /opt/venv/bin/easy_install \
         /opt/venv/bin/easy_install-* \
         /opt/venv/bin/wheel; \
+      /opt/venv/bin/python -c "from torch.utils.cpp_extension import CUDA_HOME; import mmcv, mmdet, pkg_resources; from mmcv.ops import MultiScaleDeformableAttention; print(CUDA_HOME, mmcv.__version__, mmdet.__version__, pkg_resources.__name__, MultiScaleDeformableAttention.__name__)"; \
     fi; \
   fi; \
   rm -rf \

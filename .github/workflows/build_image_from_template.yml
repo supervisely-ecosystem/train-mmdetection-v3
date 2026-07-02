@@ -25,6 +25,11 @@ on:
         required: false
         type: boolean
         default: false
+      build_cache:
+        description: "Use Docker registry build cache"
+        required: false
+        type: boolean
+        default: true
 jobs:
   build-image:
     uses: supervisely-ecosystem/workflows/.github/workflows/build_image_from_template.yml@master
@@ -35,3 +40,4 @@ jobs:
       cve_checks: ${{ inputs.enable_cve_checks }}
       skip_tag_check: ${{ inputs.skip_tag_check }}
       no_cache_requirements: ${{ inputs.no_cache_requirements }}
+      build_cache: ${{ inputs.build_cache }}

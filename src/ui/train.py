@@ -28,6 +28,7 @@ from src.ui.hyperparameters import (
     max_per_img,
     general
 )
+from src.ui import train_config
 from src.ui.task import task_selector
 from src.ui.train_val_split import dump_train_val_splits, splits
 from supervisely.app.widgets import (
@@ -57,6 +58,20 @@ def get_task():
         return "instance_segmentation"
     else:
         return "object_detection"
+
+
+def resolve_max_per_img(cfg: Config, fallback: int) -> int:
+    """Reads the max_per_img actually set on the (possibly advanced-mode-preserved)
+    model config, instead of assuming it always matches the max_per_img widget -
+    the two can diverge once advanced mode leaves a hand-edited value in place."""
+    test_cfg = getattr(cfg.model, "test_cfg", None)
+    if test_cfg is not None:
+        rcnn_cfg = getattr(test_cfg, "rcnn", None)
+        if rcnn_cfg is not None and hasattr(rcnn_cfg, "max_per_img"):
+            return rcnn_cfg.max_per_img
+        if hasattr(test_cfg, "max_per_img"):
+            return test_cfg.max_per_img
+    return fallback
 
 
 def set_device_env(device_name: str):
@@ -184,7 +199,12 @@ def train():
     DetLocalVisualizer._instance_dict.clear()
 
     # create config from params
-    train_cfg = params.update_config(g.cfg, max_per_img.get_value())
+    # In advanced mode, preserve whatever the user hand-edited in the Advanced Config
+    # step for fields it exposes (optimizer/scheduler/train_cfg/checkpoint & log
+    # settings/max_per_img/frozen_stages) instead of silently overwriting them.
+    train_cfg = params.update_config(
+        g.cfg, max_per_img.get_value(), advanced_mode=train_config.switch.is_on()
+    )
 
     # update load_from with custom_weights_path
     if params.load_from and weights_path_or_url:
@@ -354,7 +374,7 @@ def train():
                 if task_type == sly.nn.TaskType.OBJECT_DETECTION:
                     params = sly.nn.benchmark.ObjectDetectionEvaluator.load_yaml_evaluation_params()
                     params = yaml.safe_load(params)
-                    params["max_detections"] = max_per_img.get_value()
+                    params["max_detections"] = resolve_max_per_img(train_cfg, max_per_img.get_value())
                     bm = sly.nn.benchmark.ObjectDetectionBenchmark(
                         g.api,
                         g.project_info.id,
@@ -368,7 +388,7 @@ def train():
                 elif task_type == sly.nn.TaskType.INSTANCE_SEGMENTATION:
                     params = sly.nn.benchmark.InstanceSegmentationEvaluator.load_yaml_evaluation_params()
                     params = yaml.safe_load(params)
-                    params["max_detections"] = max_per_img.get_value()
+                    params["max_detections"] = resolve_max_per_img(train_cfg, max_per_img.get_value())
                     bm = sly.nn.benchmark.InstanceSegmentationBenchmark(
                         g.api,
                         g.project_info.id,

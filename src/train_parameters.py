@@ -76,7 +76,16 @@ class TrainParameters:
         self.app_dir = app_dir
         self.work_dir = app_dir + "/work_dir"
 
-    def update_config(self, config: Config, max_per_img: int = 100):
+    def update_config(self, config: Config, max_per_img: int = 100, advanced_mode: bool = False):
+        """
+        :param advanced_mode: if True, preserve whatever `config` already has for
+            fields the user can hand-edit in the Advanced Config step (optimizer,
+            scheduler, train_cfg epochs/val_interval, checkpoint/log hook settings,
+            max_per_img, frozen_stages) instead of unconditionally rebuilding them
+            from widget state. Structural fields that depend on runtime paths/state
+            (dataset wiring, num_classes, work_dir, Supervisely integration hooks,
+            model-specific correctness patches) are always enforced regardless.
+        """
         cfg = deepcopy(config)
         assert self.is_inited(), "TrainParameters: wrong initialization parameters."
 
@@ -99,11 +108,16 @@ class TrainParameters:
             cfg.model.data_preprocessor.pad_mask = True
             cfg.model.data_preprocessor.pad_size_divisor = 32
 
-        if hasattr(self, "frozen_stages") and self.frozen_stages is not None:
+        if (
+            not advanced_mode
+            and hasattr(self, "frozen_stages")
+            and self.frozen_stages is not None
+        ):
             cfg.model.backbone.frozen_stages = self.frozen_stages
             sly.logger.debug(f"Frozen stages set to: {self.frozen_stages}")
 
-        # pipelines
+        # pipelines - always (re)built: train_dataset/val_dataset below embed these
+        # directly (real SlyImgAugs config path + input_size), regardless of mode.
         train_pipeline, test_pipeline = get_default_pipelines(
             with_mask=self.task == "instance_segmentation"
         )
@@ -112,10 +126,14 @@ class TrainParameters:
         train_pipeline.insert(idx_insert, img_aug)
         train_pipeline[3]["scale"] = self.input_size
         test_pipeline[1]["scale"] = self.input_size
-        if cfg.get("train_pipeline"):
-            cfg.train_pipeline = train_pipeline
-        if cfg.get("test_pipeline"):
-            cfg.test_pipeline = test_pipeline
+        # the top-level cfg.train_pipeline/test_pipeline keys are just a reference
+        # echo (the pipeline that's actually used is embedded in train_dataset/
+        # val_dataset below) - in advanced mode, leave whatever the user has there.
+        if not advanced_mode:
+            if cfg.get("train_pipeline"):
+                cfg.train_pipeline = train_pipeline
+            if cfg.get("test_pipeline"):
+                cfg.test_pipeline = test_pipeline
 
         # datasets
         train_dataset = dict(
@@ -170,30 +188,32 @@ class TrainParameters:
         cfg.test_evaluator = cfg.val_evaluator.copy()
 
         # train/val
-        cfg.train_cfg = dict(
-            by_epoch=self.epoch_based_train,
-            max_epochs=self.total_epochs,
-            val_interval=self.val_interval,
-        )
+        if not advanced_mode:
+            cfg.train_cfg = dict(
+                by_epoch=self.epoch_based_train,
+                max_epochs=self.total_epochs,
+                val_interval=self.val_interval,
+            )
 
         # hooks
         # from sly_hook import SuperviselyHook
         # from mmdet.engine.hooks import CheckInvalidLossHook, MeanTeacherHook, NumClassCheckHook
         # from mmengine.hooks import CheckpointHook
-        save_best = "auto" if self.save_best else None
-        cfg.default_hooks.checkpoint = dict(
-            type="CheckpointHook",
-            interval=self.checkpoint_interval,
-            by_epoch=self.epoch_based_train,
-            max_keep_ckpts=self.max_keep_checkpoints,
-            save_last=self.save_last,
-            save_best=save_best,
-            save_optimizer=self.save_optimizer,
-        )
-        cfg.log_processor = dict(
-            type="LogProcessor", window_size=self.chart_update_interval, by_epoch=True
-        )
-        cfg.default_hooks.logger["interval"] = self.log_interval
+        if not advanced_mode:
+            save_best = "auto" if self.save_best else None
+            cfg.default_hooks.checkpoint = dict(
+                type="CheckpointHook",
+                interval=self.checkpoint_interval,
+                by_epoch=self.epoch_based_train,
+                max_keep_ckpts=self.max_keep_checkpoints,
+                save_last=self.save_last,
+                save_best=save_best,
+                save_optimizer=self.save_optimizer,
+            )
+            cfg.log_processor = dict(
+                type="LogProcessor", window_size=self.chart_update_interval, by_epoch=True
+            )
+            cfg.default_hooks.logger["interval"] = self.log_interval
         cfg.custom_hooks = [
             dict(type="NumClassCheckHook"),
             # dict(type="CheckInvalidLossHook", interval=1),
@@ -201,39 +221,45 @@ class TrainParameters:
         ]
 
         # change max_per_img
-        if hasattr(cfg.model.test_cfg, "max_per_img"):
-            cfg.model.test_cfg.max_per_img = max_per_img
-        if hasattr(cfg.model.test_cfg, "rcnn"):
-            if hasattr(cfg.model.test_cfg.rcnn, "max_per_img"):
-                cfg.model.test_cfg.rcnn.max_per_img = max_per_img
+        if not advanced_mode:
+            if hasattr(cfg.model.test_cfg, "max_per_img"):
+                cfg.model.test_cfg.max_per_img = max_per_img
+            if hasattr(cfg.model.test_cfg, "rcnn"):
+                if hasattr(cfg.model.test_cfg.rcnn, "max_per_img"):
+                    cfg.model.test_cfg.rcnn.max_per_img = max_per_img
 
         # visualization
         # from mmdet.engine.hooks import DetVisualizationHook
         # TODO: debug
-        cfg.default_hooks.visualization = dict(type="DetVisualizationHook", draw=True, interval=100)
+        if not advanced_mode:
+            cfg.default_hooks.visualization = dict(
+                type="DetVisualizationHook", draw=True, interval=100
+            )
 
         # optimizer
         # from mmengine.optim.optimizer import OptimWrapper
-        cfg.optim_wrapper.optimizer = self.optimizer
-        if self.clip_grad_norm:
-            cfg.optim_wrapper.clip_grad = dict(max_norm=self.clip_grad_norm)
+        if not advanced_mode:
+            cfg.optim_wrapper.optimizer = self.optimizer
+            if self.clip_grad_norm:
+                cfg.optim_wrapper.clip_grad = dict(max_norm=self.clip_grad_norm)
 
         # scheduler
         # from mmengine.optim.scheduler import ConstantLR, LinearLR
-        cfg.param_scheduler = []
-        if self.warmup_iters:
-            warmup = dict(
-                type="LinearLR",
-                start_factor=self.warmup_ratio,
-                by_epoch=False,
-                begin=0,
-                end=self.warmup_iters,
-            )
-            cfg.param_scheduler.append(warmup)
-        if self.scheduler:
-            if self.scheduler["by_epoch"] is False:
-                self.scheduler["begin"] = self.warmup_iters
-            cfg.param_scheduler.append(self.scheduler)
+        if not advanced_mode:
+            cfg.param_scheduler = []
+            if self.warmup_iters:
+                warmup = dict(
+                    type="LinearLR",
+                    start_factor=self.warmup_ratio,
+                    by_epoch=False,
+                    begin=0,
+                    end=self.warmup_iters,
+                )
+                cfg.param_scheduler.append(warmup)
+            if self.scheduler:
+                if self.scheduler["by_epoch"] is False:
+                    self.scheduler["begin"] = self.warmup_iters
+                cfg.param_scheduler.append(self.scheduler)
 
         # TODO: loss. can we correctly change losses?
 
